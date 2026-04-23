@@ -23,6 +23,5 @@ Thumbs.db
 *.iml
 
 # Build output
-export_presets.cfg
 build/
 dist/
