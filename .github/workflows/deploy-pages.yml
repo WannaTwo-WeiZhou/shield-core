@@ -44,6 +44,11 @@ jobs:
           unzip -q templates.tpz
           mv templates/* ~/.local/share/godot/export_templates/${GODOT_TEMPLATE_VERSION}/
 
+      - name: Download CJK font (Noto Sans SC)
+        run: |
+          mkdir -p fonts
+          wget -q "https://github.com/google/fonts/raw/main/ofl/notosanssc/NotoSansSC%5Bwght%5D.ttf" -O fonts/NotoSansSC.ttf
+
       - name: Import project
         run: |
           mkdir -p build/web

@@ -25,3 +25,6 @@ Thumbs.db
 # Build output
 build/
 dist/
+
+# CJK font downloaded by CI
+fonts/NotoSansSC.ttf
