@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://c54q3qhqhcyey"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_white18"]
+font_color = Color(1, 1, 1, 1)
+font_size = 18
+
+[node name="HintLabel" type="Label"]
+offset_left = 0.0
+offset_top = 920.0
+offset_right = 640.0
+offset_bottom = 950.0
+text = "使用 AD 键移动，护盾触碰绿色子弹回血，红色子弹受伤"
+label_settings = SubResource("LabelSettings_white18")
+horizontal_alignment = 1
+vertical_alignment = 1

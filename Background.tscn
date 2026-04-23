@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://bg1qf8y10f7qy"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1a1e2c"]
+bg_color = Color(0.102, 0.118, 0.173, 1)
+
+[node name="Background" type="ColorRect"]
+offset_right = 640.0
+offset_bottom = 960.0
+color = Color(0.102, 0.118, 0.173, 1)

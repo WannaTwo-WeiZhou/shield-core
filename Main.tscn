@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://cotfeg4xqt7ku"]
+
+[ext_resource type="PackedScene" uid="uid://bg1qf8y10f7qy" path="res://Background.tscn" id="1_bg"]
+[ext_resource type="PackedScene" uid="uid://c54q3qhqhcyey" path="res://HintLabel.tscn" id="2_label"]
+
+[node name="Main" type="Node2D"]
+
+[node name="Background" parent="." instance=ExtResource("1_bg")]
+
+[node name="HintLabel" parent="." instance=ExtResource("2_label")]
