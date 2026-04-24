@@ -39,12 +39,22 @@ func get_tag_effects(tag: String) -> Array:
 	return _tag_effects.get(tag, [])
 
 
+## 查询某标签下指定类型的所有效果（简化联动查询）
+func get_tag_effects_by_type(tag: String, effect_type: String) -> Array:
+	return get_tag_effects(tag).filter(func(e: Dictionary) -> bool: return e.get("type", "") == effect_type)
+
+
 ## 检查某标签下是否存在指定类型效果
 func has_tag_effect(tag: String, effect_type: String) -> bool:
 	for eff in get_tag_effects(tag):
 		if eff.get("type", "") == effect_type:
 			return true
 	return false
+
+
+## 调试用：返回当前属性加成字典（不直接暴露私有字段）
+func debug_get_bonuses() -> Dictionary:
+	return _attribute_bonuses.duplicate()
 
 
 ## 调试用：打印当前状态

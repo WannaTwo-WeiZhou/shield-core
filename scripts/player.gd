@@ -134,7 +134,7 @@ func _process_health_regen(delta: float) -> void:
 	if _regen_timer >= interval:
 		_regen_timer = 0.0
 		var amount: int = int(data.get("regen_amount", 2))
-		health.current_health += amount
+		health.heal(amount)
 		print("[REGEN] 恢复 %d 点生命，当前: %d/%d" % [amount, health.current_health, health.max_health])
 
 
@@ -186,31 +186,28 @@ func _handle_shield_hit(body: Node2D, shield: Area2D) -> void:
 	var base_xp := experience.get_xp_per_bullet_hit()
 	experience.add_xp(base_xp * xp_multiplier)
 
-	# ── 发射格挡事件（联动用） ──────────────────────────────────────────────────────────────
-	@warning_ignore("return_value_discarded")
-	EventBus.emit_block(self, body)
+	# ── 发射格挡事件（联动用）
+	var _ctx := EventBus.emit_block(self, body)
 
-	# ── vital_fortress 联动：格挡恢复生命 ──────────────────────────────────────────────────────
-	if AbilityManager.pipeline.has_tag_effect("shield", "enhance"):
-		for eff in AbilityManager.pipeline.get_tag_effects("shield"):
-			if eff.get("type", "") == "enhance" and "heal_on_block" in eff.get("add_tags", []):
-				health.current_health += 1
-				print("[SYNERGY:vital_fortress] 格挡恢复 1 点生命")
-				break
+	# ── vital_fortress 联动：格挡恢复生命（通过 pipeline 的标签效果驱动，无硬编码能力名）
+	for eff in AbilityManager.pipeline.get_tag_effects_by_type("shield", "enhance"):
+		if "heal_on_block" in eff.get("add_tags", []):
+			health.heal(1)
+			print("[SYNERGY:vital_fortress] 格挡恢复 1 点生命")
+			break
 
-	# ── 盾反：将子弹反弹 ──────────────────────────────────────────────────────────────────
+	# ── 盾反：将子弹反弹
 	var reflect_inst := AbilityManager.get_instance("shield_reflect")
 	if reflect_inst != null:
 		var reflect_data := reflect_inst.get_current_data()
 		if randf() < reflect_data.get("reflect_chance", 0.0):
 			_reflect_bullet(body, shield)
-			# ── burning_reflect 联动：反弹同时燃烧 ────────────────────────────────────────────
-			if AbilityManager.pipeline.has_tag_effect("reflect", "enhance"):
-				for eff in AbilityManager.pipeline.get_tag_effects("reflect"):
-					if eff.get("type", "") == "enhance" and "burn" in eff.get("add_tags", []):
-						print("[SYNERGY:burning_reflect] 反弹子弹附带燃烧！")
-						# 此处可扩展为在落点创建燃烧区域节点
-						break
+			# ── burning_reflect 联动：反弹同时燃烧（标签驱动，无硬编码）
+			for eff in AbilityManager.pipeline.get_tag_effects_by_type("reflect", "enhance"):
+				if "burn" in eff.get("add_tags", []):
+					print("[SYNERGY:burning_reflect] 反弹子弹附带燃烧！")
+					# 此处可扩展为在落点创建燃烧区域节点
+					break
 			return  # 已反弹，不销毁
 
 	body.queue_free()

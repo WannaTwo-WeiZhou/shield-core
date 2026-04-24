@@ -127,7 +127,7 @@ func _rebuild_pipeline() -> void:
 		_apply_instance_to_pipeline(inst)
 	_synergy_resolver.evaluate(get_all_tags(), pipeline, EventBus)
 	print("[AbilityManager] 管线已重建 | 属性: %s | 活跃联动: %s" % [
-		pipeline._attribute_bonuses,
+		pipeline.debug_get_bonuses(),
 		_synergy_resolver.get_active_synergies()
 	])
 
@@ -155,7 +155,9 @@ func _generate_candidates(count: int) -> Array:
 		var total_weight := 0
 		for entry in remaining:
 			total_weight += entry["weight"]
-		var roll := randi() % maxi(total_weight, 1)
+		if total_weight <= 0:
+			break
+		var roll := randi() % total_weight
 		var cumulative := 0
 		for j in range(remaining.size()):
 			cumulative += remaining[j]["weight"]

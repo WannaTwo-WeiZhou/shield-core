@@ -45,10 +45,12 @@ func get_active_synergies() -> Array:
 
 
 func _tags_satisfied(required: Array, available: Array) -> bool:
+	if required.is_empty():
+		return false  # 无约束的联动不应自动激活，需至少声明一个条件标签
 	for tag in required:
 		if not available.has(tag):
 			return false
-	return not required.is_empty()
+	return true
 
 
 func _apply_synergy(syn: Dictionary, pipeline: ModifierPipeline) -> void:
