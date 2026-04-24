@@ -2,7 +2,7 @@ extends CharacterBody2D
 
 const Experience = preload("res://experience/experience.gd")
 
-const SPEED: float = 400.0
+const BASE_SPEED: float = 400.0
 const MIN_X: float = 40.0
 const MAX_X: float = 600.0
 const MIN_Y: float = 40.0
@@ -24,21 +24,31 @@ var is_dragging: bool = false
 var joystick_center: Vector2 = Vector2.ZERO
 var input_vector: Vector2 = Vector2.ZERO
 
+# 生命恢复计时器（由 health_regen 能力驱动）
+var _regen_timer: float = 0.0
+
 func _ready() -> void:
 	joystick_base.visible = false
-	
+
 	# Connect collision signals
 	core_hitbox.body_entered.connect(_on_core_body_entered)
 	shield_left.body_entered.connect(_on_shield_left_body_entered)
 	shield_right.body_entered.connect(_on_shield_right_body_entered)
-	
+
 	# Connect health signal for logging
 	health.health_changed.connect(_on_health_changed)
+
+	# 注册到能力管理器，使能力效果可访问玩家
+	AbilityManager.register_player(self)
+
+	# 订阅能力变更事件，刷新属性
+	AbilityManager.abilities_updated.connect(_on_abilities_updated)
+
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch or event is InputEventMouseButton:
 		var touch_pos = get_global_mouse_position()
-		
+
 		if event.pressed:
 			is_dragging = true
 			joystick_center = touch_pos
@@ -52,6 +62,7 @@ func _input(event: InputEvent) -> void:
 			joystick_base.visible = false
 			input_vector = Vector2.ZERO
 
+
 func _process(delta: float) -> void:
 	shield_container.rotate(PI * delta)
 	if is_dragging:
@@ -62,25 +73,29 @@ func _process(delta: float) -> void:
 	if input_vector != Vector2.ZERO:
 		_move_player(delta)
 
+	_process_health_regen(delta)
+
+
 func _update_joystick() -> void:
 	var current_pos = get_global_mouse_position()
 	var delta = current_pos - joystick_center
 	var distance = delta.length()
-	
+
 	if distance > JOYSTICK_MAX_RADIUS:
 		delta = delta.normalized() * JOYSTICK_MAX_RADIUS
 		distance = JOYSTICK_MAX_RADIUS
-	
+
 	joystick_knob.position = delta
-	
+
 	if distance > JOYSTICK_DEADZONE:
 		input_vector = delta / JOYSTICK_MAX_RADIUS
 	else:
 		input_vector = Vector2.ZERO
 
+
 func _update_keyboard_input() -> void:
 	var keyboard_vector = Vector2.ZERO
-	
+
 	if Input.is_key_pressed(KEY_W):
 		keyboard_vector.y -= 1
 	if Input.is_key_pressed(KEY_S):
@@ -89,19 +104,41 @@ func _update_keyboard_input() -> void:
 		keyboard_vector.x -= 1
 	if Input.is_key_pressed(KEY_D):
 		keyboard_vector.x += 1
-	
+
 	input_vector = keyboard_vector.normalized()
+
 
 func _move_player(delta: float) -> void:
 	if input_vector == Vector2.ZERO:
 		return
-	
-	velocity = input_vector * SPEED
+
+	# 应用速度加成（来自 speed_boost 等能力）
+	var speed := BASE_SPEED + AbilityManager.pipeline.get_attribute("speed_bonus")
+	velocity = input_vector * speed
 	move_and_slide()
-	
+
 	# Clamp position within bounds
 	global_position.x = clamp(global_position.x, MIN_X, MAX_X)
 	global_position.y = clamp(global_position.y, MIN_Y, MAX_Y)
+
+
+# ─── 生命恢复 ──────────────────────────────────────────────────────────────
+
+func _process_health_regen(delta: float) -> void:
+	var inst := AbilityManager.get_instance("health_regen")
+	if inst == null:
+		return
+	var data := inst.get_current_data()
+	var interval: float = data.get("regen_interval", 5.0)
+	_regen_timer += delta
+	if _regen_timer >= interval:
+		_regen_timer = 0.0
+		var amount: int = int(data.get("regen_amount", 2))
+		health.current_health += amount
+		print("[REGEN] 恢复 %d 点生命，当前: %d/%d" % [amount, health.current_health, health.max_health])
+
+
+# ─── 碰撞处理 ───────────────────────────────────────────────────────────────────
 
 func _on_core_body_entered(body: Node2D) -> void:
 	print("[COLLISION] player_core hit by %s (layer: %d, mask: %d)" % [
@@ -111,7 +148,9 @@ func _on_core_body_entered(body: Node2D) -> void:
 	])
 	if body.is_in_group("bullet"):
 		health.take_damage()
+		EventBus.emit_take_damage(self, health.damage_per_hit)
 		body.queue_free()
+
 
 func _on_shield_left_body_entered(body: Node2D) -> void:
 	print("[COLLISION] player_shield_left hit by %s (layer: %d, mask: %d)" % [
@@ -119,7 +158,8 @@ func _on_shield_left_body_entered(body: Node2D) -> void:
 		body.collision_layer if body is CollisionObject2D else -1,
 		body.collision_mask if body is CollisionObject2D else -1
 	])
-	_destroy_if_bullet(body)
+	_handle_shield_hit(body, shield_left)
+
 
 func _on_shield_right_body_entered(body: Node2D) -> void:
 	print("[COLLISION] player_shield_right hit by %s (layer: %d, mask: %d)" % [
@@ -127,12 +167,73 @@ func _on_shield_right_body_entered(body: Node2D) -> void:
 		body.collision_layer if body is CollisionObject2D else -1,
 		body.collision_mask if body is CollisionObject2D else -1
 	])
-	_destroy_if_bullet(body)
+	_handle_shield_hit(body, shield_right)
 
-func _destroy_if_bullet(body: Node2D) -> void:
-	if body.is_in_group("bullet"):
-		experience.add_xp(experience.get_xp_per_bullet_hit())
-		body.queue_free()
+
+func _handle_shield_hit(body: Node2D, shield: Area2D) -> void:
+	if not body.is_in_group("bullet"):
+		return
+
+	# ── 暴击格挡：有几率双倍 XP ────────────────────────────────────────────────────────
+	var xp_multiplier := 1
+	var crit_inst := AbilityManager.get_instance("crit_block")
+	if crit_inst != null:
+		var crit_data := crit_inst.get_current_data()
+		if randf() < crit_data.get("crit_chance", 0.0):
+			xp_multiplier = 2
+			print("[CRIT BLOCK] 暴击格挡！双倍 XP")
+
+	var base_xp := experience.get_xp_per_bullet_hit()
+	experience.add_xp(base_xp * xp_multiplier)
+
+	# ── 发射格挡事件（联动用） ──────────────────────────────────────────────────────────────
+	@warning_ignore("return_value_discarded")
+	EventBus.emit_block(self, body)
+
+	# ── vital_fortress 联动：格挡恢复生命 ──────────────────────────────────────────────────────
+	if AbilityManager.pipeline.has_tag_effect("shield", "enhance"):
+		for eff in AbilityManager.pipeline.get_tag_effects("shield"):
+			if eff.get("type", "") == "enhance" and "heal_on_block" in eff.get("add_tags", []):
+				health.current_health += 1
+				print("[SYNERGY:vital_fortress] 格挡恢复 1 点生命")
+				break
+
+	# ── 盾反：将子弹反弹 ──────────────────────────────────────────────────────────────────
+	var reflect_inst := AbilityManager.get_instance("shield_reflect")
+	if reflect_inst != null:
+		var reflect_data := reflect_inst.get_current_data()
+		if randf() < reflect_data.get("reflect_chance", 0.0):
+			_reflect_bullet(body, shield)
+			# ── burning_reflect 联动：反弹同时燃烧 ────────────────────────────────────────────
+			if AbilityManager.pipeline.has_tag_effect("reflect", "enhance"):
+				for eff in AbilityManager.pipeline.get_tag_effects("reflect"):
+					if eff.get("type", "") == "enhance" and "burn" in eff.get("add_tags", []):
+						print("[SYNERGY:burning_reflect] 反弹子弹附带燃烧！")
+						# 此处可扩展为在落点创建燃烧区域节点
+						break
+			return  # 已反弹，不销毁
+
+	body.queue_free()
+
+
+func _reflect_bullet(bullet: Node2D, shield: Area2D) -> void:
+	# 以盾牌中心为法线，将子弹方向反转
+	var to_bullet: Vector2 = (bullet.global_position - shield.global_position).normalized()
+	if "direction" in bullet:
+		# 重新设置方向：朝离开盾牌的方向
+		bullet.direction = to_bullet
+		bullet.rotation = to_bullet.angle()
+		bullet.add_to_group("player_bullet")
+		print("[REFLECT] 子弹被反弹！方向: %s" % to_bullet)
+	else:
+		bullet.queue_free()
+
 
 func _on_health_changed(current: int, max: int) -> void:
 	print("[HEALTH] Health changed: %d/%d" % [current, max])
+
+
+# ─── 能力变更回调 ──────────────────────────────────────────────────────────────────
+
+func _on_abilities_updated() -> void:
+	print("[Player] 能力已更新，当前标签: %s" % AbilityManager.get_all_tags())

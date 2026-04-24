@@ -1,0 +1,84 @@
+{
+  "abilities": [
+    {
+      "id": "speed_boost",
+      "name": "疾风步",
+      "description": "大幅提升移动速度，让你灵活躲避子弹。",
+      "rarity": 1,
+      "weight": 100,
+      "max_level": 3,
+      "tags": ["attribute", "movement"],
+      "affects_tags": [],
+      "responds_to_tags": [],
+      "per_level": [
+        {"speed_bonus": 60},
+        {"speed_bonus": 120},
+        {"speed_bonus": 200}
+      ]
+    },
+    {
+      "id": "shield_reflect",
+      "name": "盾反",
+      "description": "格挡子弹时，将其反弹回去造成伤害。",
+      "rarity": 2,
+      "weight": 80,
+      "max_level": 3,
+      "tags": ["shield", "reflect"],
+      "affects_tags": ["shield"],
+      "responds_to_tags": ["on_block"],
+      "per_level": [
+        {"reflect_chance": 0.50},
+        {"reflect_chance": 0.75},
+        {"reflect_chance": 1.00}
+      ]
+    },
+    {
+      "id": "burn_shield",
+      "name": "燃盾",
+      "description": "格挡子弹时，在格挡点留下短暂的燃烧区域。",
+      "rarity": 2,
+      "weight": 75,
+      "max_level": 3,
+      "tags": ["shield", "burn"],
+      "affects_tags": ["shield", "burn"],
+      "responds_to_tags": ["on_block"],
+      "per_level": [
+        {"burn_damage": 5, "burn_duration": 1.5},
+        {"burn_damage": 8, "burn_duration": 2.0},
+        {"burn_damage": 12, "burn_duration": 3.0}
+      ]
+    },
+    {
+      "id": "health_regen",
+      "name": "生命恢复",
+      "description": "每隔一段时间自动恢复少量生命值。",
+      "rarity": 1,
+      "weight": 90,
+      "max_level": 3,
+      "tags": ["attribute", "health"],
+      "affects_tags": [],
+      "responds_to_tags": [],
+      "per_level": [
+        {"regen_amount": 2, "regen_interval": 5.0},
+        {"regen_amount": 4, "regen_interval": 4.0},
+        {"regen_amount": 7, "regen_interval": 3.0}
+      ]
+    },
+    {
+      "id": "crit_block",
+      "name": "暴击格挡",
+      "description": "格挡时有几率获得双倍经验。",
+      "rarity": 2,
+      "weight": 70,
+      "max_level": 3,
+      "tags": ["crit", "shield"],
+      "affects_tags": ["on_block"],
+      "responds_to_tags": ["on_block"],
+      "per_level": [
+        {"crit_chance": 0.15, "block_xp_bonus": 1.0},
+        {"crit_chance": 0.25, "block_xp_bonus": 1.0},
+        {"crit_chance": 0.40, "block_xp_bonus": 1.0}
+      ]
+    }
+  ]
+}

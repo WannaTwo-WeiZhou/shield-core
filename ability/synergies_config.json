@@ -1,0 +1,34 @@
+{
+  "synergies": [
+    {
+      "id": "burning_reflect",
+      "required_tags": ["shield", "reflect", "burn"],
+      "description": "炎反：同时拥有【盾反】与【燃盾】时，反弹的子弹自动附带燃烧效果。",
+      "effect": {
+        "type": "tag_enhance",
+        "target_tag": "reflect",
+        "add_tags": ["burn"]
+      }
+    },
+    {
+      "id": "swift_guardian",
+      "required_tags": ["movement", "shield"],
+      "description": "疾风护卫：同时拥有移动类与护盾类能力时，格挡判定范围略微扩大。",
+      "effect": {
+        "type": "attribute_bonus",
+        "attribute": "shield_radius_bonus",
+        "bonus": 8
+      }
+    },
+    {
+      "id": "vital_fortress",
+      "required_tags": ["health", "shield"],
+      "description": "生命要塞：同时拥有生命恢复与护盾类能力时，每次格挡额外恢复 1 点生命。",
+      "effect": {
+        "type": "tag_enhance",
+        "target_tag": "shield",
+        "add_tags": ["heal_on_block"]
+      }
+    }
+  ]
+}
