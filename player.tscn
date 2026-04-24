@@ -1,0 +1,53 @@
+[gd_scene load_steps=5 format=3 uid="uid://player001"]
+
+[ext_resource type="Script" path="res://scripts/player.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://b1kwb7k26iupv" path="res://assets/player/shield_circle.png" id="2_shield"]
+[ext_resource type="Texture2D" uid="uid://41m4vh7uubtb" path="res://assets/player/joystick_base.png" id="3_joystick_base"]
+[ext_resource type="Texture2D" uid="uid://euu7lp4pc3a4" path="res://assets/player/joystick_knob.png" id="4_joystick_knob"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_core"]
+size = Vector2(32, 32)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_shield"]
+radius = 16.0
+
+[node name="player" type="CharacterBody2D"]
+position = Vector2(320, 800)
+script = ExtResource("1_script")
+
+[node name="core_visual" type="ColorRect" parent="."]
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 16.0
+mouse_filter = 2
+metadata/_edit_use_anchors_ = true
+color = Color(0.9058823529411765, 0.2980392156862745, 0.23529411764705882, 1)
+
+[node name="core_collision" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_core")
+
+[node name="shield_left" type="Sprite2D" parent="."]
+position = Vector2(-40, 0)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_shield")
+
+[node name="shield_left_collision" type="CollisionShape2D" parent="shield_left"]
+shape = SubResource("CircleShape2D_shield")
+
+[node name="shield_right" type="Sprite2D" parent="."]
+position = Vector2(40, 0)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_shield")
+
+[node name="shield_right_collision" type="CollisionShape2D" parent="shield_right"]
+shape = SubResource("CircleShape2D_shield")
+
+[node name="joystick_base" type="Sprite2D" parent="."]
+visible = false
+z_index = 100
+texture = ExtResource("3_joystick_base")
+
+[node name="joystick_knob" type="Sprite2D" parent="joystick_base"]
+z_index = 101
+texture = ExtResource("4_joystick_knob")

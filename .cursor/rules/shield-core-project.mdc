@@ -1,0 +1,39 @@
+---
+description: ShieldCore 项目规范 - 引用 Copilot Instructions
+globs: *
+alwaysApply: true
+---
+
+# ShieldCore 项目规范
+
+> **始终使用中文回复用户。** 代码注释、提交信息可保持英文，但与用户的对话一律使用简体中文。
+
+本项目遵循 `.github/copilot-instructions.md` 中的完整规范。核心要点：
+
+## 项目概览
+
+- **引擎**: Godot 4.6.2-stable (GL Compatibility renderer)
+- **类型**: 2D Web 游戏，导出到 GitHub Pages
+- **分辨率**: 640×960 竖屏
+- **主场景**: `main.tscn`
+
+## 命名与组织规范
+
+| 项目 | 规范 |
+|------|------|
+| 文件名 | `snake_case` |
+| 目录结构 | Feature-based |
+| 类名/节点名 | `PascalCase` |
+| 资源引用 | 优先 `uid://` |
+
+## 关键约定
+
+1. **场景是构建单元** — 以小型 `.tscn` 为单元，由 `main.tscn` 实例化
+2. **Feature 目录** — 每个功能独立目录（如 `start/`、`player/`）
+3. **共享资源** — 放 `assets/`（字体、音效等）
+4. **自动加载** — 放 `autoload/`
+5. **插件** — 放 `addons/<plugin_name>/`
+
+## 完整规范
+
+详细规范请参考 `.github/copilot-instructions.md`
