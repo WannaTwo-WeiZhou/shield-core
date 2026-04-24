@@ -15,6 +15,7 @@ const JOYSTICK_DEADZONE: float = 10.0
 @onready var core_hitbox: Area2D = $core_hitbox
 @onready var shield_left: Area2D = $shield_container/shield_left
 @onready var shield_right: Area2D = $shield_container/shield_right
+@onready var health: Health = $health
 
 var is_dragging: bool = false
 var joystick_center: Vector2 = Vector2.ZERO
@@ -27,6 +28,9 @@ func _ready() -> void:
 	core_hitbox.body_entered.connect(_on_core_body_entered)
 	shield_left.body_entered.connect(_on_shield_left_body_entered)
 	shield_right.body_entered.connect(_on_shield_right_body_entered)
+	
+	# Connect health signal for logging
+	health.health_changed.connect(_on_health_changed)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch or event is InputEventMouseButton:
@@ -84,7 +88,9 @@ func _on_core_body_entered(body: Node2D) -> void:
 		body.collision_layer if body is CollisionObject2D else -1,
 		body.collision_mask if body is CollisionObject2D else -1
 	])
-	_destroy_if_bullet(body)
+	if body.is_in_group("bullet"):
+		health.take_damage()
+		body.queue_free()
 
 func _on_shield_left_body_entered(body: Node2D) -> void:
 	print("[COLLISION] player_shield_left hit by %s (layer: %d, mask: %d)" % [
@@ -105,3 +111,6 @@ func _on_shield_right_body_entered(body: Node2D) -> void:
 func _destroy_if_bullet(body: Node2D) -> void:
 	if body.is_in_group("bullet"):
 		body.queue_free()
+
+func _on_health_changed(current: int, max: int) -> void:
+	print("[HEALTH] Health changed: %d/%d" % [current, max])

@@ -1,0 +1,24 @@
+[gd_scene load_steps=2 format=3 uid="uid://healthui001"]
+
+[ext_resource type="Script" path="res://health_ui/health_ui.gd" id="1_script"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
+bg_color = Color(0.2, 0.2, 0.2, 0.8)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fill"]
+bg_color = Color(0.905882, 0.298039, 0.235294, 1)
+
+[node name="HealthUI" type="CanvasLayer"]
+script = ExtResource("1_script")
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+offset_left = 120.0
+offset_top = 20.0
+offset_right = 520.0
+offset_bottom = 40.0
+theme_override_styles/background = SubResource("StyleBoxFlat_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_fill")
+max_value = 100.0
+step = 1.0
+value = 100.0
+show_percentage = false

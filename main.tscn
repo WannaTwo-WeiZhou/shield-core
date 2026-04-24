@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://bullet/bullet_spawner.gd" id="5_spawner"]
 [ext_resource type="Texture2D" uid="uid://41m4vh7uubtb" path="res://assets/player/joystick_base.png" id="6_joystick_base"]
 [ext_resource type="Texture2D" uid="uid://euu7lp4pc3a4" path="res://assets/player/joystick_knob.png" id="7_joystick_knob"]
+[ext_resource type="PackedScene" uid="uid://healthui001" path="res://health_ui/health_ui.tscn" id="8_health_ui"]
 
 [node name="main" type="Node2D" unique_id=1686072544]
 
@@ -19,6 +20,8 @@ bullet_scene = ExtResource("4_bullet")
 [node name="hint_label" parent="." unique_id=1576387859 instance=ExtResource("2_label")]
 
 [node name="player" parent="." unique_id=1111111111 instance=ExtResource("3_player")]
+
+[node name="health_ui" parent="." instance=ExtResource("8_health_ui")]
 
 [node name="joystick_canvas" type="CanvasLayer" parent="."]
 layer = 100

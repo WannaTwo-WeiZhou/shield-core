@@ -1,6 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://player001"]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_script"]
+[ext_resource type="Script" path="res://health/health.gd" id="1_health"]
 [ext_resource type="Texture2D" uid="uid://b1kwb7k26iupv" path="res://assets/player/shield_circle.png" id="2_shield"]
 [ext_resource type="Texture2D" uid="uid://41m4vh7uubtb" path="res://assets/player/joystick_base.png" id="3_joystick_base"]
 [ext_resource type="Texture2D" uid="uid://euu7lp4pc3a4" path="res://assets/player/joystick_knob.png" id="4_joystick_knob"]
@@ -56,4 +57,9 @@ texture = ExtResource("2_shield")
 
 [node name="shield_right_collision" type="CollisionShape2D" parent="shield_container/shield_right"]
 shape = SubResource("CircleShape2D_shield")
+
+[node name="health" type="Node" parent="."]
+script = ExtResource("1_health")
+max_health = 100
+damage_per_hit = 10
 
