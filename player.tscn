@@ -1,10 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://player001"]
+[gd_scene format=3 uid="uid://player001"]
 
-[ext_resource type="Script" path="res://scripts/player.gd" id="1_script"]
-[ext_resource type="Script" path="res://health/health.gd" id="1_health"]
+[ext_resource type="Script" uid="uid://csbjje6eiio7y" path="res://health/health.gd" id="1_health"]
+[ext_resource type="Script" uid="uid://bkh03epljpvc1" path="res://scripts/player.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://40rhba03xven" path="res://experience/experience.gd" id="2_experience"]
 [ext_resource type="Texture2D" uid="uid://b1kwb7k26iupv" path="res://assets/player/shield_circle.png" id="2_shield"]
-[ext_resource type="Texture2D" uid="uid://41m4vh7uubtb" path="res://assets/player/joystick_base.png" id="3_joystick_base"]
-[ext_resource type="Texture2D" uid="uid://euu7lp4pc3a4" path="res://assets/player/joystick_knob.png" id="4_joystick_knob"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_core"]
 size = Vector2(32, 32)
@@ -12,54 +11,53 @@ size = Vector2(32, 32)
 [sub_resource type="CircleShape2D" id="CircleShape2D_shield"]
 radius = 16.0
 
-[node name="player" type="CharacterBody2D"]
+[node name="player" type="CharacterBody2D" unique_id=1008815712]
 position = Vector2(320, 800)
 script = ExtResource("1_script")
 
-[node name="core_hitbox" type="Area2D" parent="."]
-collision_layer = 1
+[node name="core_hitbox" type="Area2D" parent="." unique_id=531056196]
 collision_mask = 4
 
-[node name="core_visual" type="ColorRect" parent="core_hitbox"]
+[node name="core_visual" type="ColorRect" parent="core_hitbox" unique_id=203226002]
 offset_left = -16.0
 offset_top = -16.0
 offset_right = 16.0
 offset_bottom = 16.0
 mouse_filter = 2
+color = Color(0.90588236, 0.29803923, 0.23529412, 1)
 metadata/_edit_use_anchors_ = true
-color = Color(0.9058823529411765, 0.2980392156862745, 0.23529411764705882, 1)
 
-[node name="core_collision" type="CollisionShape2D" parent="core_hitbox"]
+[node name="core_collision" type="CollisionShape2D" parent="core_hitbox" unique_id=1314610217]
 shape = SubResource("RectangleShape2D_core")
 
-[node name="shield_container" type="Marker2D" parent="."]
+[node name="shield_container" type="Marker2D" parent="." unique_id=119107528]
 
-[node name="shield_left" type="Area2D" parent="shield_container"]
+[node name="shield_left" type="Area2D" parent="shield_container" unique_id=631525996]
 position = Vector2(-40, 0)
 collision_layer = 2
 collision_mask = 4
 
-[node name="shield_left_visual" type="Sprite2D" parent="shield_container/shield_left"]
+[node name="shield_left_visual" type="Sprite2D" parent="shield_container/shield_left" unique_id=777787216]
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("2_shield")
 
-[node name="shield_left_collision" type="CollisionShape2D" parent="shield_container/shield_left"]
+[node name="shield_left_collision" type="CollisionShape2D" parent="shield_container/shield_left" unique_id=168360434]
 shape = SubResource("CircleShape2D_shield")
 
-[node name="shield_right" type="Area2D" parent="shield_container"]
+[node name="shield_right" type="Area2D" parent="shield_container" unique_id=1073521273]
 position = Vector2(40, 0)
 collision_layer = 2
 collision_mask = 4
 
-[node name="shield_right_visual" type="Sprite2D" parent="shield_container/shield_right"]
+[node name="shield_right_visual" type="Sprite2D" parent="shield_container/shield_right" unique_id=1940887331]
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("2_shield")
 
-[node name="shield_right_collision" type="CollisionShape2D" parent="shield_container/shield_right"]
+[node name="shield_right_collision" type="CollisionShape2D" parent="shield_container/shield_right" unique_id=726334205]
 shape = SubResource("CircleShape2D_shield")
 
-[node name="health" type="Node" parent="."]
+[node name="health" type="Node" parent="." unique_id=364632370]
 script = ExtResource("1_health")
-max_health = 100
-damage_per_hit = 10
 
+[node name="experience" type="Node" parent="." unique_id=1736205301]
+script = ExtResource("2_experience")

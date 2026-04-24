@@ -1,5 +1,7 @@
 extends CharacterBody2D
 
+const Experience = preload("res://experience/experience.gd")
+
 const SPEED: float = 400.0
 const MIN_X: float = 40.0
 const MAX_X: float = 600.0
@@ -16,6 +18,7 @@ const JOYSTICK_DEADZONE: float = 10.0
 @onready var shield_left: Area2D = $shield_container/shield_left
 @onready var shield_right: Area2D = $shield_container/shield_right
 @onready var health: Health = $health
+@onready var experience: Experience = $experience
 
 var is_dragging: bool = false
 var joystick_center: Vector2 = Vector2.ZERO
@@ -110,6 +113,7 @@ func _on_shield_right_body_entered(body: Node2D) -> void:
 
 func _destroy_if_bullet(body: Node2D) -> void:
 	if body.is_in_group("bullet"):
+		experience.add_xp(experience.get_xp_per_bullet_hit())
 		body.queue_free()
 
 func _on_health_changed(current: int, max: int) -> void:
