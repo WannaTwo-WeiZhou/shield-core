@@ -84,6 +84,7 @@ func _on_core_body_entered(body: Node2D) -> void:
 		body.collision_layer if body is CollisionObject2D else -1,
 		body.collision_mask if body is CollisionObject2D else -1
 	])
+	_destroy_if_bullet(body)
 
 func _on_shield_left_body_entered(body: Node2D) -> void:
 	print("[COLLISION] player_shield_left hit by %s (layer: %d, mask: %d)" % [
@@ -91,6 +92,7 @@ func _on_shield_left_body_entered(body: Node2D) -> void:
 		body.collision_layer if body is CollisionObject2D else -1,
 		body.collision_mask if body is CollisionObject2D else -1
 	])
+	_destroy_if_bullet(body)
 
 func _on_shield_right_body_entered(body: Node2D) -> void:
 	print("[COLLISION] player_shield_right hit by %s (layer: %d, mask: %d)" % [
@@ -98,3 +100,8 @@ func _on_shield_right_body_entered(body: Node2D) -> void:
 		body.collision_layer if body is CollisionObject2D else -1,
 		body.collision_mask if body is CollisionObject2D else -1
 	])
+	_destroy_if_bullet(body)
+
+func _destroy_if_bullet(body: Node2D) -> void:
+	if body.is_in_group("bullet"):
+		body.queue_free()
