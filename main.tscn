@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://byoiqp8nrncx"]
+[gd_scene load_steps=10 format=3 uid="uid://byoiqp8nrncx"]
 
 [ext_resource type="PackedScene" uid="uid://bg1qf8y10f7qy" path="res://start/background.tscn" id="1_bg"]
 [ext_resource type="PackedScene" uid="uid://c54q3qhqhcyey" path="res://start/hint_label.tscn" id="2_label"]
@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://healthui001" path="res://health_ui/health_ui.tscn" id="8_health_ui"]
 [ext_resource type="PackedScene" uid="uid://xpui001" path="res://experience_ui/experience_ui.tscn" id="9_xp_ui"]
 [ext_resource type="PackedScene" uid="uid://gameover001" path="res://game_over/game_over_ui.tscn" id="10_game_over"]
+[ext_resource type="PackedScene" uid="uid://abilitypickui001" path="res://ability_pick_ui/ability_pick_ui.tscn" id="11_ability_pick_ui"]
 
 [node name="main" type="Node2D" unique_id=1686072544]
 
@@ -28,6 +29,8 @@ bullet_scene = ExtResource("4_bullet")
 [node name="experience_ui" parent="." instance=ExtResource("9_xp_ui")]
 
 [node name="game_over_ui" parent="." unique_id=999999999 instance=ExtResource("10_game_over")]
+
+[node name="ability_pick_ui" parent="." instance=ExtResource("11_ability_pick_ui")]
 
 [node name="joystick_canvas" type="CanvasLayer" parent="."]
 layer = 100

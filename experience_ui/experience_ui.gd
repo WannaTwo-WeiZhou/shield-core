@@ -18,4 +18,5 @@ func _on_xp_changed(current_xp: int, max_xp: int, level: int) -> void:
 
 func _on_level_up(new_level: int) -> void:
 	print("[UI] Level up animation trigger for level %d" % new_level)
-	# Level up visual feedback could be added here
+	# 通知能力管理器生成升级候选
+	AbilityManager.on_player_level_up(new_level)

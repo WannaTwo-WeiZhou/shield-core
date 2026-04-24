@@ -22,5 +22,8 @@ func _ready() -> void:
 func take_damage(amount: int = damage_per_hit) -> void:
 	current_health -= amount
 
+func heal(amount: int) -> void:
+	current_health += amount
+
 func reset() -> void:
 	current_health = max_health

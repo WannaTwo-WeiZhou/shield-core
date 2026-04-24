@@ -1,0 +1,51 @@
+[gd_scene load_steps=2 format=3 uid="uid://abilitycard001"]
+
+[ext_resource type="Script" path="res://ability_pick_ui/ability_card.gd" id="1_card_script"]
+
+[node name="ability_card" type="PanelContainer"]
+custom_minimum_size = Vector2(160, 240)
+script = ExtResource("1_card_script")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+
+[node name="name_label" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "能力名称"
+horizontal_alignment = 1
+label_settings = null
+theme_override_font_sizes/font_size = 18
+
+[node name="rarity_label" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "【普通】"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.8, 0.8, 0.5, 1)
+theme_override_font_sizes/font_size = 13
+
+[node name="desc_label" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+text = "能力描述"
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 14
+
+[node name="level_label" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "新能力"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.6, 0.9, 0.6, 1)
+theme_override_font_sizes/font_size = 12
+
+[node name="button" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "选择"
+
+[connection signal="pressed" from="VBoxContainer/button" to="." method="_on_button_pressed"]
