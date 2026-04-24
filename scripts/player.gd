@@ -56,6 +56,10 @@ func _process(delta: float) -> void:
 	shield_container.rotate(PI * delta)
 	if is_dragging:
 		_update_joystick()
+	else:
+		_update_keyboard_input()
+
+	if input_vector != Vector2.ZERO:
 		_move_player(delta)
 
 func _update_joystick() -> void:
@@ -73,6 +77,20 @@ func _update_joystick() -> void:
 		input_vector = delta / JOYSTICK_MAX_RADIUS
 	else:
 		input_vector = Vector2.ZERO
+
+func _update_keyboard_input() -> void:
+	var keyboard_vector = Vector2.ZERO
+	
+	if Input.is_key_pressed(KEY_W):
+		keyboard_vector.y -= 1
+	if Input.is_key_pressed(KEY_S):
+		keyboard_vector.y += 1
+	if Input.is_key_pressed(KEY_A):
+		keyboard_vector.x -= 1
+	if Input.is_key_pressed(KEY_D):
+		keyboard_vector.x += 1
+	
+	input_vector = keyboard_vector.normalized()
 
 func _move_player(delta: float) -> void:
 	if input_vector == Vector2.ZERO:
