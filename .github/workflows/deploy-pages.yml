@@ -46,8 +46,8 @@ jobs:
 
       - name: Download CJK font (Noto Sans SC)
         run: |
-          mkdir -p fonts
-          wget -q "https://github.com/google/fonts/raw/main/ofl/notosanssc/NotoSansSC%5Bwght%5D.ttf" -O fonts/NotoSansSC.ttf
+          mkdir -p assets/fonts
+          wget -q "https://github.com/google/fonts/raw/main/ofl/notosanssc/NotoSansSC%5Bwght%5D.ttf" -O assets/fonts/NotoSansSC.ttf
 
       - name: Import project
         run: |

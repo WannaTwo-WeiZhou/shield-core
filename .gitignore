@@ -27,4 +27,4 @@ build/
 dist/
 
 # CJK font downloaded by CI
-fonts/NotoSansSC.ttf
+assets/fonts/NotoSansSC.ttf

@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://byoiqp8nrncx"]
+
+[ext_resource type="PackedScene" uid="uid://bg1qf8y10f7qy" path="res://start/background.tscn" id="1_bg"]
+[ext_resource type="PackedScene" uid="uid://c54q3qhqhcyey" path="res://start/hint_label.tscn" id="2_label"]
+
+[node name="main" type="Node2D" unique_id=1686072544]
+
+[node name="background" parent="." unique_id=978789563 instance=ExtResource("1_bg")]
+
+[node name="hint_label" parent="." unique_id=1576387859 instance=ExtResource("2_label")]
