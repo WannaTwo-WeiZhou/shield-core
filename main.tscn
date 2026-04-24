@@ -1,8 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://byoiqp8nrncx"]
+[gd_scene load_steps=6 format=3 uid="uid://byoiqp8nrncx"]
 
 [ext_resource type="PackedScene" uid="uid://bg1qf8y10f7qy" path="res://start/background.tscn" id="1_bg"]
 [ext_resource type="PackedScene" uid="uid://c54q3qhqhcyey" path="res://start/hint_label.tscn" id="2_label"]
 [ext_resource type="PackedScene" uid="uid://player001" path="res://player.tscn" id="3_player"]
+[ext_resource type="Texture2D" uid="uid://41m4vh7uubtb" path="res://assets/player/joystick_base.png" id="4_joystick_base"]
+[ext_resource type="Texture2D" uid="uid://euu7lp4pc3a4" path="res://assets/player/joystick_knob.png" id="5_joystick_knob"]
 
 [node name="main" type="Node2D" unique_id=1686072544]
 
@@ -11,3 +13,15 @@
 [node name="hint_label" parent="." unique_id=1576387859 instance=ExtResource("2_label")]
 
 [node name="player" parent="." unique_id=1111111111 instance=ExtResource("3_player")]
+
+[node name="joystick_canvas" type="CanvasLayer" parent="."]
+layer = 100
+
+[node name="joystick_base" type="Sprite2D" parent="joystick_canvas"]
+visible = false
+z_index = 100
+texture = ExtResource("4_joystick_base")
+
+[node name="joystick_knob" type="Sprite2D" parent="joystick_canvas/joystick_base"]
+z_index = 101
+texture = ExtResource("5_joystick_knob")

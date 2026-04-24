@@ -9,8 +9,8 @@ const MAX_Y: float = 920.0
 const JOYSTICK_MAX_RADIUS: float = 60.0
 const JOYSTICK_DEADZONE: float = 10.0
 
-@onready var joystick_base: Sprite2D = $joystick_base
-@onready var joystick_knob: Sprite2D = $joystick_base/joystick_knob
+@onready var joystick_base: Sprite2D = get_node("/root/main/joystick_canvas/joystick_base")
+@onready var joystick_knob: Sprite2D = get_node("/root/main/joystick_canvas/joystick_base/joystick_knob")
 @onready var shield_container: Marker2D = $shield_container
 @onready var core_hitbox: Area2D = $core_hitbox
 @onready var shield_left: Area2D = $shield_container/shield_left

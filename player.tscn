@@ -57,11 +57,3 @@ texture = ExtResource("2_shield")
 [node name="shield_right_collision" type="CollisionShape2D" parent="shield_container/shield_right"]
 shape = SubResource("CircleShape2D_shield")
 
-[node name="joystick_base" type="Sprite2D" parent="."]
-visible = false
-z_index = 100
-texture = ExtResource("3_joystick_base")
-
-[node name="joystick_knob" type="Sprite2D" parent="joystick_base"]
-z_index = 101
-texture = ExtResource("4_joystick_knob")
