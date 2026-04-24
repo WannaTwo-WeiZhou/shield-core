@@ -27,20 +27,22 @@ color = Color(0.9058823529411765, 0.2980392156862745, 0.23529411764705882, 1)
 [node name="core_collision" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_core")
 
-[node name="shield_left" type="Sprite2D" parent="."]
+[node name="shield_container" type="Marker2D" parent="."]
+
+[node name="shield_left" type="Sprite2D" parent="shield_container"]
 position = Vector2(-40, 0)
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("2_shield")
 
-[node name="shield_left_collision" type="CollisionShape2D" parent="shield_left"]
+[node name="shield_left_collision" type="CollisionShape2D" parent="shield_container/shield_left"]
 shape = SubResource("CircleShape2D_shield")
 
-[node name="shield_right" type="Sprite2D" parent="."]
+[node name="shield_right" type="Sprite2D" parent="shield_container"]
 position = Vector2(40, 0)
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("2_shield")
 
-[node name="shield_right_collision" type="CollisionShape2D" parent="shield_right"]
+[node name="shield_right_collision" type="CollisionShape2D" parent="shield_container/shield_right"]
 shape = SubResource("CircleShape2D_shield")
 
 [node name="joystick_base" type="Sprite2D" parent="."]

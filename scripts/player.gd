@@ -11,6 +11,7 @@ const JOYSTICK_DEADZONE: float = 10.0
 
 @onready var joystick_base: Sprite2D = $joystick_base
 @onready var joystick_knob: Sprite2D = $joystick_base/joystick_knob
+@onready var shield_container: Marker2D = $shield_container
 
 var is_dragging: bool = false
 var joystick_center: Vector2 = Vector2.ZERO
@@ -37,6 +38,7 @@ func _input(event: InputEvent) -> void:
 			input_vector = Vector2.ZERO
 
 func _process(delta: float) -> void:
+	shield_container.rotate(PI * delta)
 	if is_dragging:
 		_update_joystick()
 		_move_player(delta)
