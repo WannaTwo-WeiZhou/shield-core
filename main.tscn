@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://euu7lp4pc3a4" path="res://assets/player/joystick_knob.png" id="7_joystick_knob"]
 [ext_resource type="PackedScene" uid="uid://healthui001" path="res://health_ui/health_ui.tscn" id="8_health_ui"]
 [ext_resource type="PackedScene" uid="uid://xpui001" path="res://experience_ui/experience_ui.tscn" id="9_xp_ui"]
+[ext_resource type="PackedScene" uid="uid://gameover001" path="res://game_over/game_over_ui.tscn" id="10_game_over"]
 
 [node name="main" type="Node2D" unique_id=1686072544]
 
@@ -25,6 +26,8 @@ bullet_scene = ExtResource("4_bullet")
 [node name="health_ui" parent="." instance=ExtResource("8_health_ui")]
 
 [node name="experience_ui" parent="." instance=ExtResource("9_xp_ui")]
+
+[node name="game_over_ui" parent="." unique_id=999999999 instance=ExtResource("10_game_over")]
 
 [node name="joystick_canvas" type="CanvasLayer" parent="."]
 layer = 100

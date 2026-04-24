@@ -1,0 +1,32 @@
+[gd_scene load_steps=2 format=3 uid="uid://gameover001"]
+
+[ext_resource type="Script" path="res://game_over/game_over_ui.gd" id="1_game_over"]
+
+[node name="game_over_ui" type="CanvasLayer"]
+layer = 200
+script = ExtResource("1_game_over")
+
+[node name="overlay" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.7)
+
+[node name="again_label" type="Label" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -30.0
+offset_right = 100.0
+offset_bottom = 30.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 48
+text = "Again?"
+horizontal_alignment = 1
+vertical_alignment = 1
