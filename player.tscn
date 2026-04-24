@@ -15,7 +15,11 @@ radius = 16.0
 position = Vector2(320, 800)
 script = ExtResource("1_script")
 
-[node name="core_visual" type="ColorRect" parent="."]
+[node name="core_hitbox" type="Area2D" parent="."]
+collision_layer = 1
+collision_mask = 4
+
+[node name="core_visual" type="ColorRect" parent="core_hitbox"]
 offset_left = -16.0
 offset_top = -16.0
 offset_right = 16.0
@@ -24,21 +28,29 @@ mouse_filter = 2
 metadata/_edit_use_anchors_ = true
 color = Color(0.9058823529411765, 0.2980392156862745, 0.23529411764705882, 1)
 
-[node name="core_collision" type="CollisionShape2D" parent="."]
+[node name="core_collision" type="CollisionShape2D" parent="core_hitbox"]
 shape = SubResource("RectangleShape2D_core")
 
 [node name="shield_container" type="Marker2D" parent="."]
 
-[node name="shield_left" type="Sprite2D" parent="shield_container"]
+[node name="shield_left" type="Area2D" parent="shield_container"]
 position = Vector2(-40, 0)
+collision_layer = 2
+collision_mask = 4
+
+[node name="shield_left_visual" type="Sprite2D" parent="shield_container/shield_left"]
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("2_shield")
 
 [node name="shield_left_collision" type="CollisionShape2D" parent="shield_container/shield_left"]
 shape = SubResource("CircleShape2D_shield")
 
-[node name="shield_right" type="Sprite2D" parent="shield_container"]
+[node name="shield_right" type="Area2D" parent="shield_container"]
 position = Vector2(40, 0)
+collision_layer = 2
+collision_mask = 4
+
+[node name="shield_right_visual" type="Sprite2D" parent="shield_container/shield_right"]
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("2_shield")
 

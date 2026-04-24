@@ -25,6 +25,13 @@ window/stretch/mode="canvas_items"
 
 theme/custom_font="res://assets/fonts/NotoSansSC.ttf"
 
+[layer_names]
+
+2d_physics/layer_1="player_core"
+2d_physics/layer_2="player_shield"
+2d_physics/layer_3="enemy_bullet"
+2d_physics/layer_4="player_bullet"
+
 [physics]
 
 3d/physics_engine="Jolt Physics"

@@ -12,6 +12,9 @@ const JOYSTICK_DEADZONE: float = 10.0
 @onready var joystick_base: Sprite2D = $joystick_base
 @onready var joystick_knob: Sprite2D = $joystick_base/joystick_knob
 @onready var shield_container: Marker2D = $shield_container
+@onready var core_hitbox: Area2D = $core_hitbox
+@onready var shield_left: Area2D = $shield_container/shield_left
+@onready var shield_right: Area2D = $shield_container/shield_right
 
 var is_dragging: bool = false
 var joystick_center: Vector2 = Vector2.ZERO
@@ -19,6 +22,11 @@ var input_vector: Vector2 = Vector2.ZERO
 
 func _ready() -> void:
 	joystick_base.visible = false
+	
+	# Connect collision signals
+	core_hitbox.body_entered.connect(_on_core_body_entered)
+	shield_left.body_entered.connect(_on_shield_left_body_entered)
+	shield_right.body_entered.connect(_on_shield_right_body_entered)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch or event is InputEventMouseButton:
@@ -69,3 +77,24 @@ func _move_player(delta: float) -> void:
 	# Clamp position within bounds
 	global_position.x = clamp(global_position.x, MIN_X, MAX_X)
 	global_position.y = clamp(global_position.y, MIN_Y, MAX_Y)
+
+func _on_core_body_entered(body: Node2D) -> void:
+	print("[COLLISION] player_core hit by %s (layer: %d, mask: %d)" % [
+		body.name,
+		body.collision_layer if body is CollisionObject2D else -1,
+		body.collision_mask if body is CollisionObject2D else -1
+	])
+
+func _on_shield_left_body_entered(body: Node2D) -> void:
+	print("[COLLISION] player_shield_left hit by %s (layer: %d, mask: %d)" % [
+		body.name,
+		body.collision_layer if body is CollisionObject2D else -1,
+		body.collision_mask if body is CollisionObject2D else -1
+	])
+
+func _on_shield_right_body_entered(body: Node2D) -> void:
+	print("[COLLISION] player_shield_right hit by %s (layer: %d, mask: %d)" % [
+		body.name,
+		body.collision_layer if body is CollisionObject2D else -1,
+		body.collision_mask if body is CollisionObject2D else -1
+	])
