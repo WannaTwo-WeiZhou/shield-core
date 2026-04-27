@@ -171,6 +171,8 @@ func _process_health_regen(delta: float) -> void:
 # ─── 碰撞处理 ───────────────────────────────────────────────────────────────────
 
 func _on_core_body_entered(body: Node2D) -> void:
+	if body.is_queued_for_deletion():
+		return
 	print("[COLLISION] player_core hit by %s (layer: %d, mask: %d)" % [
 		body.name,
 		body.collision_layer if body is CollisionObject2D else -1,
@@ -201,6 +203,8 @@ func _on_shield_right_body_entered(body: Node2D) -> void:
 
 
 func _handle_shield_hit(body: Node2D, shield: Area2D) -> void:
+	if body.is_queued_for_deletion():
+		return
 	if not body.is_in_group("bullet"):
 		return
 
@@ -287,12 +291,25 @@ func _reflect_bullet(bullet: Node2D, shield: Area2D) -> void:
 		bullet.direction = to_bullet
 		bullet.rotation = to_bullet.angle()
 		bullet.add_to_group("player_bullet")
+		bullet.collision_layer = 8
+		bullet.collision_mask = 4
+		
+		var visual = bullet.get_node_or_null("bullet_visual")
+		if visual:
+			visual.modulate = Color(0.2, 1.0, 1.0)
+			
 		if "speed" in bullet:
 			# 预留属性通道：联动可进一步二次改写 speed
 			bullet.speed = bullet.speed + AbilityManager.pipeline.get_attribute("bullet_speed_bonus")
 		print("[REFLECT] 子弹被反弹！方向: %s" % to_bullet)
 	else:
 		bullet.queue_free()
+
+
+func on_enemy_bullet_destroyed(bullet: Node2D) -> void:
+	var base_xp := experience.get_xp_per_bullet_hit()
+	experience.add_xp(base_xp)
+	print("[EXPERIENCE] 摧毁正常子弹（抵消），获得 %d XP" % base_xp)
 
 
 func _apply_event_modifiers(event_name: String, context: Dictionary) -> void:
