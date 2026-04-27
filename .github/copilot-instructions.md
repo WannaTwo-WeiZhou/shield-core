@@ -51,7 +51,7 @@ Push to `main` → workflow downloads Godot **4.6.2-stable** + export templates,
 
 ## Ability Issue workflow
 
-- 当用户提到“创建能力 issue”“新建 ability issue”“根据讨论结果创建这个能力的 issue”等意图时，优先使用项目技能 **`/create-ability-issue`**。
+- 当用户提到“创建能力 issue”“新建 ability issue”“根据讨论结果创建这个能力的 issue”等意图时，优先使用项目指令 **`/create-ability-issue`**。
 - 创建前必须先检查信息是否达到可执行程度；如果 `Guardrails`、`Mechanics`、`Numbers & Formula`、`Config Schema` 仍有关键 `TBD`，先追问，不要直接创建 GitHub issue。
 - 一个 ability issue 只允许覆盖一个 `ability_id`。标题遵循：
   - 新能力：`[Ability] <能力中文名> (<ability_id>)`
@@ -63,6 +63,5 @@ Push to `main` → workflow downloads Godot **4.6.2-stable** + export templates,
   3. `Validation`
   4. `Rollback / Safety`
 - 模板中的默认路径要优先对齐本仓库真实结构：能力主配置位于 `ability/abilities_config.json`，联动配置位于 `ability/synergies_config.json`，不要套用不存在的 `abilities/registry.gd` 等示例路径。
-- 当环境允许写入 GitHub issue 时，优先使用 `.github/skills/create-ability-issue/create_github_issue.ps1` 创建 issue；如果缺少 token 或创建失败，则返回完整 Markdown 正文与重试命令，而不是只给片段摘要。
-- 如果本仓库已配置自定义 MCP server 并暴露 `create_issue` 工具，优先通过 MCP 创建 GitHub issue；只有在 MCP 不可用时，才回退到 `.github/skills/create-ability-issue/create_github_issue.ps1`。
-- 本仓库提供 MCP 示例配置 `.copilot/mcp-config.json.example` 与本地 server 骨架 `.copilot/mcp_servers/ability_issue_server/server.ps1`；需要时复制并按本机 token/路径做本地化配置。
+- 当环境允许写入 GitHub issue 时，优先使用 `.github/skills/create-ability-issue/create_github_issue.ps1` 创建 issue；该脚本会优先复用本机 Git Credential Manager 中的 GitHub HTTPS 凭据，再回退到 `GH_TOKEN` / `GITHUB_TOKEN`。
+- 如果缺少 GitHub HTTPS 凭据且也没有环境变量 token，则返回完整 Markdown 正文与重试命令，而不是只给片段摘要。

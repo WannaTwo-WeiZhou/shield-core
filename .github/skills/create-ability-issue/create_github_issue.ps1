@@ -12,14 +12,50 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-function Get-GitHubToken {
+function Get-GitHubAuthHeaders {
+	$credentialInput = "protocol=https`nhost=github.com`n`n"
+	$credentialOutput = $credentialInput | git credential fill 2>$null
+	if ($LASTEXITCODE -eq 0 -and $credentialOutput) {
+		$credentialMap = @{}
+		foreach ($line in ($credentialOutput -split "`r?`n")) {
+			if ($line -match "^(?<key>[^=]+)=(?<value>.*)$") {
+				$credentialMap[$Matches.key] = $Matches.value
+			}
+		}
+
+		if ($credentialMap.ContainsKey("username") -and $credentialMap.ContainsKey("password")) {
+			$credentialPair = "{0}:{1}" -f @($credentialMap["username"], $credentialMap["password"])
+			$basicAuth = [Convert]::ToBase64String(
+				[System.Text.Encoding]::UTF8.GetBytes($credentialPair)
+			)
+			return @{
+				Authorization = "Basic $basicAuth"
+				Accept = "application/vnd.github+json"
+				"X-GitHub-Api-Version" = "2022-11-28"
+				"User-Agent" = "shield-core-ability-issue-script"
+			}
+		}
+	}
+
 	if ($env:GH_TOKEN) {
-		return $env:GH_TOKEN
+		$token = $env:GH_TOKEN
+		return @{
+			Authorization = "Bearer $token"
+			Accept = "application/vnd.github+json"
+			"X-GitHub-Api-Version" = "2022-11-28"
+			"User-Agent" = "shield-core-ability-issue-script"
+		}
 	}
 	if ($env:GITHUB_TOKEN) {
-		return $env:GITHUB_TOKEN
+		$token = $env:GITHUB_TOKEN
+		return @{
+			Authorization = "Bearer $token"
+			Accept = "application/vnd.github+json"
+			"X-GitHub-Api-Version" = "2022-11-28"
+			"User-Agent" = "shield-core-ability-issue-script"
+		}
 	}
-	throw "缺少 GitHub token。请先设置 GH_TOKEN 或 GITHUB_TOKEN。"
+	throw "缺少可用的 GitHub 鉴权。请先确保本机 Git Credential Manager 中存在 GitHub HTTPS 凭据，或设置 GH_TOKEN / GITHUB_TOKEN。"
 }
 
 function Resolve-RepoFromOrigin {
@@ -83,13 +119,7 @@ if ($DryRun) {
 	exit 0
 }
 
-$token = Get-GitHubToken
-$headers = @{
-	Authorization = "Bearer $token"
-	Accept = "application/vnd.github+json"
-	"X-GitHub-Api-Version" = "2022-11-28"
-	"User-Agent" = "shield-core-ability-issue-script"
-}
+$headers = Get-GitHubAuthHeaders
 
 $response = Invoke-RestMethod `
 	-Method Post `

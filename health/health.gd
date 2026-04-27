@@ -25,5 +25,13 @@ func take_damage(amount: int = damage_per_hit) -> void:
 func heal(amount: int) -> void:
 	current_health += amount
 
+func set_max_health(value: int) -> void:
+	var old_max := max_health
+	var old_current := current_health
+	max_health = maxi(1, value)
+	current_health = clamp(old_current, 0, max_health)
+	if old_max != max_health and old_current == current_health:
+		health_changed.emit(current_health, max_health)
+
 func reset() -> void:
 	current_health = max_health

@@ -1,5 +1,5 @@
 # 能力的静态定义，从 abilities_config.json 加载。
-# 只保存数据，不包含运行时逻辑。
+# 只保存数据，不包含运行时逻辑（当前能力固定为单级）。
 class_name AbilityDefinition
 extends RefCounted
 
@@ -8,7 +8,8 @@ var display_name: String = ""
 var description: String = ""
 var rarity: int = 1          # 1=普通 2=稀有 3=史诗
 var weight: int = 100        # 候选池权重
-var max_level: int = 3
+var max_level: int = 1
+var repeatable: bool = false
 var tags: Array = []         # 例如 ["shield", "attribute"]
 var affects_tags: Array = [] # 本能力影响哪些标签的行为
 var responds_to_tags: Array = [] # 本能力响应哪些标签事件
@@ -22,7 +23,8 @@ static func from_dict(data: Dictionary) -> AbilityDefinition:
 	def.description = data.get("description", "")
 	def.rarity = data.get("rarity", 1)
 	def.weight = data.get("weight", 100)
-	def.max_level = data.get("max_level", 3)
+	def.max_level = data.get("max_level", 1)
+	def.repeatable = data.get("repeatable", false)
 	def.tags = data.get("tags", [])
 	def.affects_tags = data.get("affects_tags", [])
 	def.responds_to_tags = data.get("responds_to_tags", [])

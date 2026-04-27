@@ -9,7 +9,7 @@ const SynergyResolver = preload("res://ability/synergy_resolver.gd")
 
 ## 候选生成完毕，需要显示三选一界面（Array[AbilityDefinition]）
 signal ability_selection_needed(candidates: Array)
-## 能力已获取或升级
+## 能力已获取
 signal ability_acquired(ability_id: String, level: int)
 ## 能力列表变更（UI 刷新用）
 signal abilities_updated()
@@ -58,6 +58,9 @@ func _load_definitions() -> void:
 ## 由经验系统在升级时调用
 func on_player_level_up() -> void:
 	var candidates := _generate_candidates(3)
+	if candidates.is_empty():
+		print("[AbilityManager] 当前已获得全部能力，无可选项")
+		return
 	print("[AbilityManager] 升级候选: %s" % [
 		candidates.map(func(d: AbilityDefinition) -> String: return d.id)
 	])
@@ -69,11 +72,14 @@ func on_player_level_up() -> void:
 ## 玩家从 UI 选择一个能力后调用
 func select_ability(ability_id: String) -> void:
 	if _instances.has(ability_id):
-		var inst: AbilityInstance = _instances[ability_id]
-		if not inst.is_maxed():
-			inst.upgrade()
-			print("[AbilityManager] 升级 %s → Lv%d" % [ability_id, inst.current_level])
-			EventBus.on_ability_upgraded.emit(ability_id, inst.current_level)
+		var existing_inst: AbilityInstance = _instances[ability_id]
+		if existing_inst.definition.repeatable:
+			existing_inst.add_stack()
+			print("[AbilityManager] 重复获得能力: %s x%d" % [ability_id, existing_inst.get_stack_count()])
+			EventBus.on_ability_acquired.emit(ability_id, existing_inst.get_stack_count())
+		else:
+			print("[AbilityManager] 已拥有能力，忽略重复选择: %s" % ability_id)
+			return
 	else:
 		var def: AbilityDefinition = _definitions.get(ability_id, null)
 		if def == null:
@@ -86,7 +92,7 @@ func select_ability(ability_id: String) -> void:
 
 	_rebuild_pipeline()
 	var final_inst := get_instance(ability_id)
-	ability_acquired.emit(ability_id, final_inst.current_level if final_inst else 1)
+	ability_acquired.emit(ability_id, final_inst.get_stack_count() if final_inst else 1)
 	abilities_updated.emit()
 
 
@@ -137,13 +143,15 @@ func _rebuild_pipeline() -> void:
 
 func _apply_instance_to_pipeline(inst: AbilityInstance) -> void:
 	var data := inst.get_current_data()
-	# 数值属性（直接注册加成）
-	for key in ["speed_bonus", "bullet_speed_bonus", "damage_bonus", "block_xp_bonus"]:
-		if data.has(key):
-			pipeline.add_attribute(key, float(data[key]))
-	# 标签效果（供事件系统读取）
-	for tag in inst.definition.affects_tags:
-		pipeline.add_tag_effect(tag, {"ability_id": inst.get_id(), "data": data})
+	var stack_count := maxi(inst.get_stack_count(), 1)
+	for _i in range(stack_count):
+		# 数值属性（直接注册加成）
+		for key in ["speed_bonus", "bullet_speed_bonus", "damage_bonus", "block_xp_bonus", "max_health_bonus"]:
+			if data.has(key):
+				pipeline.add_attribute(key, float(data[key]))
+		# 标签效果（供事件系统读取）
+		for tag in inst.definition.affects_tags:
+			pipeline.add_tag_effect(tag, {"ability_id": inst.get_id(), "data": data})
 
 
 # ─── 内部：候选生成 ────────────────────────────────────────────────────────────
@@ -174,11 +182,6 @@ func _generate_candidates(count: int) -> Array:
 func _build_candidate_pool() -> Array:
 	var pool: Array = []
 	for def: AbilityDefinition in _definitions.values():
-		var inst: AbilityInstance = _instances.get(def.id, null)
-		if inst == null or not inst.is_maxed():
-			var w := def.weight
-			if inst != null:
-				# 已拥有但未满级：降低权重，避免升级选项垄断候选池
-				w = int(w * 0.6)
-			pool.append({"def": def, "weight": w})
+		if def.repeatable or not _instances.has(def.id):
+			pool.append({"def": def, "weight": def.weight})
 	return pool

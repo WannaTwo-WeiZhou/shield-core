@@ -2,7 +2,6 @@ extends CharacterBody2D
 
 const Experience = preload("res://experience/experience.gd")
 const Health = preload("res://health/health.gd")
-const AbilityInstance = preload("res://ability/ability_instance.gd")
 
 const BASE_SPEED: float = 400.0
 const MIN_X: float = 40.0
@@ -28,6 +27,7 @@ var input_vector: Vector2 = Vector2.ZERO
 
 # 生命恢复计时器（由 health_regen 能力驱动）
 var _regen_timer: float = 0.0
+var _base_max_health: int = 0
 
 func _ready() -> void:
 	joystick_base.visible = false
@@ -42,9 +42,11 @@ func _ready() -> void:
 
 	# 注册到能力管理器，使能力效果可访问玩家
 	AbilityManager.register_player(self)
+	_base_max_health = health.max_health
 
 	# 订阅能力变更事件，刷新属性
 	AbilityManager.abilities_updated.connect(_on_abilities_updated)
+	_refresh_max_health_cap_from_abilities()
 
 
 func _input(event: InputEvent) -> void:
@@ -274,4 +276,19 @@ func _on_health_changed(current: int, max: int) -> void:
 # ─── 能力变更回调 ──────────────────────────────────────────────────────────────────
 
 func _on_abilities_updated() -> void:
+	_refresh_max_health_cap_from_abilities()
 	print("[Player] 能力已更新，当前标签: %s" % AbilityManager.get_all_tags())
+
+
+func _refresh_max_health_cap_from_abilities() -> void:
+	var max_health_bonus := int(AbilityManager.pipeline.get_attribute("max_health_bonus"))
+	var target_max_health := maxi(1, _base_max_health + max_health_bonus)
+	if target_max_health == health.max_health:
+		return
+
+	health.set_max_health(target_max_health)
+	print("[HEALTH] 最大生命已更新: %d (基础:%d + 加成:%d)" % [
+		health.max_health,
+		_base_max_health,
+		max_health_bonus
+	])

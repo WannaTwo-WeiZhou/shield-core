@@ -36,11 +36,7 @@
     {
       "id": "molten_rebound",
       "required_abilities": ["shield_reflect", "burn_shield"],
-      "min_levels": {
-        "shield_reflect": 2,
-        "burn_shield": 2
-      },
-      "description": "熔核共振：盾反与燃盾都达到 2 级后，反弹子弹速度显著提升。",
+      "description": "熔核共振：同时拥有【盾反】与【燃盾】时，反弹子弹速度显著提升。",
       "effects": [
         {
           "type": "runtime_flag",
@@ -57,7 +53,7 @@
     {
       "id": "cat_guardian_set",
       "required_abilities": ["shield_reflect", "burn_shield", "crit_block"],
-      "description": "猫盾三件套：同时装备三项技能时，格挡会额外回血并获得额外经验。",
+      "description": "猫盾三件套：同时装备三项能力时，格挡会额外回血并获得额外经验。",
       "effects": [
         {
           "type": "runtime_flag",
@@ -80,12 +76,7 @@
     {
       "id": "cat_guardian_nine_lives",
       "required_abilities": ["shield_reflect", "burn_shield", "crit_block"],
-      "min_levels": {
-        "shield_reflect": 3,
-        "burn_shield": 3,
-        "crit_block": 3
-      },
-      "description": "猫盾进阶：三件套全部满级后，格挡经验再次提升。",
+      "description": "猫盾进阶：三件套齐备时，格挡经验再次提升。",
       "effect": {
         "type": "event_modifier",
         "event": "on_block",

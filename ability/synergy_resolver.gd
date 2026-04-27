@@ -46,7 +46,6 @@ func get_active_synergies() -> Array:
 func _synergy_matches(syn: Dictionary, all_tags: Array, owned_instances: Dictionary) -> bool:
 	var required_abilities: Array = syn.get("required_abilities", [])
 	var required_tags: Array = syn.get("required_tags", [])
-	var min_levels: Dictionary = syn.get("min_levels", {})
 
 	var condition_matched := false
 	# ID 条件优先，标签条件兜底（兼容旧配置）
@@ -60,7 +59,7 @@ func _synergy_matches(syn: Dictionary, all_tags: Array, owned_instances: Diction
 	if not condition_matched:
 		return false
 
-	return _levels_satisfied(min_levels, owned_instances)
+	return true
 
 
 func _tags_satisfied(required: Array, available: Array) -> bool:
@@ -77,18 +76,6 @@ func _abilities_satisfied(required: Array, owned_instances: Dictionary) -> bool:
 		return false
 	for ability_id in required:
 		if not owned_instances.has(ability_id):
-			return false
-	return true
-
-
-func _levels_satisfied(min_levels: Dictionary, owned_instances: Dictionary) -> bool:
-	if min_levels.is_empty():
-		return true
-	for ability_id in min_levels.keys():
-		var inst = owned_instances.get(ability_id, null)
-		if inst == null:
-			return false
-		if inst.current_level < int(min_levels[ability_id]):
 			return false
 	return true
 

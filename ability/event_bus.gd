@@ -19,8 +19,6 @@ signal on_crit(context: Dictionary)
 # ---------- 能力系统事件 ----------
 ## 获得新能力
 signal on_ability_acquired(ability_id: String, level: int)
-## 能力升级
-signal on_ability_upgraded(ability_id: String, new_level: int)
 ## 联动激活
 signal on_synergy_activated(synergy_id: String)
 

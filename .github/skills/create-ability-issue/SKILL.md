@@ -48,18 +48,17 @@ Produce a complete ability issue that follows the repository spec, then create t
 
 1. Draft the issue body using `ability_issue_template.md`.
 2. Save the generated body to a temporary Markdown file outside the repository or in another non-committed temp location.
-3. If a custom MCP server in this repository exposes a `create_issue` tool, prefer calling that tool with the generated title/body/labels.
-4. If MCP is unavailable, run this script from the repository root:
+3. Run this script from the repository root:
 
    ```powershell
    pwsh -File .github/skills/create-ability-issue/create_github_issue.ps1 -Title "<issue-title>" -BodyPath "<temp-body-path>"
    ```
 
+4. The script should first try the local GitHub HTTPS credentials already available through Git Credential Manager / `git credential fill`.
 5. Only pass `-Labels` if you know those labels already exist in the repository.
 
 ## Failure handling
 
-- If `GH_TOKEN` or `GITHUB_TOKEN` is missing, stop before the POST request and tell the user to set one of them.
-- If MCP tool invocation fails, surface the exact failure, then retry with the local script only if the environment clearly supports it.
+- If no GitHub HTTPS credential can be resolved from Git Credential Manager, and `GH_TOKEN` / `GITHUB_TOKEN` is also missing, stop before the POST request and tell the user how to provide one of those authentication paths.
 - If repository owner/repo cannot be inferred from `origin`, ask for them explicitly or rerun the script with `-Owner` and `-Repo`.
 - If issue creation fails, show the exact error and return the generated Markdown body so the user can still paste it manually.

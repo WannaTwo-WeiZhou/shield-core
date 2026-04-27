@@ -25,16 +25,12 @@ func _gui_input(event: InputEvent) -> void:
 		_select()
 
 
-func setup(def: AbilityDefinition, current_level: int) -> void:
+func setup(def: AbilityDefinition) -> void:
 	_ability_id = def.id
 	name_label.text = def.display_name
 	rarity_label.text = "【%s】" % def.rarity_label()
 	desc_label.text = def.description
-
-	if current_level > 0:
-		level_label.text = "Lv %d → %d（当前已持有）" % [current_level, current_level + 1]
-	else:
-		level_label.text = "新能力"
+	level_label.text = "可重复获得" if def.repeatable else "唯一能力（不可升级）"
 
 	# 根据稀有度设置卡片颜色
 	match def.rarity:
