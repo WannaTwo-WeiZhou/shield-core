@@ -13,13 +13,13 @@ var spawning: bool = true
 
 func _ready() -> void:
 	player = get_node("../player")
-	await get_tree().create_timer(initial_delay).timeout
+	await get_tree().create_timer(initial_delay, false).timeout
 	_start_spawning()
 
 func _start_spawning() -> void:
 	while spawning:
 		_spawn_bullet()
-		await get_tree().create_timer(spawn_interval).timeout
+		await get_tree().create_timer(spawn_interval, false).timeout
 
 var bullet_counter: int = 0
 
