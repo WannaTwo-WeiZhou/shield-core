@@ -2,7 +2,7 @@
 # 显示期间游戏暂停，选择后恢复。
 extends CanvasLayer
 
-const AbilityCard = preload("res://ability_pick_ui/ability_card.tscn")
+const AbilityCard = preload("res://ability/pick_ui/ability_card.tscn")
 const AbilityDefinition = preload("res://ability/ability_definition.gd")
 const AbilityInstance = preload("res://ability/ability_instance.gd")
 

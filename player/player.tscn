@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://player001"]
 
 [ext_resource type="Script" uid="uid://csbjje6eiio7y" path="res://health/health.gd" id="1_health"]
-[ext_resource type="Script" uid="uid://bkh03epljpvc1" path="res://scripts/player.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://bkh03epljpvc1" path="res://player/player.gd" id="1_script"]
 [ext_resource type="Script" uid="uid://40rhba03xven" path="res://experience/experience.gd" id="2_experience"]
-[ext_resource type="Texture2D" uid="uid://b1kwb7k26iupv" path="res://assets/player/shield_circle.png" id="2_shield"]
+[ext_resource type="Texture2D" uid="uid://b1kwb7k26iupv" path="res://player/shield_circle.png" id="2_shield"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_core"]
 size = Vector2(32, 32)

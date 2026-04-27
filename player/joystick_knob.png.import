@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://euu7lp4pc3a4"
-path="res://.godot/imported/joystick_knob.png-7a93333b3d723ed99bfb1bd604de8586.ctex"
+path="res://.godot/imported/joystick_knob.png-7c7b8d6c1e87cb842fbe871add8b7031.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/player/joystick_knob.png"
-dest_files=["res://.godot/imported/joystick_knob.png-7a93333b3d723ed99bfb1bd604de8586.ctex"]
+source_file="res://player/joystick_knob.png"
+dest_files=["res://.godot/imported/joystick_knob.png-7c7b8d6c1e87cb842fbe871add8b7031.ctex"]
 
 [params]
 

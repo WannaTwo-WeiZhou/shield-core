@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://abilitypickui001"]
 
-[ext_resource type="Script" path="res://ability_pick_ui/ability_pick_ui.gd" id="1_ui_script"]
+[ext_resource type="Script" path="res://ability/pick_ui/ability_pick_ui.gd" id="1_ui_script"]
 
 [node name="ability_pick_ui" type="CanvasLayer"]
 layer = 90

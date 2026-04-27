@@ -2,15 +2,15 @@
 
 [ext_resource type="PackedScene" uid="uid://bg1qf8y10f7qy" path="res://start/background.tscn" id="1_bg"]
 [ext_resource type="PackedScene" uid="uid://c54q3qhqhcyey" path="res://start/hint_label.tscn" id="2_label"]
-[ext_resource type="PackedScene" uid="uid://player001" path="res://player.tscn" id="3_player"]
+[ext_resource type="PackedScene" uid="uid://player001" path="res://player/player.tscn" id="3_player"]
 [ext_resource type="PackedScene" uid="uid://bullet001" path="res://bullet/bullet.tscn" id="4_bullet"]
 [ext_resource type="Script" path="res://bullet/bullet_spawner.gd" id="5_spawner"]
-[ext_resource type="Texture2D" uid="uid://41m4vh7uubtb" path="res://assets/player/joystick_base.png" id="6_joystick_base"]
-[ext_resource type="Texture2D" uid="uid://euu7lp4pc3a4" path="res://assets/player/joystick_knob.png" id="7_joystick_knob"]
-[ext_resource type="PackedScene" uid="uid://healthui001" path="res://health_ui/health_ui.tscn" id="8_health_ui"]
-[ext_resource type="PackedScene" uid="uid://xpui001" path="res://experience_ui/experience_ui.tscn" id="9_xp_ui"]
+[ext_resource type="Texture2D" uid="uid://41m4vh7uubtb" path="res://player/joystick_base.png" id="6_joystick_base"]
+[ext_resource type="Texture2D" uid="uid://euu7lp4pc3a4" path="res://player/joystick_knob.png" id="7_joystick_knob"]
+[ext_resource type="PackedScene" uid="uid://healthui001" path="res://health/health_ui.tscn" id="8_health_ui"]
+[ext_resource type="PackedScene" uid="uid://xpui001" path="res://experience/experience_ui.tscn" id="9_xp_ui"]
 [ext_resource type="PackedScene" uid="uid://gameover001" path="res://game_over/game_over_ui.tscn" id="10_game_over"]
-[ext_resource type="PackedScene" uid="uid://abilitypickui001" path="res://ability_pick_ui/ability_pick_ui.tscn" id="11_ability_pick_ui"]
+[ext_resource type="PackedScene" uid="uid://abilitypickui001" path="res://ability/pick_ui/ability_pick_ui.tscn" id="11_ability_pick_ui"]
 
 [node name="main" type="Node2D" unique_id=1686072544]
 
