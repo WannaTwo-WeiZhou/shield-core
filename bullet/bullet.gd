@@ -1,6 +1,6 @@
 extends CharacterBody2D
 
-const SPEED: float = 100.0
+@export var speed: float = 100.0
 
 var direction: Vector2 = Vector2.ZERO
 
@@ -14,7 +14,7 @@ func init(target_position: Vector2) -> void:
 	rotation = direction.angle()
 
 func _process(delta: float) -> void:
-	position += direction * SPEED * delta
+	position += direction * speed * delta
 
 func _on_screen_exited() -> void:
 	queue_free()

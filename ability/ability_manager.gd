@@ -128,7 +128,7 @@ func _rebuild_pipeline() -> void:
 	pipeline.reset()
 	for inst: AbilityInstance in _instances.values():
 		_apply_instance_to_pipeline(inst)
-	_synergy_resolver.evaluate(get_all_tags(), pipeline, EventBus)
+	_synergy_resolver.evaluate(get_all_tags(), _instances, pipeline, EventBus)
 	print("[AbilityManager] 管线已重建 | 属性: %s | 活跃联动: %s" % [
 		pipeline.debug_get_bonuses(),
 		_synergy_resolver.get_active_synergies()

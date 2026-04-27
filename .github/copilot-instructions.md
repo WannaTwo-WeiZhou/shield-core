@@ -48,3 +48,21 @@ Push to `main` → workflow downloads Godot **4.6.2-stable** + export templates,
 - **Resolution.** Design for 640×960 portrait with `stretch_mode=canvas_items, aspect=keep`. Position UI relative to that viewport.
 - **EditorConfig.** UTF-8, no other rules; preserve existing line endings of files you edit.
 - When adding GDScript, keep `script_export_mode=2` working — i.e. plain `.gd` files referenced from scenes; don't rely on editor-only tooling at runtime.
+
+## Ability Issue workflow
+
+- 当用户提到“创建能力 issue”“新建 ability issue”“根据讨论结果创建这个能力的 issue”等意图时，优先使用项目技能 **`/create-ability-issue`**。
+- 创建前必须先检查信息是否达到可执行程度；如果 `Guardrails`、`Mechanics`、`Numbers & Formula`、`Config Schema` 仍有关键 `TBD`，先追问，不要直接创建 GitHub issue。
+- 一个 ability issue 只允许覆盖一个 `ability_id`。标题遵循：
+  - 新能力：`[Ability] <能力中文名> (<ability_id>)`
+  - 重做：`[Ability][Rework] <能力中文名> (<ability_id>)`
+  - 平衡：`[Ability][Balance] <能力中文名> (<ability_id>)`
+- Issue 正文必须保留固定章节标题，并生成最新的 `## Execution Checklist (vN)`；其中 4 个小节顺序固定为：
+  1. `Files to add / modify`
+  2. `Implementation steps`
+  3. `Validation`
+  4. `Rollback / Safety`
+- 模板中的默认路径要优先对齐本仓库真实结构：能力主配置位于 `ability/abilities_config.json`，联动配置位于 `ability/synergies_config.json`，不要套用不存在的 `abilities/registry.gd` 等示例路径。
+- 当环境允许写入 GitHub issue 时，优先使用 `.github/skills/create-ability-issue/create_github_issue.ps1` 创建 issue；如果缺少 token 或创建失败，则返回完整 Markdown 正文与重试命令，而不是只给片段摘要。
+- 如果本仓库已配置自定义 MCP server 并暴露 `create_issue` 工具，优先通过 MCP 创建 GitHub issue；只有在 MCP 不可用时，才回退到 `.github/skills/create-ability-issue/create_github_issue.ps1`。
+- 本仓库提供 MCP 示例配置 `.copilot/mcp-config.json.example` 与本地 server 骨架 `.copilot/mcp_servers/ability_issue_server/server.ps1`；需要时复制并按本机 token/路径做本地化配置。

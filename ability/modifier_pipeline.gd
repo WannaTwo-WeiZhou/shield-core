@@ -11,10 +11,15 @@ var _attribute_bonuses: Dictionary = {}
 ## 供联动系统或战斗结算读取
 var _tag_effects: Dictionary = {}
 
+## 运行时效果注册表：effect_type -> Array[Dictionary]
+## 用于承载联动注入的行为修饰（如事件修饰器、运行时标记）
+var _runtime_effects: Dictionary = {}
+
 
 func reset() -> void:
 	_attribute_bonuses.clear()
 	_tag_effects.clear()
+	_runtime_effects.clear()
 
 
 ## 注册属性加成（可叠加）
@@ -52,12 +57,64 @@ func has_tag_effect(tag: String, effect_type: String) -> bool:
 	return false
 
 
+## 注册运行时效果（按 effect_type 分组）
+func add_runtime_effect(effect_type: String, effect: Dictionary) -> void:
+	if effect_type.is_empty():
+		return
+	if not _runtime_effects.has(effect_type):
+		_runtime_effects[effect_type] = []
+	_runtime_effects[effect_type].append(effect)
+
+
+## 查询某类运行时效果
+func get_runtime_effects(effect_type: String) -> Array:
+	return _runtime_effects.get(effect_type, [])
+
+
+## 注册运行时标记（常用于开启某个融合/套装状态）
+func add_runtime_flag(flag: String, payload: Dictionary = {}) -> void:
+	if flag.is_empty():
+		return
+	var effect := {"flag": flag}
+	for key in payload.keys():
+		effect[key] = payload[key]
+	add_runtime_effect("runtime_flag", effect)
+
+
+func has_runtime_flag(flag: String) -> bool:
+	for effect in get_runtime_effects("runtime_flag"):
+		if effect.get("flag", "") == flag:
+			return true
+	return false
+
+
+## 注册事件修饰器（供 on_block / on_reflect 等统一消费）
+func add_event_modifier(event_name: String, modifier: Dictionary) -> void:
+	if event_name.is_empty():
+		return
+	var payload := modifier.duplicate()
+	payload["event"] = event_name
+	add_runtime_effect("event_modifier", payload)
+
+
+func get_event_modifiers(event_name: String) -> Array:
+	return get_runtime_effects("event_modifier").filter(
+		func(effect: Dictionary) -> bool:
+			return effect.get("event", "") == event_name
+	)
+
+
 ## 调试用：返回当前属性加成字典（不直接暴露私有字段）
 func debug_get_bonuses() -> Dictionary:
 	return _attribute_bonuses.duplicate()
+
+
+func debug_get_runtime_effects() -> Dictionary:
+	return _runtime_effects.duplicate(true)
 
 
 ## 调试用：打印当前状态
 func debug_print() -> void:
 	print("[ModifierPipeline] Attributes: ", _attribute_bonuses)
 	print("[ModifierPipeline] Tag effects: ", _tag_effects.keys())
+	print("[ModifierPipeline] Runtime effects: ", _runtime_effects.keys())

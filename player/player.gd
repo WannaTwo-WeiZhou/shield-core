@@ -190,17 +190,15 @@ func _handle_shield_hit(body: Node2D, shield: Area2D) -> void:
 			print("[CRIT BLOCK] 暴击格挡！双倍 XP")
 
 	var base_xp := experience.get_xp_per_bullet_hit()
-	experience.add_xp(base_xp * xp_multiplier)
+	var block_xp := base_xp * xp_multiplier
+	experience.add_xp(block_xp)
 
-	# ── 发射格挡事件（联动用）
-	var _ctx := EventBus.emit_block(self, body)
-
-	# ── vital_fortress 联动：格挡恢复生命（通过 pipeline 的标签效果驱动，无硬编码能力名）
-	for eff in AbilityManager.pipeline.get_tag_effects_by_type("shield", "enhance"):
-		if "heal_on_block" in eff.get("add_tags", []):
-			health.heal(1)
-			print("[SYNERGY:vital_fortress] 格挡恢复 1 点生命")
-			break
+	# ── 发射格挡事件 + 统一消费 on_block 修饰器
+	var block_ctx := EventBus.emit_block(self, body, {
+		"shield": shield,
+		"xp_awarded": block_xp
+	})
+	_apply_event_modifiers("on_block", block_ctx)
 
 	# ── 盾反：将子弹反弹
 	var reflect_inst := AbilityManager.get_instance("shield_reflect")
@@ -208,12 +206,11 @@ func _handle_shield_hit(body: Node2D, shield: Area2D) -> void:
 		var reflect_data := reflect_inst.get_current_data()
 		if randf() < reflect_data.get("reflect_chance", 0.0):
 			_reflect_bullet(body, shield)
-			# ── burning_reflect 联动：反弹同时燃烧（标签驱动，无硬编码）
-			for eff in AbilityManager.pipeline.get_tag_effects_by_type("reflect", "enhance"):
-				if "burn" in eff.get("add_tags", []):
-					print("[SYNERGY:burning_reflect] 反弹子弹附带燃烧！")
-					# 此处可扩展为在落点创建燃烧区域节点
-					break
+			_apply_event_modifiers("on_reflect", {
+				"player": self,
+				"bullet": body,
+				"shield": shield
+			})
 			return  # 已反弹，不销毁
 
 	body.queue_free()
@@ -227,9 +224,47 @@ func _reflect_bullet(bullet: Node2D, shield: Area2D) -> void:
 		bullet.direction = to_bullet
 		bullet.rotation = to_bullet.angle()
 		bullet.add_to_group("player_bullet")
+		if "speed" in bullet:
+			# 预留属性通道：联动可进一步二次改写 speed
+			bullet.speed = bullet.speed + AbilityManager.pipeline.get_attribute("bullet_speed_bonus")
 		print("[REFLECT] 子弹被反弹！方向: %s" % to_bullet)
 	else:
 		bullet.queue_free()
+
+
+func _apply_event_modifiers(event_name: String, context: Dictionary) -> void:
+	for modifier: Dictionary in AbilityManager.pipeline.get_event_modifiers(event_name):
+		_apply_single_event_modifier(event_name, modifier, context)
+
+
+func _apply_single_event_modifier(event_name: String, modifier: Dictionary, context: Dictionary) -> void:
+	var action: String = modifier.get("action", "")
+	match action:
+		"heal":
+			var amount := int(modifier.get("amount", 0))
+			if amount > 0:
+				health.heal(amount)
+				print("[EVENT:%s] 恢复 %d 点生命" % [event_name, amount])
+		"bonus_xp":
+			var amount := int(modifier.get("amount", 0))
+			if amount > 0:
+				experience.add_xp(amount)
+				print("[EVENT:%s] 额外获得 %d XP" % [event_name, amount])
+		"reflect_speed_multiplier":
+			var bullet = context.get("bullet", null)
+			if bullet != null and "speed" in bullet:
+				var multiplier := float(modifier.get("multiplier", 1.0))
+				bullet.speed = bullet.speed * multiplier
+				print("[EVENT:%s] 反弹子弹速度 x%.2f" % [event_name, multiplier])
+		"burn_on_reflect":
+			var bullet = context.get("bullet", null)
+			if bullet != null:
+				bullet.set_meta("burn_on_hit", true)
+				bullet.set_meta("burn_damage", int(modifier.get("burn_damage", 0)))
+				bullet.set_meta("burn_duration", float(modifier.get("burn_duration", 0.0)))
+				print("[EVENT:%s] 反弹子弹附带燃烧标记" % event_name)
+		_:
+			push_warning("[Player] 未支持的事件修饰动作: %s" % action)
 
 
 func _on_health_changed(current: int, max: int) -> void:

@@ -2,12 +2,14 @@
   "synergies": [
     {
       "id": "burning_reflect",
-      "required_tags": ["shield", "reflect", "burn"],
-      "description": "炎反：同时拥有【盾反】与【燃盾】时，反弹的子弹自动附带燃烧效果。",
+      "required_abilities": ["shield_reflect", "burn_shield"],
+      "description": "炎反融合：同时拥有【盾反】与【燃盾】时，反弹子弹附带燃烧标记。",
       "effect": {
-        "type": "tag_enhance",
-        "target_tag": "reflect",
-        "add_tags": ["burn"]
+        "type": "event_modifier",
+        "event": "on_reflect",
+        "action": "burn_on_reflect",
+        "burn_damage": 6,
+        "burn_duration": 2.0
       }
     },
     {
@@ -25,9 +27,70 @@
       "required_tags": ["health", "shield"],
       "description": "生命要塞：同时拥有生命恢复与护盾类能力时，每次格挡额外恢复 1 点生命。",
       "effect": {
-        "type": "tag_enhance",
-        "target_tag": "shield",
-        "add_tags": ["heal_on_block"]
+        "type": "event_modifier",
+        "event": "on_block",
+        "action": "heal",
+        "amount": 1
+      }
+    },
+    {
+      "id": "molten_rebound",
+      "required_abilities": ["shield_reflect", "burn_shield"],
+      "min_levels": {
+        "shield_reflect": 2,
+        "burn_shield": 2
+      },
+      "description": "熔核共振：盾反与燃盾都达到 2 级后，反弹子弹速度显著提升。",
+      "effects": [
+        {
+          "type": "runtime_flag",
+          "flag": "molten_rebound_ready"
+        },
+        {
+          "type": "event_modifier",
+          "event": "on_reflect",
+          "action": "reflect_speed_multiplier",
+          "multiplier": 1.6
+        }
+      ]
+    },
+    {
+      "id": "cat_guardian_set",
+      "required_abilities": ["shield_reflect", "burn_shield", "crit_block"],
+      "description": "猫盾三件套：同时装备三项技能时，格挡会额外回血并获得额外经验。",
+      "effects": [
+        {
+          "type": "runtime_flag",
+          "flag": "cat_guardian_set_active"
+        },
+        {
+          "type": "event_modifier",
+          "event": "on_block",
+          "action": "heal",
+          "amount": 1
+        },
+        {
+          "type": "event_modifier",
+          "event": "on_block",
+          "action": "bonus_xp",
+          "amount": 5
+        }
+      ]
+    },
+    {
+      "id": "cat_guardian_nine_lives",
+      "required_abilities": ["shield_reflect", "burn_shield", "crit_block"],
+      "min_levels": {
+        "shield_reflect": 3,
+        "burn_shield": 3,
+        "crit_block": 3
+      },
+      "description": "猫盾进阶：三件套全部满级后，格挡经验再次提升。",
+      "effect": {
+        "type": "event_modifier",
+        "event": "on_block",
+        "action": "bonus_xp",
+        "amount": 8
       }
     }
   ]

@@ -25,11 +25,10 @@ func load_config() -> void:
 
 
 ## 根据玩家当前标签集重新评估联动，将生效的效果注册进 pipeline 并发射信号
-func evaluate(all_tags: Array, pipeline: ModifierPipeline, event_bus: Node) -> void:
+func evaluate(all_tags: Array, owned_instances: Dictionary, pipeline: ModifierPipeline, event_bus: Node) -> void:
 	_active_synergy_ids.clear()
 	for syn in _synergy_defs:
-		var required: Array = syn.get("required_tags", [])
-		if _tags_satisfied(required, all_tags):
+		if _synergy_matches(syn, all_tags, owned_instances):
 			_active_synergy_ids.append(syn["id"])
 			_apply_synergy(syn, pipeline)
 			event_bus.on_synergy_activated.emit(syn["id"])
@@ -44,6 +43,26 @@ func get_active_synergies() -> Array:
 	return _active_synergy_ids.duplicate()
 
 
+func _synergy_matches(syn: Dictionary, all_tags: Array, owned_instances: Dictionary) -> bool:
+	var required_abilities: Array = syn.get("required_abilities", [])
+	var required_tags: Array = syn.get("required_tags", [])
+	var min_levels: Dictionary = syn.get("min_levels", {})
+
+	var condition_matched := false
+	# ID 条件优先，标签条件兜底（兼容旧配置）
+	if not required_abilities.is_empty():
+		condition_matched = _abilities_satisfied(required_abilities, owned_instances)
+	elif not required_tags.is_empty():
+		condition_matched = _tags_satisfied(required_tags, all_tags)
+	else:
+		return false
+
+	if not condition_matched:
+		return false
+
+	return _levels_satisfied(min_levels, owned_instances)
+
+
 func _tags_satisfied(required: Array, available: Array) -> bool:
 	if required.is_empty():
 		return false  # 无约束的联动不应自动激活，需至少声明一个条件标签
@@ -53,8 +72,41 @@ func _tags_satisfied(required: Array, available: Array) -> bool:
 	return true
 
 
+func _abilities_satisfied(required: Array, owned_instances: Dictionary) -> bool:
+	if required.is_empty():
+		return false
+	for ability_id in required:
+		if not owned_instances.has(ability_id):
+			return false
+	return true
+
+
+func _levels_satisfied(min_levels: Dictionary, owned_instances: Dictionary) -> bool:
+	if min_levels.is_empty():
+		return true
+	for ability_id in min_levels.keys():
+		var inst = owned_instances.get(ability_id, null)
+		if inst == null:
+			return false
+		if inst.current_level < int(min_levels[ability_id]):
+			return false
+	return true
+
+
 func _apply_synergy(syn: Dictionary, pipeline: ModifierPipeline) -> void:
-	var effect: Dictionary = syn.get("effect", {})
+	var effects: Array = []
+	if syn.has("effects"):
+		effects = syn.get("effects", [])
+	else:
+		var legacy_effect: Dictionary = syn.get("effect", {})
+		if not legacy_effect.is_empty():
+			effects = [legacy_effect]
+
+	for effect: Dictionary in effects:
+		_apply_effect(syn, effect, pipeline)
+
+
+func _apply_effect(syn: Dictionary, effect: Dictionary, pipeline: ModifierPipeline) -> void:
 	match effect.get("type", ""):
 		"tag_enhance":
 			# 向某个标签的效果链添加增强标记，供战斗结算读取
@@ -67,5 +119,23 @@ func _apply_synergy(syn: Dictionary, pipeline: ModifierPipeline) -> void:
 				effect.get("attribute", ""),
 				float(effect.get("bonus", 0))
 			)
+		"runtime_flag":
+			pipeline.add_runtime_flag(
+				effect.get("flag", ""),
+				{
+					"synergy_id": syn.get("id", ""),
+					"params": effect.get("params", {})
+				}
+			)
+		"event_modifier":
+			var event_name: String = effect.get("event", "")
+			var modifier := effect.duplicate(true)
+			modifier.erase("type")
+			modifier.erase("event")
+			modifier["synergy_id"] = syn.get("id", "")
+			pipeline.add_event_modifier(event_name, modifier)
 		_:
-			pass
+			push_warning("[SynergyResolver] 未知 effect type: %s (synergy: %s)" % [
+				effect.get("type", ""),
+				syn.get("id", "unknown")
+			])
