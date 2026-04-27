@@ -13,6 +13,18 @@ signal card_selected(ability_id: String)
 var _ability_id: String = ""
 
 
+func _ready() -> void:
+	mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+
+
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton \
+			and event.button_index == MOUSE_BUTTON_LEFT \
+			and event.pressed:
+		accept_event()
+		_select()
+
+
 func setup(def: AbilityDefinition, current_level: int) -> void:
 	_ability_id = def.id
 	name_label.text = def.display_name
@@ -49,5 +61,5 @@ func _make_panel(color: Color) -> StyleBoxFlat:
 	return style
 
 
-func _on_button_pressed() -> void:
+func _select() -> void:
 	card_selected.emit(_ability_id)
