@@ -42,10 +42,9 @@
 - 兼容性注意事项：TBD
 
 ## 2.7 测试与验收（Test & Acceptance）
-- 手动测试步骤：
-  1. TBD
-  2. TBD
-  3. TBD
+- AI 侧交付检查：
+  - 代码创建/修改：TBD
+  - 编译 / 构建 / 导出通过：TBD
 - 预期结果：TBD
 - 失败时的排查点：TBD
 
@@ -63,7 +62,8 @@
 - [ ] TBD
 
 ### 3) Validation
-- [ ] TBD
+- [ ] AI：代码创建/修改完成
+- [ ] AI：编译 / 构建 / 导出通过
 
 ### 4) Rollback / Safety
 - [ ] TBD

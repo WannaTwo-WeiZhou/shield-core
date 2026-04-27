@@ -1,88 +1,146 @@
 {
   "synergies": [
-    {
-      "id": "burning_reflect",
-      "required_abilities": ["shield_reflect", "burn_shield"],
-      "description": "炎反融合：同时拥有【盾反】与【燃盾】时，反弹子弹附带燃烧标记。",
-      "effect": {
-        "type": "event_modifier",
-        "event": "on_reflect",
-        "action": "burn_on_reflect",
-        "burn_damage": 6,
-        "burn_duration": 2.0
-      }
-    },
-    {
-      "id": "swift_guardian",
-      "required_tags": ["movement", "shield"],
-      "description": "疾风护卫：同时拥有移动类与护盾类能力时，格挡判定范围略微扩大。",
-      "effect": {
-        "type": "attribute_bonus",
-        "attribute": "shield_radius_bonus",
-        "bonus": 8
-      }
-    },
-    {
-      "id": "vital_fortress",
-      "required_tags": ["health", "shield"],
-      "description": "生命要塞：同时拥有生命恢复与护盾类能力时，每次格挡额外恢复 1 点生命。",
-      "effect": {
-        "type": "event_modifier",
-        "event": "on_block",
-        "action": "heal",
-        "amount": 1
-      }
-    },
-    {
-      "id": "molten_rebound",
-      "required_abilities": ["shield_reflect", "burn_shield"],
-      "description": "熔核共振：同时拥有【盾反】与【燃盾】时，反弹子弹速度显著提升。",
-      "effects": [
-        {
-          "type": "runtime_flag",
-          "flag": "molten_rebound_ready"
-        },
-        {
-          "type": "event_modifier",
-          "event": "on_reflect",
-          "action": "reflect_speed_multiplier",
-          "multiplier": 1.6
-        }
-      ]
-    },
-    {
-      "id": "cat_guardian_set",
-      "required_abilities": ["shield_reflect", "burn_shield", "crit_block"],
-      "description": "猫盾三件套：同时装备三项能力时，格挡会额外回血并获得额外经验。",
-      "effects": [
-        {
-          "type": "runtime_flag",
-          "flag": "cat_guardian_set_active"
-        },
-        {
-          "type": "event_modifier",
-          "event": "on_block",
-          "action": "heal",
-          "amount": 1
-        },
-        {
-          "type": "event_modifier",
-          "event": "on_block",
-          "action": "bonus_xp",
-          "amount": 5
-        }
-      ]
-    },
-    {
-      "id": "cat_guardian_nine_lives",
-      "required_abilities": ["shield_reflect", "burn_shield", "crit_block"],
-      "description": "猫盾进阶：三件套齐备时，格挡经验再次提升。",
-      "effect": {
-        "type": "event_modifier",
-        "event": "on_block",
-        "action": "bonus_xp",
-        "amount": 8
-      }
-    }
+	{
+	  "id": "burning_reflect",
+	  "required_abilities": ["shield_reflect", "burn_shield"],
+	  "description": "炎反融合：同时拥有【盾反】与【燃盾】时，反弹子弹附带燃烧标记。",
+	  "effect": {
+		"type": "event_modifier",
+		"event": "on_reflect",
+		"action": "burn_on_reflect",
+		"burn_damage": 6,
+		"burn_duration": 2.0
+	  }
+	},
+	{
+	  "id": "swift_guardian",
+	  "required_tags": ["movement", "shield"],
+	  "description": "疾风护卫：同时拥有移动类与护盾类能力时，格挡判定范围略微扩大。",
+	  "effect": {
+		"type": "attribute_bonus",
+		"attribute": "shield_radius_bonus",
+		"bonus": 8
+	  }
+	},
+	{
+	  "id": "vital_fortress",
+	  "required_tags": ["health", "shield"],
+	  "description": "生命要塞：同时拥有生命恢复与护盾类能力时，每次格挡额外恢复 1 点生命。",
+	  "effect": {
+		"type": "event_modifier",
+		"event": "on_block",
+		"action": "heal",
+		"amount": 1
+	  }
+	},
+	{
+	  "id": "molten_rebound",
+	  "required_abilities": ["shield_reflect", "burn_shield"],
+	  "description": "熔核共振：同时拥有【盾反】与【燃盾】时，反弹子弹速度显著提升。",
+	  "effects": [
+		{
+		  "type": "runtime_flag",
+		  "flag": "molten_rebound_ready"
+		},
+		{
+		  "type": "event_modifier",
+		  "event": "on_reflect",
+		  "action": "reflect_speed_multiplier",
+		  "multiplier": 1.6
+		}
+	  ]
+	},
+	{
+	  "id": "cat_guardian_set",
+	  "required_abilities": ["shield_reflect", "burn_shield", "crit_block"],
+	  "description": "猫盾三件套：同时装备三项能力时，格挡会额外回血并获得额外经验。",
+	  "effects": [
+		{
+		  "type": "runtime_flag",
+		  "flag": "cat_guardian_set_active"
+		},
+		{
+		  "type": "event_modifier",
+		  "event": "on_block",
+		  "action": "heal",
+		  "amount": 1
+		},
+		{
+		  "type": "event_modifier",
+		  "event": "on_block",
+		  "action": "bonus_xp",
+		  "amount": 5
+		}
+	  ]
+	},
+	{
+	  "id": "cat_guardian_nine_lives",
+	  "required_abilities": ["shield_reflect", "burn_shield", "crit_block"],
+	  "description": "猫盾进阶：三件套齐备时，格挡经验再次提升。",
+	  "effect": {
+		"type": "event_modifier",
+		"event": "on_block",
+		"action": "bonus_xp",
+		"amount": 8
+	  }
+	}
+  ],
+  "planned_synergies": [
+	{
+	  "id": "counter_spiral_barrage_fusion",
+	  "status": "planned",
+	  "base_ability_id": "counter_spiral",
+	  "theme": "发射弹幕",
+	  "description": "规划中的融合能力：当【反击螺旋】与未来某个玩家弹幕系能力组合时，触发反击螺旋可额外释放一组玩家弹幕。",
+	  "activation_event": "on_counter_spiral_trigger",
+	  "recommended_partner_tags": ["projectile", "bullet", "reflect"],
+	  "candidate_effect": {
+		"action": "spawn_player_projectiles",
+		"shape": "radial_or_fan",
+		"notes": [
+		  "基础反击螺旋本体不产弹，仅在融合后获得主动产弹表现。",
+		  "优先考虑与玩家弹幕形态、数量或轨迹有关的能力融合。",
+          "避免与单发盾反完全重复，建议突出范围、扇形或螺旋轨迹差异。"
+		]
+	  },
+	  "fit_guidelines": [
+		"适合后续新增的玩家投射物系能力。",
+		"适合能改变弹数量、散射角或轨迹的能力。",
+        "若未来能力更偏防御或回复，不建议与该融合直接绑定。"
+	  ],
+	  "implementation_notes": [
+		"仅记录在配置中供后续能力设计时参考，当前不参与解析或运行。",
+        "未来如果决定实装，建议通过 runtime_flag 或 event_modifier 挂接。"
+	  ]
+	},
+	{
+	  "id": "counter_spiral_bullet_clear_fusion",
+	  "status": "planned",
+	  "base_ability_id": "counter_spiral",
+	  "theme": "清除一定范围内弹幕",
+	  "description": "规划中的融合能力：当【反击螺旋】与未来某个护盾/观测/清场系能力组合时，触发反击螺旋可清除一定范围内的敌方子弹；被清除的子弹按格挡结算并计入经验。",
+	  "activation_event": "on_counter_spiral_trigger",
+	  "recommended_partner_tags": ["shield", "visibility", "vacuum", "cleanup", "xp"],
+	  "candidate_effect": {
+		"action": "clear_bullets_in_radius",
+		"radius_source": "future_config",
+		"bullets_count_as_block": true,
+		"grant_block_xp": true,
+		"notes": [
+		  "被清除的子弹需要等价走一次格挡收益结算。",
+		  "该融合应明确区分于普通范围伤害，重点是控场和收益转化。",
+          "适合与能扩大判定范围、提高可见度或增强格挡收益的能力组合。"
+		]
+	  },
+	  "fit_guidelines": [
+		"优先考虑护盾半径、观测视野、经验收益类能力。",
+		"如果未来能力只是单纯输出，不建议直接接这个融合。",
+        "需要特别关注可读性，避免清弹效果与普通格挡反馈混淆。"
+	  ],
+	  "implementation_notes": [
+		"仅记录在配置中供后续能力设计时参考，当前不参与解析或运行。",
+        "未来实装时需要把“清除子弹”与“格挡经验结算”统一到同一事件链中。"
+	  ]
+	}
   ]
 }

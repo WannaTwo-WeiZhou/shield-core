@@ -11,6 +11,7 @@ const MAX_Y: float = 920.0
 
 const JOYSTICK_MAX_RADIUS: float = 60.0
 const JOYSTICK_DEADZONE: float = 10.0
+const BASE_SHIELD_SPIN_SPEED: float = PI
 
 @onready var joystick_base: Sprite2D = get_node("/root/main/joystick_canvas/joystick_base")
 @onready var joystick_knob: Sprite2D = get_node("/root/main/joystick_canvas/joystick_base/joystick_knob")
@@ -28,6 +29,9 @@ var input_vector: Vector2 = Vector2.ZERO
 # 生命恢复计时器（由 health_regen 能力驱动）
 var _regen_timer: float = 0.0
 var _base_max_health: int = 0
+var _counter_spiral_spin_multiplier: float = 1.0
+var _counter_spiral_boost_end_time_sec: float = -1.0
+var _counter_spiral_last_trigger_time_sec: float = -1.0
 
 func _ready() -> void:
 	joystick_base.visible = false
@@ -68,7 +72,8 @@ func _input(event: InputEvent) -> void:
 
 
 func _process(delta: float) -> void:
-	shield_container.rotate(PI * delta)
+	_update_counter_spiral_state()
+	shield_container.rotate(_get_current_shield_spin_speed() * delta)
 	if is_dragging:
 		_update_joystick()
 	else:
@@ -128,6 +133,23 @@ func _move_player(delta: float) -> void:
 	# Clamp position within bounds
 	global_position.x = clamp(global_position.x, MIN_X, MAX_X)
 	global_position.y = clamp(global_position.y, MIN_Y, MAX_Y)
+
+
+func _update_counter_spiral_state() -> void:
+	if not _is_counter_spiral_active(_get_time_seconds()):
+		_counter_spiral_spin_multiplier = 1.0
+
+
+func _get_current_shield_spin_speed() -> float:
+	return BASE_SHIELD_SPIN_SPEED * _counter_spiral_spin_multiplier
+
+
+func _is_counter_spiral_active(now_sec: float) -> bool:
+	return now_sec < _counter_spiral_boost_end_time_sec
+
+
+func _get_time_seconds() -> float:
+	return float(Time.get_ticks_msec()) / 1000.0
 
 
 # ─── 生命恢复 ──────────────────────────────────────────────────────────────
@@ -201,6 +223,7 @@ func _handle_shield_hit(body: Node2D, shield: Area2D) -> void:
 		"xp_awarded": block_xp
 	})
 	_apply_event_modifiers("on_block", block_ctx)
+	_try_trigger_counter_spiral(body, shield)
 
 	# ── 盾反：将子弹反弹
 	var reflect_inst := AbilityManager.get_instance("shield_reflect")
@@ -216,6 +239,44 @@ func _handle_shield_hit(body: Node2D, shield: Area2D) -> void:
 			return  # 已反弹，不销毁
 
 	body.queue_free()
+
+
+func _try_trigger_counter_spiral(body: Node2D, shield: Area2D) -> void:
+	var inst := AbilityManager.get_instance("counter_spiral")
+	if inst == null:
+		return
+
+	var data := inst.get_current_data()
+	var now_sec := _get_time_seconds()
+	var internal_cooldown_sec := maxf(0.0, float(data.get("internal_cooldown_sec", 0.0)))
+	if now_sec < _counter_spiral_last_trigger_time_sec + internal_cooldown_sec:
+		return
+
+	var proc_chance := clampf(float(data.get("proc_chance", 0.0)), 0.0, 1.0)
+	if randf() >= proc_chance:
+		return
+
+	var refresh_on_retrigger := bool(data.get("refresh_on_retrigger", true))
+	if _is_counter_spiral_active(now_sec) and not refresh_on_retrigger:
+		return
+
+	var spin_speed_multiplier := maxf(1.0, float(data.get("spin_speed_multiplier", 1.0)))
+	var duration_sec := maxf(0.0, float(data.get("duration_sec", 0.0)))
+	_counter_spiral_last_trigger_time_sec = now_sec
+	_counter_spiral_spin_multiplier = spin_speed_multiplier
+	_counter_spiral_boost_end_time_sec = now_sec + duration_sec
+
+	EventBus.emit_counter_spiral_trigger(self, shield, {
+		"body": body,
+		"proc_chance": proc_chance,
+		"spin_speed_multiplier": spin_speed_multiplier,
+		"duration_sec": duration_sec,
+		"internal_cooldown_sec": internal_cooldown_sec
+	})
+	print("[COUNTER SPIRAL] 触发！旋转倍率 x%.2f，持续 %.2f 秒" % [
+		spin_speed_multiplier,
+		duration_sec
+	])
 
 
 func _reflect_bullet(bullet: Node2D, shield: Area2D) -> void:

@@ -22,10 +22,13 @@ Produce a complete ability issue that follows the repository spec, then create t
 5. Generate or update the latest `## Execution Checklist (vN)` only after the issue is implementable.
 6. If the environment can write to GitHub, create the issue with the script in this skill directory.
 7. If GitHub creation is blocked, return the full Markdown body and the exact command needed to retry.
+8. Do not generate any requirement for runtime/manual gameplay validation. The AI is only responsible for creating or modifying code and getting the project to compile/build/export successfully when the environment supports it.
 
 ## Repository-specific rules
 
 - Keep all issue prose in simplified Chinese unless a field is naturally English-only (such as `ability_id` or file paths).
+- Keep the fixed section headings from the repository spec, but scope `## 2.7 测试与验收（Test & Acceptance）` and `### 3) Validation` so they do not require AI-run runtime verification.
+- In validation-related sections, only include AI-owned checks such as code creation/modification completed and compile/build/export passes.
 - Use the repository's actual ability architecture when writing file paths or implementation notes:
   - Core definitions live in `ability/abilities_config.json`
   - Synergy definitions live in `ability/synergies_config.json`

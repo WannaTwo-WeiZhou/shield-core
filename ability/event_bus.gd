@@ -21,6 +21,8 @@ signal on_crit(context: Dictionary)
 signal on_ability_acquired(ability_id: String, level: int)
 ## 联动激活
 signal on_synergy_activated(synergy_id: String)
+## 反击螺旋触发
+signal on_counter_spiral_trigger(context: Dictionary)
 
 
 # --- 便捷封装：发射格挡事件并返回上下文 ---
@@ -36,4 +38,16 @@ func emit_take_damage(player: Node, damage: int, extra: Dictionary = {}) -> Dict
 	var ctx: Dictionary = {"player": player, "damage": damage}
 	ctx.merge(extra)
 	on_take_damage.emit(ctx)
+	return ctx
+
+
+# --- 便捷封装：发射反击螺旋触发事件并返回上下文 ---
+func emit_counter_spiral_trigger(player: Node, shield: Node, extra: Dictionary = {}) -> Dictionary:
+	var ctx: Dictionary = {
+		"player": player,
+		"shield": shield,
+		"ability_id": "counter_spiral"
+	}
+	ctx.merge(extra)
+	on_counter_spiral_trigger.emit(ctx)
 	return ctx
