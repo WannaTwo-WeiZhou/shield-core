@@ -296,8 +296,9 @@ func _reflect_bullet(bullet: Node2D, shield: Area2D) -> void:
 		bullet.direction = to_bullet
 		bullet.rotation = to_bullet.angle()
 		bullet.add_to_group("player_bullet")
-		bullet.collision_layer = 8
-		bullet.collision_mask = 4
+		if bullet is CollisionObject2D:
+			bullet.collision_layer = 8
+			bullet.collision_mask = 4
 		
 		var visual = bullet.get_node_or_null("bullet_visual")
 		if visual:
