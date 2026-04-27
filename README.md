@@ -123,7 +123,7 @@ reflectEvent --> eventModifiers
 ```json
 {
   "id": "cat_guardian_set",
-  "required_abilities": ["shield_reflect", "burn_shield", "crit_block"],
+  "required_abilities": ["shield_reflect", "speed_boost", "crit_block"],
   "effects": [
     {"type": "runtime_flag", "flag": "cat_guardian_set_active"},
     {"type": "event_modifier", "event": "on_block", "action": "heal", "amount": 1},
@@ -168,7 +168,6 @@ reflectEvent --> eventModifiers
 - `heal`
 - `bonus_xp`
 - `reflect_speed_multiplier`
-- `burn_on_reflect`
 
 若要新增 action：
 

@@ -29,20 +29,6 @@
 	  ]
 	},
 	{
-	  "id": "burn_shield",
-	  "name": "燃盾",
-	  "description": "格挡子弹时，在格挡点留下短暂的燃烧区域。",
-	  "rarity": 2,
-	  "weight": 75,
-	  "max_level": 1,
-	  "tags": ["shield", "burn"],
-	  "affects_tags": ["shield", "burn"],
-	  "responds_to_tags": ["on_block"],
-	  "per_level": [
-		{"burn_damage": 5, "burn_duration": 1.5}
-	  ]
-	},
-	{
 	  "id": "counter_spiral",
 	  "name": "反击螺旋",
 	  "description": "格挡时有概率让护盾短时间高速旋转。",

@@ -219,11 +219,12 @@ func _handle_shield_hit(body: Node2D, shield: Area2D) -> void:
 
 	var base_xp := experience.get_xp_per_bullet_hit()
 	var block_xp := base_xp * xp_multiplier
-	experience.add_xp(block_xp)
 
 	# ── 发射格挡事件 + 统一消费 on_block 修饰器
 	var block_ctx := EventBus.emit_block(self, body, {
 		"shield": shield,
+		"base_xp_awarded": block_xp,
+		"bonus_xp_awarded": 0,
 		"xp_awarded": block_xp
 	})
 	_apply_event_modifiers("on_block", block_ctx)
@@ -240,9 +241,13 @@ func _handle_shield_hit(body: Node2D, shield: Area2D) -> void:
 				"bullet": body,
 				"shield": shield
 			})
+			var reflected_block_xp := int(block_ctx.get("xp_awarded", block_xp))
+			experience.add_xp(reflected_block_xp)
 			return  # 已反弹，不销毁
 
 	body.queue_free()
+	var total_block_xp := int(block_ctx.get("xp_awarded", block_xp))
+	experience.add_xp(total_block_xp)
 
 
 func _try_trigger_counter_spiral(body: Node2D, shield: Area2D) -> void:
@@ -328,21 +333,21 @@ func _apply_single_event_modifier(event_name: String, modifier: Dictionary, cont
 		"bonus_xp":
 			var amount := int(modifier.get("amount", 0))
 			if amount > 0:
-				experience.add_xp(amount)
-				print("[EVENT:%s] 额外获得 %d XP" % [event_name, amount])
+				var bonus_xp_awarded := int(context.get("bonus_xp_awarded", 0)) + amount
+				var base_xp_awarded := int(context.get("base_xp_awarded", 0))
+				context["bonus_xp_awarded"] = bonus_xp_awarded
+				context["xp_awarded"] = base_xp_awarded + bonus_xp_awarded
+				print("[EVENT:%s] 记录额外 XP %d，当前总 XP %d" % [
+					event_name,
+					amount,
+					context["xp_awarded"]
+				])
 		"reflect_speed_multiplier":
 			var bullet = context.get("bullet", null)
 			if bullet != null and "speed" in bullet:
 				var multiplier := float(modifier.get("multiplier", 1.0))
 				bullet.speed = bullet.speed * multiplier
 				print("[EVENT:%s] 反弹子弹速度 x%.2f" % [event_name, multiplier])
-		"burn_on_reflect":
-			var bullet = context.get("bullet", null)
-			if bullet != null:
-				bullet.set_meta("burn_on_hit", true)
-				bullet.set_meta("burn_damage", int(modifier.get("burn_damage", 0)))
-				bullet.set_meta("burn_duration", float(modifier.get("burn_duration", 0.0)))
-				print("[EVENT:%s] 反弹子弹附带燃烧标记" % event_name)
 		_:
 			push_warning("[Player] 未支持的事件修饰动作: %s" % action)
 
@@ -355,7 +360,7 @@ func _on_health_changed(current: int, max: int) -> void:
 
 func _on_abilities_updated() -> void:
 	_refresh_max_health_cap_from_abilities()
-	print("[Player] 能力已更新，当前标签: %s" % AbilityManager.get_all_tags())
+	print("[Player] 能力已更新，当前标签: %s" % [AbilityManager.get_all_tags()])
 
 
 func _refresh_max_health_cap_from_abilities() -> void:

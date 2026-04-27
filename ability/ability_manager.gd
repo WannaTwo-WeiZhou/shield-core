@@ -27,6 +27,8 @@ var _synergy_resolver: SynergyResolver = SynergyResolver.new()
 
 ## 玩家节点引用（由 player.gd 注册）
 var _player: Node = null
+var _pending_level_up_selections: int = 0
+var _selection_in_progress: bool = false
 
 
 func _ready() -> void:
@@ -57,10 +59,22 @@ func _load_definitions() -> void:
 
 ## 由经验系统在升级时调用
 func on_player_level_up() -> void:
+	_pending_level_up_selections += 1
+	_try_show_pending_level_up()
+
+
+func _try_show_pending_level_up() -> void:
+	if _selection_in_progress or _pending_level_up_selections <= 0:
+		return
+
 	var candidates := _generate_candidates(3)
 	if candidates.is_empty():
 		print("[AbilityManager] 当前已获得全部能力，无可选项")
+		_pending_level_up_selections = 0
 		return
+
+	_pending_level_up_selections -= 1
+	_selection_in_progress = true
 	print("[AbilityManager] 升级候选: %s" % [
 		candidates.map(func(d: AbilityDefinition) -> String: return d.id)
 	])
@@ -71,29 +85,34 @@ func on_player_level_up() -> void:
 
 ## 玩家从 UI 选择一个能力后调用
 func select_ability(ability_id: String) -> void:
+	var final_inst: AbilityInstance = null
 	if _instances.has(ability_id):
 		var existing_inst: AbilityInstance = _instances[ability_id]
 		if existing_inst.definition.repeatable:
 			existing_inst.add_stack()
 			print("[AbilityManager] 重复获得能力: %s x%d" % [ability_id, existing_inst.get_stack_count()])
 			EventBus.on_ability_acquired.emit(ability_id, existing_inst.get_stack_count())
+			final_inst = existing_inst
 		else:
 			print("[AbilityManager] 已拥有能力，忽略重复选择: %s" % ability_id)
+			_finish_level_up_selection()
 			return
 	else:
 		var def: AbilityDefinition = _definitions.get(ability_id, null)
 		if def == null:
 			push_error("[AbilityManager] 未知能力 id: %s" % ability_id)
+			_finish_level_up_selection()
 			return
 		var inst := AbilityInstance.new(def)
 		_instances[ability_id] = inst
 		print("[AbilityManager] 获得新能力: %s" % ability_id)
 		EventBus.on_ability_acquired.emit(ability_id, 1)
+		final_inst = inst
 
 	_rebuild_pipeline()
-	var final_inst := get_instance(ability_id)
 	ability_acquired.emit(ability_id, final_inst.get_stack_count() if final_inst else 1)
 	abilities_updated.emit()
+	_finish_level_up_selection()
 
 
 # ─── 查询 ─────────────────────────────────────────────────────────────────────
@@ -185,3 +204,8 @@ func _build_candidate_pool() -> Array:
 		if def.repeatable or not _instances.has(def.id):
 			pool.append({"def": def, "weight": def.weight})
 	return pool
+
+
+func _finish_level_up_selection() -> void:
+	_selection_in_progress = false
+	_try_show_pending_level_up()

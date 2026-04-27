@@ -3,7 +3,7 @@
 extends Node
 
 # ---------- 战斗事件 ----------
-## 格挡：context 包含 player、body、以及联动标志（如 has_burn）
+## 格挡：context 包含 player、body、以及其他自定义数据
 signal on_block(context: Dictionary)
 ## 命中：context 包含 attacker、target、damage
 signal on_hit(context: Dictionary)
