@@ -1,6 +1,8 @@
 # 单张能力卡片，显示在三选一界面中。
 extends PanelContainer
 
+const AbilityDefinition = preload("res://ability/ability_definition.gd")
+
 signal card_selected(ability_id: String)
 
 @onready var name_label: Label = $VBoxContainer/name_label

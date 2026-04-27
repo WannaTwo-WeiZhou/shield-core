@@ -1,7 +1,11 @@
 # 能力管理器，注册为 Autoload 单例 "AbilityManager"。
 # 负责：加载定义、管理实例、生成候选、驱动管线与联动。
-class_name AbilityManager
 extends Node
+
+const AbilityDefinition = preload("res://ability/ability_definition.gd")
+const AbilityInstance = preload("res://ability/ability_instance.gd")
+const ModifierPipeline = preload("res://ability/modifier_pipeline.gd")
+const SynergyResolver = preload("res://ability/synergy_resolver.gd")
 
 ## 候选生成完毕，需要显示三选一界面（Array[AbilityDefinition]）
 signal ability_selection_needed(candidates: Array)
@@ -52,10 +56,9 @@ func _load_definitions() -> void:
 # ─── 升级三选一 ───────────────────────────────────────────────────────────────
 
 ## 由经验系统在升级时调用
-func on_player_level_up(new_level: int) -> void:
+func on_player_level_up() -> void:
 	var candidates := _generate_candidates(3)
-	print("[AbilityManager] Lv%d 升级候选: %s" % [
-		new_level,
+	print("[AbilityManager] 升级候选: %s" % [
 		candidates.map(func(d: AbilityDefinition) -> String: return d.id)
 	])
 	ability_selection_needed.emit(candidates)

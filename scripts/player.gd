@@ -1,6 +1,8 @@
 extends CharacterBody2D
 
 const Experience = preload("res://experience/experience.gd")
+const Health = preload("res://health/health.gd")
+const AbilityInstance = preload("res://ability/ability_instance.gd")
 
 const BASE_SPEED: float = 400.0
 const MIN_X: float = 40.0
@@ -69,6 +71,10 @@ func _process(delta: float) -> void:
 		_update_joystick()
 	else:
 		_update_keyboard_input()
+
+	# 测试功能：U 键直接触发升级
+	if Input.is_key_pressed(KEY_U):
+		AbilityManager.on_player_level_up()
 
 	if input_vector != Vector2.ZERO:
 		_move_player(delta)

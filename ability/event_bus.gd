@@ -1,6 +1,5 @@
 # 全局战斗事件总线，注册为 Autoload 单例 "EventBus"。
 # 所有能力通过订阅这里的信号响应战斗事件，而不直接耦合彼此。
-class_name EventBus
 extends Node
 
 # ---------- 战斗事件 ----------

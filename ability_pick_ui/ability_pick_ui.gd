@@ -3,6 +3,8 @@
 extends CanvasLayer
 
 const AbilityCard = preload("res://ability_pick_ui/ability_card.tscn")
+const AbilityDefinition = preload("res://ability/ability_definition.gd")
+const AbilityInstance = preload("res://ability/ability_instance.gd")
 
 @onready var cards_container: HBoxContainer = $background/VBoxContainer/cards_container
 @onready var title_label: Label = $background/VBoxContainer/title_label
@@ -27,7 +29,7 @@ func _show_candidates(candidates: Array) -> void:
 	for def: AbilityDefinition in candidates:
 		var card: PanelContainer = AbilityCard.instantiate()
 		cards_container.add_child(card)
-		var inst := AbilityManager.get_instance(def.id)
+		var inst: AbilityInstance = AbilityManager.get_instance(def.id)
 		var current_lv := inst.current_level if inst != null else 0
 		card.setup(def, current_lv)
 		card.card_selected.connect(_on_card_selected)
