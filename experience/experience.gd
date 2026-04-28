@@ -3,6 +3,7 @@ extends Node
 
 signal xp_changed(current_xp: int, max_xp: int, level: int)
 signal level_up(new_level: int)
+signal xp_gained(amount: int, current_xp: int, max_xp: int, level: int)
 
 const CONFIG_PATH: String = "res://experience/experience_config.json"
 
@@ -74,6 +75,7 @@ func add_xp(amount: int) -> void:
 		level_up.emit(current_level)
 	
 	xp_changed.emit(current_xp, xp_to_next_level, current_level)
+	xp_gained.emit(amount, current_xp, xp_to_next_level, current_level)
 
 func get_xp_per_bullet_hit() -> int:
 	return xp_per_bullet_hit

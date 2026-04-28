@@ -23,3 +23,31 @@ max_value = 100.0
 step = 1.0
 value = 0.0
 show_percentage = false
+
+[node name="value_label" type="Label" parent="."]
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 640.0
+offset_bottom = 14.0
+mouse_filter = 2
+text = "0 / 100"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_colors/font_color = Color(1, 1, 1, 0.95)
+theme_override_colors/font_outline_color = Color(0.05, 0.05, 0.1, 0.9)
+theme_override_constants/outline_size = 1
+theme_override_font_sizes/font_size = 12
+
+[node name="xp_popup_label" type="Label" parent="."]
+visible = false
+offset_left = 0.0
+offset_top = 12.0
+offset_right = 640.0
+offset_bottom = 30.0
+mouse_filter = 2
+text = "+1 XP"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.95, 0.88, 1, 1)
+theme_override_colors/font_outline_color = Color(0.1, 0.06, 0.2, 0.9)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 16
