@@ -2,6 +2,7 @@ extends CanvasLayer
 
 @onready var player: Node = get_node("/root/main/player")
 @onready var bullet_spawner: Node = get_node("/root/main/bullet_spawner")
+@onready var wave_director: Node = get_node_or_null("/root/main/wave_director")
 @onready var overlay: ColorRect = $overlay
 @onready var again_label: Label = $again_label
 
@@ -21,9 +22,11 @@ func _on_health_depleted() -> void:
 	
 	is_game_over = true
 	
-	# Stop bullet spawning
-	if bullet_spawner and bullet_spawner.has_method("stop_spawning"):
-		bullet_spawner.stop_spawning()
+	# Stop wave progression and any in-flight bursts
+	if wave_director and wave_director.has_method("stop"):
+		wave_director.stop()
+	if bullet_spawner and bullet_spawner.has_method("cancel_inflight"):
+		bullet_spawner.cancel_inflight()
 	
 	# Destroy all bullets
 	for bullet in get_tree().get_nodes_in_group("bullet"):

@@ -24,6 +24,14 @@ signal on_synergy_activated(synergy_id: String)
 ## 反击螺旋触发
 signal on_counter_spiral_trigger(context: Dictionary)
 
+# ---------- 弹幕波次事件 ----------
+## 进入波次准备阶段：context 包含 wave_id, index, loop, prep_time, duration, pattern_id
+signal on_wave_prep_started(context: Dictionary)
+## 波次正式开始发射：context 包含 wave_id, index, loop, duration, fire_interval, bullet_speed, pattern_id
+signal on_wave_started(context: Dictionary)
+## 波次结束：context 包含 wave_id, index, loop
+signal on_wave_ended(context: Dictionary)
+
 
 # --- 便捷封装：发射格挡事件并返回上下文 ---
 func emit_block(player: Node, blocked_body: Node, extra: Dictionary = {}) -> Dictionary:
