@@ -10,7 +10,7 @@ const CONFIG_PATH: String = "res://bullet/wave_config.json"
 const WAIT_STEP_SEC: float = 0.05
 
 @export var spawner_path: NodePath = NodePath("../bullet_spawner")
-@export var debug_skip_key: bool = true
+@export var debug_skip_key: bool = false
 
 var _patterns: Dictionary = {}
 var _waves: Array = []

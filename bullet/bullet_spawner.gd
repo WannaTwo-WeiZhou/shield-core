@@ -65,7 +65,7 @@ func _fire_fan(pattern_def: Dictionary, bullet_speed: float) -> void:
 		base_dir = Vector2.DOWN
 	var spread_rad: float = deg_to_rad(spread_deg)
 	for i in range(count):
-		var t: float = 0.0 if count == 1 else float(i) / float(count - 1)
+		var t: float = 0.5 if count == 1 else float(i) / float(count - 1)
 		var angle: float = -spread_rad * 0.5 + t * spread_rad
 		var dir: Vector2 = base_dir.rotated(angle)
 		_spawn_one(origin, dir, bullet_speed)
@@ -95,17 +95,18 @@ func _fire_line_burst(pattern_def: Dictionary, bullet_speed: float) -> void:
 func _run_line_burst(pattern_def: Dictionary, bullet_speed: float, token: int) -> void:
 	var count: int = maxi(1, int(pattern_def.get("count", 1)))
 	var interval: float = maxf(0.0, float(pattern_def.get("interval", 0.1)))
+	var origin: Vector2 = _resolve_spawn(pattern_def)
 	for i in range(count):
 		if token != _inflight_token:
 			return
 		if not is_instance_valid(player):
 			return
-		var origin: Vector2 = _resolve_spawn(pattern_def)
 		var direction: Vector2 = _resolve_direction(pattern_def, origin)
 		_spawn_one(origin, direction, bullet_speed)
-		if i == count - 1 or interval <= 0.0:
+		if i == count - 1:
 			break
-		await get_tree().create_timer(interval, false).timeout
+		if interval > 0.0:
+			await get_tree().create_timer(interval, false).timeout
 
 
 # === 解析 spawn / aim ==========================================================
