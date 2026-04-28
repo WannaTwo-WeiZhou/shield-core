@@ -33,6 +33,8 @@ Produce a complete ability issue that follows the repository spec, then create t
   - Core definitions live in `ability/abilities_config.json`
   - Synergy definitions live in `ability/synergies_config.json`
   - Runtime ability orchestration is handled by the `AbilityManager` and `EventBus` autoload-driven flow
+- Ability definitions no longer include `tags`, `affects_tags`, or `responds_to_tags` fields. Do not introduce them in new ability issues.
+- Synergies are matched **only** by `required_abilities` (exact ability_id match). Do not introduce `required_tags` or any tag-based matching in new synergy proposals.
 - Do not copy generic example paths from outside docs unless they truly exist in this repo.
 - Prefer concrete, repo-realistic paths in `Files to add / modify`, such as:
   - `ability/abilities_config.json`

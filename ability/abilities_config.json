@@ -7,9 +7,6 @@
 	  "rarity": 1,
 	  "weight": 100,
 	  "max_level": 1,
-	  "tags": ["attribute", "movement"],
-	  "affects_tags": [],
-	  "responds_to_tags": [],
 	  "per_level": [
 		{"speed_bonus": 60}
 	  ]
@@ -21,9 +18,6 @@
 	  "rarity": 2,
 	  "weight": 80,
 	  "max_level": 1,
-	  "tags": ["shield", "reflect"],
-	  "affects_tags": ["shield"],
-	  "responds_to_tags": ["on_block"],
 	  "per_level": [
 		{"reflect_chance": 0.50}
 	  ]
@@ -35,9 +29,6 @@
 	  "rarity": 2,
 	  "weight": 70,
 	  "max_level": 1,
-	  "tags": ["shield", "spin"],
-	  "affects_tags": ["shield"],
-	  "responds_to_tags": ["on_block"],
 	  "per_level": [
 		{
 		  "proc_chance": 0.25,
@@ -55,9 +46,6 @@
 	  "rarity": 1,
 	  "weight": 90,
 	  "max_level": 1,
-	  "tags": ["attribute", "health"],
-	  "affects_tags": [],
-	  "responds_to_tags": [],
 	  "per_level": [
 		{"regen_amount": 2, "regen_interval": 5.0}
 	  ]
@@ -69,9 +57,6 @@
 	  "rarity": 2,
 	  "weight": 70,
 	  "max_level": 1,
-	  "tags": ["crit", "shield"],
-	  "affects_tags": ["on_block"],
-	  "responds_to_tags": ["on_block"],
 	  "per_level": [
 		{"crit_chance": 0.15, "block_xp_bonus": 1.0}
 	  ]
@@ -84,9 +69,6 @@
 	  "weight": 65,
 	  "max_level": 1,
 	  "repeatable": true,
-	  "tags": [],
-	  "affects_tags": [],
-	  "responds_to_tags": [],
 	  "per_level": [
 		{"max_health_bonus": 10}
 	  ]

@@ -129,14 +129,9 @@ func get_all_instances() -> Array:
 	return _instances.values()
 
 
-## 返回当前所有能力标签的扁平集合（去重）
-func get_all_tags() -> Array:
-	var tags: Array = []
-	for inst: AbilityInstance in _instances.values():
-		for tag in inst.definition.tags:
-			if not tags.has(tag):
-				tags.append(tag)
-	return tags
+## 返回当前所有已获得能力的 ID 列表
+func get_all_ability_ids() -> Array:
+	return _instances.keys()
 
 
 func register_player(player: Node) -> void:
@@ -153,7 +148,7 @@ func _rebuild_pipeline() -> void:
 	pipeline.reset()
 	for inst: AbilityInstance in _instances.values():
 		_apply_instance_to_pipeline(inst)
-	_synergy_resolver.evaluate(get_all_tags(), _instances, pipeline, EventBus)
+	_synergy_resolver.evaluate(_instances, pipeline, EventBus)
 	print("[AbilityManager] 管线已重建 | 属性: %s | 活跃联动: %s" % [
 		pipeline.debug_get_bonuses(),
 		_synergy_resolver.get_active_synergies()
@@ -168,9 +163,6 @@ func _apply_instance_to_pipeline(inst: AbilityInstance) -> void:
 		for key in ["speed_bonus", "bullet_speed_bonus", "damage_bonus", "block_xp_bonus", "max_health_bonus"]:
 			if data.has(key):
 				pipeline.add_attribute(key, float(data[key]))
-		# 标签效果（供事件系统读取）
-		for tag in inst.definition.affects_tags:
-			pipeline.add_tag_effect(tag, {"ability_id": inst.get_id(), "data": data})
 
 
 # ─── 内部：候选生成 ────────────────────────────────────────────────────────────

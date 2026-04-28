@@ -33,6 +33,7 @@
 - 必填字段：TBD
 - 可选字段：TBD
 - 默认值：TBD
+- 注意：能力定义不再包含 `tags / affects_tags / responds_to_tags` 字段；联动条件统一通过 `required_abilities`（能力 ID 精确匹配）声明，禁止使用 `required_tags`。
 
 ## 2.6 实现方案（Implementation Plan）
 - 代码入口/挂载方式：TBD
