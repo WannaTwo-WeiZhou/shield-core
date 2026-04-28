@@ -1,10 +1,11 @@
-[gd_scene load_steps=10 format=3 uid="uid://byoiqp8nrncx"]
+[gd_scene load_steps=13 format=3 uid="uid://byoiqp8nrncx"]
 
 [ext_resource type="PackedScene" uid="uid://bg1qf8y10f7qy" path="res://start/background.tscn" id="1_bg"]
 [ext_resource type="PackedScene" uid="uid://c54q3qhqhcyey" path="res://start/hint_label.tscn" id="2_label"]
 [ext_resource type="PackedScene" uid="uid://player001" path="res://player/player.tscn" id="3_player"]
 [ext_resource type="PackedScene" uid="uid://bullet001" path="res://bullet/bullet.tscn" id="4_bullet"]
 [ext_resource type="Script" path="res://bullet/bullet_spawner.gd" id="5_spawner"]
+[ext_resource type="Script" path="res://bullet/wave_director.gd" id="5b_wave_director"]
 [ext_resource type="Texture2D" uid="uid://41m4vh7uubtb" path="res://player/joystick_base.png" id="6_joystick_base"]
 [ext_resource type="Texture2D" uid="uid://euu7lp4pc3a4" path="res://player/joystick_knob.png" id="7_joystick_knob"]
 [ext_resource type="PackedScene" uid="uid://healthui001" path="res://health/health_ui.tscn" id="8_health_ui"]
@@ -17,6 +18,10 @@
 [node name="bullet_spawner" type="Node" parent="."]
 script = ExtResource("5_spawner")
 bullet_scene = ExtResource("4_bullet")
+
+[node name="wave_director" type="Node" parent="."]
+script = ExtResource("5b_wave_director")
+spawner_path = NodePath("../bullet_spawner")
 
 [node name="background" parent="." unique_id=978789563 instance=ExtResource("1_bg")]
 

@@ -1,0 +1,58 @@
+{
+  "patterns": {
+    "single_aimed": {
+      "shape": "single",
+      "spawn": "edge_random",
+      "aim": "player"
+    },
+    "fan_5": {
+      "shape": "fan",
+      "count": 5,
+      "spread_deg": 40.0,
+      "spawn": "edge_random",
+      "aim": "player"
+    },
+    "fan_3_tight": {
+      "shape": "fan",
+      "count": 3,
+      "spread_deg": 18.0,
+      "spawn": "edge_random",
+      "aim": "player"
+    },
+    "ring_12": {
+      "shape": "ring",
+      "count": 12,
+      "spawn": "near_player",
+      "spawn_distance": 320.0,
+      "aim": "outward"
+    },
+    "ring_8_center": {
+      "shape": "ring",
+      "count": 8,
+      "spawn": "screen_center",
+      "aim": "outward",
+      "rotation_offset_deg": 22.5
+    },
+    "line_burst_3": {
+      "shape": "line_burst",
+      "count": 3,
+      "interval": 0.10,
+      "spawn": "edge_random",
+      "aim": "player"
+    }
+  },
+
+  "waves": [
+    { "id": "w1_warmup",   "prep_time": 2.0, "duration": 15.0, "fire_interval": 1.20, "bullet_speed": 100.0, "pattern": "single_aimed" },
+    { "id": "w2_steady",   "prep_time": 3.0, "duration": 18.0, "fire_interval": 1.00, "bullet_speed": 110.0, "pattern": "single_aimed" },
+    { "id": "w3_fan",      "prep_time": 4.0, "duration": 20.0, "fire_interval": 1.40, "bullet_speed": 120.0, "pattern": "fan_3_tight" },
+    { "id": "w4_volley",   "prep_time": 4.0, "duration": 22.0, "fire_interval": 0.95, "bullet_speed": 130.0, "pattern": "line_burst_3" },
+    { "id": "w5_ring",     "prep_time": 5.0, "duration": 24.0, "fire_interval": 2.20, "bullet_speed": 140.0, "pattern": "ring_12" },
+    { "id": "w6_storm",    "prep_time": 4.0, "duration": 30.0, "fire_interval": 0.75, "bullet_speed": 150.0, "pattern": "fan_5" },
+    { "id": "w7_pressure", "prep_time": 5.0, "duration": 30.0, "fire_interval": 1.80, "bullet_speed": 160.0, "pattern": "ring_8_center" }
+  ],
+
+  "loop_from_wave": 4,
+  "loop_speed_step": 10.0,
+  "loop_interval_mul": 0.95
+}

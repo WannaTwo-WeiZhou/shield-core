@@ -9,9 +9,15 @@ var direction: Vector2 = Vector2.ZERO
 func _ready() -> void:
 	visible_notifier.screen_exited.connect(_on_screen_exited)
 
-func init(target_position: Vector2) -> void:
-	direction = (target_position - global_position).normalized()
+# 由 BulletSpawner 调用：spawn_pos 是出生点，dir 是单位方向向量，bullet_speed 覆盖默认速度。
+func init(spawn_pos: Vector2, dir: Vector2, bullet_speed: float = -1.0) -> void:
+	global_position = spawn_pos
+	if dir.length_squared() <= 0.0:
+		dir = Vector2.DOWN
+	direction = dir.normalized()
 	rotation = direction.angle()
+	if bullet_speed > 0.0:
+		speed = bullet_speed
 
 func _physics_process(delta: float) -> void:
 	var collision = move_and_collide(direction * speed * delta)
