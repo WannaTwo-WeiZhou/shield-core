@@ -41,6 +41,8 @@ Reuse the existing Copilot skill assets instead of inventing a second spec:
   - Synergy definitions: `ability/synergies_config.json`
   - Runtime orchestration: `AbilityManager` and `EventBus` autoload flow
   - Common consumers: `player/player.gd`, `bullet/bullet.gd`, `health/health.gd`, `experience/experience.gd`
+- Ability definitions no longer include `tags / affects_tags / responds_to_tags` fields; do not reintroduce them.
+- Synergies are matched **only** by `required_abilities` (exact ability_id match); do not propose `required_tags` or any tag-based matching.
 - Do not copy generic paths from outside docs unless those files exist in this repo.
 - In `## 2.7 测试与验收（Test & Acceptance）` and `### 3) Validation`, include only AI-owned checks such as code creation/modification and compile/build/export passing.
 

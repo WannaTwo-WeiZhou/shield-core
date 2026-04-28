@@ -35,9 +35,5 @@ func get_stack_count() -> int:
 	return stack_count
 
 
-func has_tag(tag: String) -> bool:
-	return definition.has_tag(tag)
-
-
 func get_id() -> String:
 	return definition.id

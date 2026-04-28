@@ -361,7 +361,7 @@ func _on_health_changed(current: int, max: int) -> void:
 
 func _on_abilities_updated() -> void:
 	_refresh_max_health_cap_from_abilities()
-	print("[Player] 能力已更新，当前标签: %s" % [AbilityManager.get_all_tags()])
+	print("[Player] 能力已更新，当前能力: %s" % [AbilityManager.get_all_ability_ids()])
 
 
 func _refresh_max_health_cap_from_abilities() -> void:
