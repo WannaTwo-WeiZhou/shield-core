@@ -5,13 +5,18 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# We publish to the `gh-pages` branch directly (instead of using the
+# GitHub Pages deployment API) so that we can host both the main build and
+# many PR-preview builds at once, each in its own sub-directory. Switching
+# the Pages source to "Branch: gh-pages / root" is required in the
+# repository settings (Settings → Pages → Build and deployment).
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
+# Serialize main deployments so we never push two main builds concurrently.
+# PR previews use their own concurrency group so they can run in parallel.
 concurrency:
-  group: pages
+  group: gh-pages-main
   cancel-in-progress: true
 
 env:
@@ -19,7 +24,7 @@ env:
   GODOT_TEMPLATE_VERSION: 4.6.2.stable
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -27,53 +32,65 @@ jobs:
         with:
           lfs: true
 
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y wget unzip
-
-      - name: Download Godot
-        run: |
-          wget -q "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_linux.x86_64.zip" -O godot.zip
-          unzip -q godot.zip
-          mv "Godot_v${GODOT_VERSION}_linux.x86_64" /usr/local/bin/godot
-          chmod +x /usr/local/bin/godot
-
-      - name: Download export templates
-        run: |
-          wget -q "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_export_templates.tpz" -O templates.tpz
-          mkdir -p ~/.local/share/godot/export_templates/${GODOT_TEMPLATE_VERSION}
-          unzip -q templates.tpz
-          mv templates/* ~/.local/share/godot/export_templates/${GODOT_TEMPLATE_VERSION}/
-
-      - name: Download CJK font (Noto Sans SC)
-        run: |
-          mkdir -p assets/fonts
-          wget -q "https://github.com/google/fonts/raw/main/ofl/notosanssc/NotoSansSC%5Bwght%5D.ttf" -O assets/fonts/NotoSansSC.ttf
-
-      - name: Import project
-        run: |
-          mkdir -p build/web
-          godot --headless --import || true
-
-      - name: Export Web build
-        run: |
-          godot --headless --export-release "Web" build/web/index.html
-          ls -la build/web
-
-      - name: Add .nojekyll
-        run: touch build/web/.nojekyll
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Build Godot Web export
+        uses: ./.github/actions/build-godot-web
         with:
-          path: build/web
+          godot-version: ${{ env.GODOT_VERSION }}
+          godot-template-version: ${{ env.GODOT_TEMPLATE_VERSION }}
+          output-dir: build/web
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      # Publish the freshly built export to the root of the `gh-pages` branch
+      # while preserving the `pr-preview/` directory (which holds open PR
+      # previews) so we don't wipe those builds whenever main is redeployed.
+      - name: Publish to gh-pages branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          BUILD_DIR="$(pwd)/build/web"
+          WORK_DIR="$(mktemp -d)"
+
+          git config --global user.name  "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          REPO_URL="https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+
+          # Clone (shallow) the gh-pages branch if it exists, otherwise create
+          # a fresh orphan branch.
+          if git ls-remote --exit-code --heads "$REPO_URL" gh-pages >/dev/null 2>&1; then
+            git clone --depth=1 --branch gh-pages "$REPO_URL" "$WORK_DIR"
+          else
+            git clone --depth=1 "$REPO_URL" "$WORK_DIR"
+            cd "$WORK_DIR"
+            git checkout --orphan gh-pages
+            git rm -rf . >/dev/null 2>&1 || true
+            cd - >/dev/null
+          fi
+
+          cd "$WORK_DIR"
+
+          # Wipe everything in the branch root EXCEPT the pr-preview/ directory
+          # and the .git metadata, so each main deploy is a clean slate at
+          # the root while still preserving open PR preview builds.
+          shopt -s dotglob nullglob
+          for entry in *; do
+            case "$entry" in
+              .git|pr-preview) ;;
+              *) rm -rf -- "$entry" ;;
+            esac
+          done
+          shopt -u dotglob nullglob
+
+          # Copy the freshly built export into the branch root.
+          cp -R "$BUILD_DIR"/. ./
+
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No changes to publish."
+            exit 0
+          fi
+
+          git commit -m "deploy(main): ${GITHUB_SHA}"
+          git push origin gh-pages

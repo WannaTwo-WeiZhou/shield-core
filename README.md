@@ -2,6 +2,12 @@
 
 Godot 4.6.2 的 2D 竖屏游戏项目，核心玩法围绕玩家格挡、升级与能力组合。
 
+## 部署与 PR 预览
+
+- **主站**：推送到 `main` 后，`.github/workflows/deploy-pages.yml` 会重新构建 Web 包并发布到 `gh-pages` 分支根目录，访问 `https://<owner>.github.io/<repo>/`。
+- **PR 预览**：PR 收到 **approving review** 后，`.github/workflows/pr-preview.yml` 会构建 PR 当前 head，并把产物推送到 `gh-pages` 的 `pr-preview/pr-<number>/` 子目录，然后在 PR 上评论可测试地址。PR 关闭（合并或丢弃）时该子目录会自动清理。
+- **必要的人工配置**：仓库 Settings → Pages → Build and deployment 须将源切换为 **`Branch: gh-pages / root`**；首次工作流运行会自动创建 `gh-pages` 分支。
+
 ## 能力系统架构
 
 当前项目中的“能力系统”由能力定义、运行时实例、效果管线、联动解析和战斗消费层组成。

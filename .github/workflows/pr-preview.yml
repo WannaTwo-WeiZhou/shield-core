@@ -1,0 +1,259 @@
+name: PR preview deploy
+
+# Build a Godot Web export of the PR branch and publish it to a per-PR
+# sub-directory under the `gh-pages` branch (e.g. `pr-preview/pr-12/`).
+# The preview is built only AFTER the PR receives an approving review, so
+# reviewers/maintainers can manually test it before clicking merge.
+#
+# The same workflow also cleans up the preview directory once the PR is
+# closed (merged or not).
+on:
+  pull_request_review:
+    types: [submitted]
+  pull_request:
+    types: [closed]
+
+# We push to the `gh-pages` branch and comment on the PR.
+permissions:
+  contents: write
+  pull-requests: write
+
+# Serialize per-PR deploys so two events on the same PR do not race.
+concurrency:
+  group: gh-pages-preview-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  GODOT_VERSION: 4.6.2-stable
+  GODOT_TEMPLATE_VERSION: 4.6.2.stable
+
+jobs:
+  deploy-preview:
+    name: Deploy preview on approval
+    if: >-
+      github.event_name == 'pull_request_review' &&
+      github.event.review.state == 'approved' &&
+      github.event.pull_request.state == 'open' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          lfs: true
+
+      - name: Compute preview metadata
+        id: meta
+        run: |
+          set -euo pipefail
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          REPO_NAME="${GITHUB_REPOSITORY##*/}"
+          OWNER="${GITHUB_REPOSITORY%%/*}"
+          # Pages URL for a project site lives at https://<owner>.github.io/<repo>/.
+          # We host previews under pr-preview/pr-<n>/.
+          BASE_PATH="/${REPO_NAME}/pr-preview/pr-${PR_NUMBER}/"
+          PREVIEW_URL="https://${OWNER,,}.github.io${BASE_PATH}"
+          {
+            echo "pr_number=${PR_NUMBER}"
+            echo "base_path=${BASE_PATH}"
+            echo "preview_url=${PREVIEW_URL}"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Build Godot Web export
+        uses: ./.github/actions/build-godot-web
+        with:
+          godot-version: ${{ env.GODOT_VERSION }}
+          godot-template-version: ${{ env.GODOT_TEMPLATE_VERSION }}
+          output-dir: build/web
+
+      - name: Publish preview to gh-pages branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.meta.outputs.pr_number }}
+        run: |
+          set -euo pipefail
+
+          BUILD_DIR="$(pwd)/build/web"
+          WORK_DIR="$(mktemp -d)"
+
+          git config --global user.name  "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          REPO_URL="https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+
+          if git ls-remote --exit-code --heads "$REPO_URL" gh-pages >/dev/null 2>&1; then
+            git clone --depth=1 --branch gh-pages "$REPO_URL" "$WORK_DIR"
+          else
+            git clone --depth=1 "$REPO_URL" "$WORK_DIR"
+            cd "$WORK_DIR"
+            git checkout --orphan gh-pages
+            git rm -rf . >/dev/null 2>&1 || true
+            cd - >/dev/null
+          fi
+
+          cd "$WORK_DIR"
+
+          TARGET_DIR="pr-preview/pr-${PR_NUMBER}"
+          rm -rf "$TARGET_DIR"
+          mkdir -p "$TARGET_DIR"
+          cp -R "$BUILD_DIR"/. "$TARGET_DIR"/
+
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to publish."
+            exit 0
+          fi
+
+          git commit -m "preview(pr-${PR_NUMBER}): ${GITHUB_SHA}"
+
+          # Retry push a few times to cope with concurrent gh-pages updates.
+          for attempt in 1 2 3 4 5; do
+            if git push origin gh-pages; then
+              exit 0
+            fi
+            echo "Push attempt ${attempt} failed, rebasing and retrying..."
+            git fetch origin gh-pages
+            git rebase origin/gh-pages || { git rebase --abort || true; sleep $((attempt*2)); }
+          done
+          echo "Failed to push gh-pages after retries." >&2
+          exit 1
+
+      - name: Comment preview link on PR
+        uses: actions/github-script@v7
+        env:
+          PREVIEW_URL: ${{ steps.meta.outputs.preview_url }}
+          PR_NUMBER:   ${{ steps.meta.outputs.pr_number }}
+          HEAD_SHA:    ${{ github.event.pull_request.head.sha }}
+          HEAD_REF:    ${{ github.event.pull_request.head.ref }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const marker = '<!-- shield-core-pr-preview -->';
+            const url    = process.env.PREVIEW_URL;
+            const sha    = process.env.HEAD_SHA;
+            const ref    = process.env.HEAD_REF;
+            const prNum  = Number(process.env.PR_NUMBER);
+            const body = [
+              marker,
+              '### 🕹️ PR 预览构建完成',
+              '',
+              `- 测试地址: ${url}`,
+              `- 分支: \`${ref}\``,
+              `- 提交: \`${sha.slice(0, 7)}\``,
+              '',
+              'GitHub Pages CDN 缓存可能需要 1–2 分钟刷新。确认无误后再点击合并即可。',
+            ].join('\n');
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              issue_number: prNum,
+              per_page: 100,
+            });
+            const existing = comments.find(c => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo:  context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo:  context.repo.repo,
+                issue_number: prNum,
+                body,
+              });
+            }
+
+  cleanup-preview:
+    name: Cleanup preview on close
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove preview directory from gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          WORK_DIR="$(mktemp -d)"
+          REPO_URL="https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+
+          if ! git ls-remote --exit-code --heads "$REPO_URL" gh-pages >/dev/null 2>&1; then
+            echo "gh-pages branch does not exist; nothing to clean."
+            exit 0
+          fi
+
+          git config --global user.name  "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git clone --depth=1 --branch gh-pages "$REPO_URL" "$WORK_DIR"
+          cd "$WORK_DIR"
+
+          TARGET_DIR="pr-preview/pr-${PR_NUMBER}"
+          if [ ! -d "$TARGET_DIR" ]; then
+            echo "No preview directory at ${TARGET_DIR}; nothing to clean."
+            exit 0
+          fi
+
+          git rm -rf "$TARGET_DIR"
+          # Drop the parent if it is now empty, just to keep things tidy.
+          if [ -d pr-preview ] && [ -z "$(ls -A pr-preview)" ]; then
+            rmdir pr-preview
+            git add -A
+          fi
+
+          git commit -m "preview(pr-${PR_NUMBER}): cleanup after PR close"
+
+          for attempt in 1 2 3 4 5; do
+            if git push origin gh-pages; then
+              exit 0
+            fi
+            echo "Push attempt ${attempt} failed, rebasing and retrying..."
+            git fetch origin gh-pages
+            git rebase origin/gh-pages || { git rebase --abort || true; sleep $((attempt*2)); }
+          done
+          exit 1
+
+      - name: Comment cleanup on PR
+        if: always()
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const marker = '<!-- shield-core-pr-preview -->';
+            const prNum  = Number(process.env.PR_NUMBER);
+            const body = [
+              marker,
+              '### 🧹 PR 预览已下线',
+              '',
+              'PR 已关闭，对应的预览构建已从 GitHub Pages 移除。',
+            ].join('\n');
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              issue_number: prNum,
+              per_page: 100,
+            });
+            const existing = comments.find(c => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo:  context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo:  context.repo.repo,
+                issue_number: prNum,
+                body,
+              });
+            }
