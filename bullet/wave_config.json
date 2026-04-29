@@ -24,7 +24,7 @@
       "count": 12,
       "spawn": "near_player",
       "spawn_distance": 320.0,
-      "aim": "outward"
+      "aim": "player"
     },
     "ring_8_center": {
       "shape": "ring",
