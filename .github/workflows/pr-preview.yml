@@ -2,16 +2,16 @@ name: PR preview deploy
 
 # Build a Godot Web export of the PR branch and publish it to a per-PR
 # sub-directory under the `gh-pages` branch (e.g. `pr-preview/pr-12/`).
-# The preview is built only AFTER the PR receives an approving review, so
-# reviewers/maintainers can manually test it before clicking merge.
+# The preview is built on every push to the PR so contributors can test
+# changes immediately without waiting for a review approval.
 #
 # The same workflow also cleans up the preview directory once the PR is
 # closed (merged or not).
 on:
-  pull_request_review:
-    types: [submitted]
   pull_request:
-    types: [closed]
+    # opened/synchronize/reopened → build and publish a new preview.
+    # closed → cleanup-preview job removes the preview directory from gh-pages.
+    types: [opened, synchronize, reopened, closed]
 
 # Grant the maximum permissions needed by any job in this workflow; each job
 # then restricts itself further via job-level permissions blocks.
@@ -37,9 +37,8 @@ jobs:
     permissions:
       contents: read
     if: >-
-      github.event_name == 'pull_request_review' &&
-      github.event.review.state == 'approved' &&
-      github.event.pull_request.state == 'open' &&
+      github.event_name == 'pull_request' &&
+      github.event.action != 'closed' &&
       github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     outputs:
