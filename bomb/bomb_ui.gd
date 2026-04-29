@@ -37,6 +37,8 @@ func _create_bomb_icons(count: int) -> void:
 	for i in range(count):
 		var panel = PanelContainer.new()
 		panel.custom_minimum_size = ICON_SIZE
+		# 不拦截鼠标/触摸事件，避免遮挡玩家输入（拖动/双击触发 B 弹）
+		panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 		# 创建边框样式
 		var style = StyleBoxFlat.new()
