@@ -93,4 +93,24 @@ jobs:
           fi
 
           git commit -m "deploy(main): ${GITHUB_SHA}"
-          git push origin gh-pages
+
+          for attempt in 1 2 3; do
+            if git push origin HEAD:gh-pages; then
+              echo "Published to gh-pages on attempt ${attempt}."
+              exit 0
+            fi
+
+            if [ "$attempt" -eq 3 ]; then
+              echo "Failed to publish to gh-pages after ${attempt} attempts."
+              exit 1
+            fi
+
+            echo "Push rejected, fetching latest gh-pages and rebasing before retry ${attempt}..."
+            git fetch origin gh-pages || true
+
+            if git show-ref --verify --quiet refs/remotes/origin/gh-pages; then
+              git rebase origin/gh-pages
+            fi
+
+            sleep $((attempt * 2))
+          done
