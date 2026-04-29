@@ -24,6 +24,12 @@ signal on_synergy_activated(synergy_id: String)
 ## 反击螺旋触发
 signal on_counter_spiral_trigger(context: Dictionary)
 
+# ---------- B 弹事件 ----------
+## B 弹使用：context 包含 charges_remaining
+signal on_bomb_used(context: Dictionary)
+## B 弹充能变化：context 包含 charges, max, recharge_progress
+signal on_bomb_charges_changed(context: Dictionary)
+
 # ---------- 弹幕波次事件 ----------
 ## 进入波次准备阶段：context 包含 wave_id, index, loop, prep_time, duration, pattern_id
 signal on_wave_prep_started(context: Dictionary)

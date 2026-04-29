@@ -52,6 +52,9 @@ func _ready() -> void:
 	AbilityManager.abilities_updated.connect(_on_abilities_updated)
 	_refresh_max_health_cap_from_abilities()
 
+	# B 弹触发时收起摇杆
+	EventBus.on_bomb_used.connect(_on_bomb_used)
+
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch or event is InputEventMouseButton:
@@ -351,6 +354,12 @@ func _apply_single_event_modifier(event_name: String, modifier: Dictionary, cont
 				print("[EVENT:%s] 反弹子弹速度 x%.2f" % [event_name, multiplier])
 		_:
 			push_warning("[Player] 未支持的事件修饰动作: %s" % action)
+
+
+func _on_bomb_used(_ctx: Dictionary) -> void:
+	is_dragging = false
+	joystick_base.visible = false
+	input_vector = Vector2.ZERO
 
 
 func _on_health_changed(current: int, max: int) -> void:

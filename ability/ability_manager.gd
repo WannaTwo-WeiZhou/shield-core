@@ -160,7 +160,7 @@ func _apply_instance_to_pipeline(inst: AbilityInstance) -> void:
 	var stack_count := maxi(inst.get_stack_count(), 1)
 	for _i in range(stack_count):
 		# 数值属性（直接注册加成）
-		for key in ["speed_bonus", "bullet_speed_bonus", "damage_bonus", "block_xp_bonus", "max_health_bonus"]:
+		for key in ["speed_bonus", "bullet_speed_bonus", "damage_bonus", "block_xp_bonus", "max_health_bonus", "bomb_capacity_bonus", "bomb_recharge_seconds_bonus"]:
 			if data.has(key):
 				pipeline.add_attribute(key, float(data[key]))
 

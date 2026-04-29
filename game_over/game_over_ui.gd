@@ -32,6 +32,11 @@ func _on_health_depleted() -> void:
 	for bullet in get_tree().get_nodes_in_group("bullet"):
 		bullet.queue_free()
 	
+	# Disable bomb system
+	var bomb_system = get_node_or_null("/root/main/bomb_system")
+	if bomb_system and bomb_system.has_method("disable"):
+		bomb_system.disable()
+
 	# Show game over UI
 	overlay.visible = true
 	again_label.visible = true
