@@ -145,12 +145,15 @@ jobs:
               'GitHub Pages CDN 缓存可能需要 1–2 分钟刷新。确认无误后再点击合并即可。',
             ].join('\n');
 
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo:  context.repo.repo,
-              issue_number: prNum,
-              per_page: 100,
-            });
+            const comments = await github.paginate(
+              github.rest.issues.listComments,
+              {
+                owner: context.repo.owner,
+                repo:  context.repo.repo,
+                issue_number: prNum,
+                per_page: 100,
+              }
+            );
             const existing = comments.find(c => c.body && c.body.includes(marker));
             if (existing) {
               await github.rest.issues.updateComment({
