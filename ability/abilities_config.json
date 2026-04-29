@@ -72,6 +72,21 @@
 	  "per_level": [
 		{"max_health_bonus": 10}
 	  ]
+	},
+	{
+	  "id": "breathing_orbit",
+	  "name": "呼吸摆盾",
+	  "description": "护盾在近远半径间往复摆动，形成呼吸式拦截轨迹。",
+	  "rarity": 2,
+	  "weight": 75,
+	  "max_level": 1,
+	  "per_level": [
+		{
+		  "radius_min_offset_px": -8.0,
+		  "radius_max_offset_px": 24.0,
+		  "radius_cycle_sec": 1.2
+		}
+	  ]
 	}
   ]
 }
