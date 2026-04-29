@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://bkh03epljpvc1" path="res://player/player.gd" id="1_script"]
 [ext_resource type="Script" uid="uid://40rhba03xven" path="res://experience/experience.gd" id="2_experience"]
 [ext_resource type="Texture2D" uid="uid://b1kwb7k26iupv" path="res://player/shield_circle.png" id="2_shield"]
+[ext_resource type="Script" path="res://bomb/bomb.gd" id="3_bomb"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_core"]
 size = Vector2(32, 32)
@@ -61,3 +62,6 @@ script = ExtResource("1_health")
 
 [node name="experience" type="Node" parent="." unique_id=1736205301]
 script = ExtResource("2_experience")
+
+[node name="bomb" type="Node" parent="." unique_id=888888888]
+script = ExtResource("3_bomb")

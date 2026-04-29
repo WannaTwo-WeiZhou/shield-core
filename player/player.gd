@@ -2,6 +2,7 @@ extends CharacterBody2D
 
 const Experience = preload("res://experience/experience.gd")
 const Health = preload("res://health/health.gd")
+const Bomb = preload("res://bomb/bomb.gd")
 
 const BASE_SPEED: float = 400.0
 const MIN_X: float = 40.0
@@ -21,10 +22,15 @@ const BASE_SHIELD_SPIN_SPEED: float = PI
 @onready var shield_right: Area2D = $shield_container/shield_right
 @onready var health: Health = $health
 @onready var experience: Experience = $experience
+@onready var bomb: Bomb = $bomb
 
 var is_dragging: bool = false
 var joystick_center: Vector2 = Vector2.ZERO
 var input_vector: Vector2 = Vector2.ZERO
+
+# B弹双击检测相关
+const DOUBLE_TAP_TIME_WINDOW: float = 0.3  # 双击时间窗口（秒）
+var _last_tap_time: float = 0.0
 
 # 生命恢复计时器（由 health_regen 能力驱动）
 var _regen_timer: float = 0.0
@@ -58,6 +64,15 @@ func _input(event: InputEvent) -> void:
 		var touch_pos = get_global_mouse_position()
 
 		if event.pressed:
+			# 检测双击
+			var current_time = _get_time_seconds()
+			if current_time - _last_tap_time <= DOUBLE_TAP_TIME_WINDOW:
+				# 双击触发B弹
+				_try_use_bomb()
+				_last_tap_time = 0.0  # 重置双击计时，避免连续触发
+			else:
+				_last_tap_time = current_time
+
 			is_dragging = true
 			joystick_center = touch_pos
 			joystick_base.global_position = joystick_center
@@ -376,3 +391,25 @@ func _refresh_max_health_cap_from_abilities() -> void:
 		_base_max_health,
 		max_health_bonus
 	])
+
+
+# ─── B弹系统 ────────────────────────────────────────────────────────────────
+
+func _try_use_bomb() -> void:
+	if bomb.use_bomb():
+		_clear_all_bullets()
+		print("[BOMB] B弹已激活！清除所有子弹")
+
+func _clear_all_bullets() -> void:
+	# 获取场景树中所有的子弹
+	var bullets = get_tree().get_nodes_in_group("bullet")
+	var cleared_count = 0
+
+	for bullet in bullets:
+		if bullet and is_instance_valid(bullet):
+			# 只清除敌方子弹，不清除玩家反弹的子弹
+			if not bullet.is_in_group("player_bullet"):
+				bullet.queue_free()
+				cleared_count += 1
+
+	print("[BOMB] 清除了 %d 发敌方子弹" % cleared_count)

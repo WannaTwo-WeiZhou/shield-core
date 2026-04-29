@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://bombui001"]
+
+[ext_resource type="Script" path="res://bomb/bomb_ui.gd" id="1_script"]
+
+[node name="BombUI" type="CanvasLayer"]
+layer = 10
+script = ExtResource("1_script")
+
+[node name="Container" type="HBoxContainer" parent="."]
+offset_left = 20.0
+offset_top = 60.0
+offset_right = 200.0
+offset_bottom = 100.0
+theme_override_constants/separation = 10
