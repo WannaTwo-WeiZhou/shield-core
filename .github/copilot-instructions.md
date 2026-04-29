@@ -36,9 +36,14 @@ There are no unit tests, linters, or formatters configured. Do not introduce new
 - **Web export** (mirrors CI; requires the matching export templates installed for 4.6.2.stable):
   `godot --headless --export-release "Web" build/web/index.html`
 
-## CI / deployment (`.github/workflows/deploy-pages.yml`)
+## CI / deployment
 
-Push to `main` → workflow downloads Godot **4.6.2-stable** + export templates, fetches Noto Sans SC into `assets/fonts/`, runs `--import`, exports the `Web` preset to `build/web/`, adds `.nojekyll`, and deploys to GitHub Pages. When changing the engine version, bump both `GODOT_VERSION` (e.g. `4.6.2-stable`) and `GODOT_TEMPLATE_VERSION` (dot form, e.g. `4.6.2.stable`), and update `config/features` in `project.godot`.
+The shared build steps live in the composite action `.github/actions/build-godot-web/`. It downloads Godot **4.6.2-stable** + export templates, fetches Noto Sans SC into `assets/fonts/`, runs `--import`, exports the `Web` preset to `build/web/`, and adds `.nojekyll`. When changing the engine version, bump both `GODOT_VERSION` (e.g. `4.6.2-stable`) and `GODOT_TEMPLATE_VERSION` (dot form, e.g. `4.6.2.stable`) in the workflow files, and update `config/features` in `project.godot`.
+
+Two workflows publish to the **`gh-pages` branch** (Pages source must be set to `Branch: gh-pages / root` in the repo settings):
+
+- `.github/workflows/deploy-pages.yml` — on every push to `main`, builds the Web export and replaces the gh-pages root, while preserving `pr-preview/` so open previews stay alive.
+- `.github/workflows/pr-preview.yml` — when a PR receives an **approving review** (`pull_request_review` with `state == approved`), builds the PR head and publishes it to `gh-pages` under `pr-preview/pr-<number>/`, then comments the preview URL on the PR. When the PR is closed (merged or not), the same workflow removes that sub-directory. Forks are skipped because they do not have write access to the gh-pages branch.
 
 ## Conventions
 
