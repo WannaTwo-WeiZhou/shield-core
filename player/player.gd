@@ -184,9 +184,10 @@ func _process_breathing_orbit(delta: float) -> void:
 	var max_radius := minf(80.0, maxf(min_radius + 4.0, base_radius + radius_max_offset))
 
 	if not _breathing_orbit_was_active:
-		# 首次激活：从当前半径位置平滑接入，先执行向外摆阶段
+		# 首次激活：从护盾当前实际半径平滑接入，避免 pipeline 属性导致首帧突变
+		var current_actual_radius := absf(shield_left.position.x)
 		var r := max_radius - min_radius
-		var raw_phase := (base_radius - min_radius) / r if r > 0.0 else 0.0
+		var raw_phase := (current_actual_radius - min_radius) / r if r > 0.0 else 0.0
 		var phase01_init := clampf(raw_phase, 0.0, 1.0)
 		_breathing_orbit_elapsed = phase01_init * (radius_cycle * 0.5)
 		_breathing_orbit_was_active = true
