@@ -70,6 +70,7 @@ func _input(event: InputEvent) -> void:
 				# 双击触发B弹
 				_try_use_bomb()
 				_last_tap_time = 0.0  # 重置双击计时，避免连续触发
+				return  # 双击后不触发拖拽，直接返回
 			else:
 				_last_tap_time = current_time
 
@@ -97,6 +98,10 @@ func _process(delta: float) -> void:
 	# 测试功能：U 键直接触发升级
 	if Input.is_key_pressed(KEY_U):
 		AbilityManager.on_player_level_up()
+
+	# 测试功能：B 键触发B弹
+	if Input.is_action_just_pressed("ui_accept") or Input.is_key_pressed(KEY_B):
+		_try_use_bomb()
 
 	if input_vector != Vector2.ZERO:
 		_move_player(delta)
