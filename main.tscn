@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://byoiqp8nrncx"]
+[gd_scene load_steps=16 format=3 uid="uid://byoiqp8nrncx"]
 
 [ext_resource type="PackedScene" uid="uid://bg1qf8y10f7qy" path="res://start/background.tscn" id="1_bg"]
 [ext_resource type="PackedScene" uid="uid://c54q3qhqhcyey" path="res://start/hint_label.tscn" id="2_label"]
@@ -14,6 +14,7 @@
 [ext_resource type="PackedScene" uid="uid://abilitypickui001" path="res://ability/pick_ui/ability_pick_ui.tscn" id="11_ability_pick_ui"]
 [ext_resource type="Script" path="res://bomb/bomb_system.gd" id="12_bomb_system"]
 [ext_resource type="PackedScene" uid="uid://bombuibase001" path="res://bomb/bomb_ui.tscn" id="13_bomb_ui"]
+[ext_resource type="PackedScene" uid="uid://versionlabel001" path="res://start/version_label.tscn" id="14_version_label"]
 
 [node name="main" type="Node2D" unique_id=1686072544]
 
@@ -43,6 +44,8 @@ spawner_path = NodePath("../bullet_spawner")
 script = ExtResource("12_bomb_system")
 
 [node name="bomb_ui" parent="." instance=ExtResource("13_bomb_ui")]
+
+[node name="version_label" parent="." instance=ExtResource("14_version_label")]
 
 [node name="joystick_canvas" type="CanvasLayer" parent="."]
 layer = 100

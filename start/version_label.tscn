@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://versionlabel001"]
+
+[ext_resource type="Script" path="res://start/version_label.gd" id="1_script"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_version"]
+font_color = Color(1, 1, 1, 0.7)
+font_size = 14
+
+[node name="VersionLabelCanvas" type="CanvasLayer"]
+layer = 50
+
+[node name="VersionLabel" type="Label" parent="."]
+offset_left = 8.0
+offset_top = 936.0
+offset_right = 208.0
+offset_bottom = 958.0
+label_settings = SubResource("LabelSettings_version")
+script = ExtResource("1_script")
