@@ -30,7 +30,7 @@ var input_vector: Vector2 = Vector2.ZERO
 
 # B弹双击检测相关
 const DOUBLE_TAP_TIME_WINDOW: float = 0.3  # 双击时间窗口（秒）
-var _last_tap_time: float = 0.0
+var _last_tap_time: float = -1.0
 
 # 生命恢复计时器（由 health_regen 能力驱动）
 var _regen_timer: float = 0.0
@@ -66,10 +66,10 @@ func _input(event: InputEvent) -> void:
 		if event.pressed:
 			# 检测双击
 			var current_time = _get_time_seconds()
-			if current_time - _last_tap_time <= DOUBLE_TAP_TIME_WINDOW:
+			if _last_tap_time >= 0.0 and current_time - _last_tap_time <= DOUBLE_TAP_TIME_WINDOW:
 				# 双击触发B弹
 				_try_use_bomb()
-				_last_tap_time = 0.0  # 重置双击计时，避免连续触发
+				_last_tap_time = -1.0  # 重置双击计时，避免连续触发
 				return  # 双击后不触发拖拽，直接返回
 			else:
 				_last_tap_time = current_time
@@ -99,8 +99,8 @@ func _process(delta: float) -> void:
 	if Input.is_key_pressed(KEY_U):
 		AbilityManager.on_player_level_up()
 
-	# 测试功能：B 键触发B弹
-	if Input.is_action_just_pressed("ui_accept") or Input.is_key_pressed(KEY_B):
+	# 调试快捷键：B 键触发B弹（仅 Debug 构建生效，正式玩法以双击屏幕为准）
+	if OS.is_debug_build() and Input.is_key_just_pressed(KEY_B):
 		_try_use_bomb()
 
 	if input_vector != Vector2.ZERO:

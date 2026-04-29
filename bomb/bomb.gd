@@ -20,6 +20,13 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	# 只在未满充能时计时
 	if current_bombs < max_bombs:
+		# recharge_time 配置异常（<=0）时直接立即补满，避免除零或卡死
+		if recharge_time <= 0.0:
+			_recharge_timer = 0.0
+			current_bombs = max_bombs
+			bomb_recharged.emit()
+			bomb_count_changed.emit(current_bombs, max_bombs)
+			return
 		_recharge_timer += delta
 		if _recharge_timer >= recharge_time:
 			_recharge_timer = 0.0
@@ -51,7 +58,9 @@ func get_max_bombs() -> int:
 func get_recharge_progress() -> float:
 	if current_bombs >= max_bombs:
 		return 0.0
-	return _recharge_timer / recharge_time
+	if recharge_time <= 0.0:
+		return 1.0
+	return clampf(_recharge_timer / recharge_time, 0.0, 1.0)
 
 # 重置B弹数量（例如游戏重新开始时）
 func reset() -> void:
