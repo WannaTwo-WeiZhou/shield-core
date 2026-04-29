@@ -60,7 +60,13 @@ func _ready() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if event is InputEventScreenTouch or event is InputEventMouseButton:
+	# 只处理 MouseButton。Godot 默认开启 emulate_mouse_from_touch，
+	# 触屏设备的一次点击会同时产生 ScreenTouch + 模拟 MouseButton 两个事件，
+	# 若两者都处理会被双击检测误判为“双击”，导致每次点击都触发 B 弹并跳过拖动初始化。
+	if event is InputEventMouseButton:
+		# 只关心左键（触屏模拟出来的也是左键）
+		if event.button_index != MOUSE_BUTTON_LEFT:
+			return
 		var touch_pos = get_global_mouse_position()
 
 		if event.pressed:
@@ -70,7 +76,7 @@ func _input(event: InputEvent) -> void:
 				# 双击触发B弹
 				_try_use_bomb()
 				_last_tap_time = -1.0  # 重置双击计时，避免连续触发
-				return  # 双击后不触发拖拽，直接返回
+				# 不要 return：双击仍然要更新拖动状态，避免一直按住时摇杆失灵
 			else:
 				_last_tap_time = current_time
 
