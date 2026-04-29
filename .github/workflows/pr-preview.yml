@@ -9,6 +9,8 @@ name: PR preview deploy
 # closed (merged or not).
 on:
   pull_request:
+    # opened/synchronize/reopened → build and publish a new preview.
+    # closed → cleanup-preview job removes the preview directory from gh-pages.
     types: [opened, synchronize, reopened, closed]
 
 # Grant the maximum permissions needed by any job in this workflow; each job
