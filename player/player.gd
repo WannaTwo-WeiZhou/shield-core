@@ -33,6 +33,11 @@ var _counter_spiral_spin_multiplier: float = 1.0
 var _counter_spiral_boost_end_time_sec: float = -1.0
 var _counter_spiral_last_trigger_time_sec: float = -1.0
 
+# 呼吸摆盾状态（由 breathing_orbit 能力驱动）
+var _cached_shield_initial_radius: float = 0.0
+var _breathing_orbit_elapsed: float = 0.0
+var _breathing_orbit_was_active: bool = false
+
 func _ready() -> void:
 	joystick_base.visible = false
 
@@ -47,6 +52,7 @@ func _ready() -> void:
 	# 注册到能力管理器，使能力效果可访问玩家
 	AbilityManager.register_player(self)
 	_base_max_health = health.max_health
+	_cached_shield_initial_radius = shield_left.position.length()
 
 	# 订阅能力变更事件，刷新属性
 	AbilityManager.abilities_updated.connect(_on_abilities_updated)
@@ -77,6 +83,7 @@ func _input(event: InputEvent) -> void:
 func _process(delta: float) -> void:
 	_update_counter_spiral_state()
 	shield_container.rotate(_get_current_shield_spin_speed() * delta)
+	_process_breathing_orbit(delta)
 	if is_dragging:
 		_update_joystick()
 	else:
@@ -153,6 +160,48 @@ func _is_counter_spiral_active(now_sec: float) -> bool:
 
 func _get_time_seconds() -> float:
 	return float(Time.get_ticks_msec()) / 1000.0
+
+
+# ─── 呼吸摆盾 ───────────────────────────────────────────────────────────────
+
+func _process_breathing_orbit(delta: float) -> void:
+	var inst := AbilityManager.get_instance("breathing_orbit")
+	if inst == null:
+		if _breathing_orbit_was_active:
+			shield_left.position = Vector2.LEFT * _cached_shield_initial_radius
+			shield_right.position = Vector2.RIGHT * _cached_shield_initial_radius
+			_breathing_orbit_was_active = false
+			_breathing_orbit_elapsed = 0.0
+		return
+
+	var data := inst.get_current_data()
+	var radius_min_offset: float = float(data.get("radius_min_offset_px", -8.0))
+	var radius_max_offset: float = float(data.get("radius_max_offset_px", 24.0))
+	var radius_cycle: float = maxf(0.1, float(data.get("radius_cycle_sec", 1.2)))
+
+	var base_radius := _cached_shield_initial_radius + AbilityManager.pipeline.get_attribute("shield_radius_bonus")
+	var min_radius := maxf(32.0, base_radius + radius_min_offset)
+	var max_radius := minf(80.0, maxf(min_radius + 4.0, base_radius + radius_max_offset))
+
+	if not _breathing_orbit_was_active:
+		# 首次激活：从当前半径位置平滑接入，先执行向外摆阶段
+		var r := max_radius - min_radius
+		var raw_phase := (base_radius - min_radius) / r if r > 0.0 else 0.0
+		var phase01_init := clampf(raw_phase, 0.0, 1.0)
+		_breathing_orbit_elapsed = phase01_init * (radius_cycle * 0.5)
+		_breathing_orbit_was_active = true
+
+	_breathing_orbit_elapsed += delta
+	# 每完整周期归零，避免长时间运行后浮点精度劣化
+	_breathing_orbit_elapsed = fmod(_breathing_orbit_elapsed, radius_cycle)
+
+	var half_cycle := radius_cycle * 0.5
+	# pingpong(x, 1.0) 将 x 在 [0, 1] 区间来回映射，period = 2（即一个完整周期）
+	var phase01 := pingpong(_breathing_orbit_elapsed / half_cycle, 1.0)
+	var current_radius := lerpf(min_radius, max_radius, phase01)
+
+	shield_left.position = Vector2.LEFT * current_radius
+	shield_right.position = Vector2.RIGHT * current_radius
 
 
 # ─── 生命恢复 ──────────────────────────────────────────────────────────────
