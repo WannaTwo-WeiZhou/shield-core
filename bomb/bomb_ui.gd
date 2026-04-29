@@ -7,13 +7,15 @@ var player: CharacterBody2D
 var bomb: Bomb
 
 # B弹图标的场景（运行时动态创建）
-var _bomb_icons: Array[ColorRect] = []
+var _bomb_icons: Array[PanelContainer] = []
 
-const ICON_SIZE: Vector2 = Vector2(30, 30)
+const ICON_SIZE: Vector2 = Vector2(32, 32)
 const ICON_SPACING: float = 10.0
 const AVAILABLE_COLOR: Color = Color(1.0, 0.8, 0.0, 1.0)  # 金色：可用
 const UNAVAILABLE_COLOR: Color = Color(0.3, 0.3, 0.3, 0.5)  # 灰色：不可用
 const RECHARGING_COLOR: Color = Color(0.6, 0.5, 0.0, 0.8)  # 暗金色：恢复中
+const BORDER_COLOR: Color = Color(0.8, 0.8, 0.8, 0.8)  # 边框颜色
+const BORDER_WIDTH: float = 2.0
 
 func _ready() -> void:
 	player = get_node("/root/main/player")
@@ -33,26 +35,41 @@ func _process(_delta: float) -> void:
 
 func _create_bomb_icons(count: int) -> void:
 	for i in range(count):
-		var icon = ColorRect.new()
-		icon.custom_minimum_size = ICON_SIZE
-		icon.color = AVAILABLE_COLOR
-		container.add_child(icon)
-		_bomb_icons.append(icon)
+		var panel = PanelContainer.new()
+		panel.custom_minimum_size = ICON_SIZE
+
+		# 创建边框样式
+		var style = StyleBoxFlat.new()
+		style.bg_color = AVAILABLE_COLOR
+		style.border_color = BORDER_COLOR
+		style.set_border_width_all(int(BORDER_WIDTH))
+		style.corner_radius_top_left = 4
+		style.corner_radius_top_right = 4
+		style.corner_radius_bottom_left = 4
+		style.corner_radius_bottom_right = 4
+		panel.add_theme_stylebox_override("panel", style)
+
+		container.add_child(panel)
+		_bomb_icons.append(panel)
 
 func _update_bomb_display(available_bombs: int) -> void:
 	for i in range(_bomb_icons.size()):
-		if i < available_bombs:
-			_bomb_icons[i].color = AVAILABLE_COLOR
-		else:
-			_bomb_icons[i].color = UNAVAILABLE_COLOR
+		var style = _bomb_icons[i].get_theme_stylebox("panel") as StyleBoxFlat
+		if style:
+			if i < available_bombs:
+				style.bg_color = AVAILABLE_COLOR
+			else:
+				style.bg_color = UNAVAILABLE_COLOR
 
 func _update_recharge_progress() -> void:
 	# 最左侧的不可用图标显示恢复进度
 	var first_unavailable_idx = bomb.current_bombs
 	if first_unavailable_idx < _bomb_icons.size():
 		var progress = bomb.get_recharge_progress()
-		# 插值颜色来显示恢复进度
-		_bomb_icons[first_unavailable_idx].color = UNAVAILABLE_COLOR.lerp(RECHARGING_COLOR, progress)
+		var style = _bomb_icons[first_unavailable_idx].get_theme_stylebox("panel") as StyleBoxFlat
+		if style:
+			# 插值颜色来显示恢复进度
+			style.bg_color = UNAVAILABLE_COLOR.lerp(RECHARGING_COLOR, progress)
 
 func _on_bomb_count_changed(current: int, _max: int) -> void:
 	_update_bomb_display(current)
