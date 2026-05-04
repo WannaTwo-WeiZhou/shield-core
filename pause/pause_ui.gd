@@ -5,14 +5,12 @@ extends CanvasLayer
 @onready var pause_button: Button = %pause_button
 @onready var pause_overlay: ColorRect = %pause_overlay
 @onready var resume_button: Button = %resume_button
-@onready var quit_button: Button = %quit_button
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	pause_button.pressed.connect(_on_pause_pressed)
 	resume_button.pressed.connect(_on_resume_pressed)
-	quit_button.pressed.connect(_on_quit_pressed)
 	pause_overlay.hide()
 
 
@@ -26,8 +24,3 @@ func _on_resume_pressed() -> void:
 	get_tree().paused = false
 	pause_overlay.hide()
 	pause_button.show()
-
-
-func _on_quit_pressed() -> void:
-	get_tree().paused = false
-	get_tree().quit()
