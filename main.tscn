@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://byoiqp8nrncx"]
+[gd_scene load_steps=17 format=3 uid="uid://byoiqp8nrncx"]
 
 [ext_resource type="PackedScene" uid="uid://bg1qf8y10f7qy" path="res://start/background.tscn" id="1_bg"]
 [ext_resource type="PackedScene" uid="uid://c54q3qhqhcyey" path="res://start/hint_label.tscn" id="2_label"]
@@ -15,6 +15,7 @@
 [ext_resource type="Script" path="res://bomb/bomb_system.gd" id="12_bomb_system"]
 [ext_resource type="PackedScene" uid="uid://bombuibase001" path="res://bomb/bomb_ui.tscn" id="13_bomb_ui"]
 [ext_resource type="PackedScene" uid="uid://versionlabel001" path="res://start/version_label.tscn" id="14_version_label"]
+[ext_resource type="PackedScene" path="res://pause/pause_ui.tscn" id="15_pause_ui"]
 
 [node name="main" type="Node2D" unique_id=1686072544]
 
@@ -58,3 +59,5 @@ texture = ExtResource("6_joystick_base")
 [node name="joystick_knob" type="Sprite2D" parent="joystick_canvas/joystick_base"]
 z_index = 101
 texture = ExtResource("7_joystick_knob")
+
+[node name="pause_ui" parent="." instance=ExtResource("15_pause_ui")]
