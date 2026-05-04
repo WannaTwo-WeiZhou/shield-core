@@ -15,7 +15,7 @@
 [ext_resource type="Script" path="res://bomb/bomb_system.gd" id="12_bomb_system"]
 [ext_resource type="PackedScene" uid="uid://bombuibase001" path="res://bomb/bomb_ui.tscn" id="13_bomb_ui"]
 [ext_resource type="PackedScene" uid="uid://versionlabel001" path="res://start/version_label.tscn" id="14_version_label"]
-[ext_resource type="PackedScene" path="res://pause/pause_ui.tscn" id="15_pause_ui"]
+[ext_resource type="PackedScene" uid="uid://xaji0y6dpbhsah" path="res://pause/pause_ui.tscn" id="15_pause_ui"]
 
 [node name="main" type="Node2D" unique_id=1686072544]
 
