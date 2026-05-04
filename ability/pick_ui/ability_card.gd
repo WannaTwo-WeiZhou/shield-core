@@ -25,7 +25,7 @@ func _gui_input(event: InputEvent) -> void:
 		_select()
 
 
-func setup(def: AbilityDefinition) -> void:
+func setup(def) -> void:
 	_ability_id = def.id
 	name_label.text = def.display_name
 	rarity_label.text = "【%s】" % def.rarity_label()
