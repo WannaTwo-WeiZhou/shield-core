@@ -2,12 +2,14 @@
 class_name AbilityInstance
 extends RefCounted
 
-var definition  # : AbilityDefinition (type omitted to avoid GDScript self-referencing compile issue)
+const AbilityDefinition = preload("res://ability/ability_definition.gd")
+
+var definition: AbilityDefinition
 var current_level: int = 1  # 保留字段兼容旧 UI/事件，固定为 1
 var stack_count: int = 1    # 重复获得次数，普通能力固定为 1
 
 
-func _init(def):  # def: AbilityDefinition
+func _init(def: AbilityDefinition):
 	definition = def
 	current_level = 1
 	stack_count = 1

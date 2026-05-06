@@ -22,8 +22,7 @@ func from_dict(data: Dictionary) -> void:
 	weight = data.get("weight", 100)
 	max_level = data.get("max_level", 1)
 	repeatable = data.get("repeatable", false)
-	if data.has("per_level"):
-		per_level = data.get("per_level", [])
+	per_level = (data["per_level"] as Array).duplicate() if data.has("per_level") else []
 
 
 ## 返回指定等级（1-based）的效果字典
