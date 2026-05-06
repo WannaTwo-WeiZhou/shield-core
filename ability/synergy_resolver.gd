@@ -3,6 +3,8 @@
 class_name SynergyResolver
 extends RefCounted
 
+const ModifierPipeline = preload("res://ability/modifier_pipeline.gd")
+
 const CONFIG_PATH := "res://ability/synergies_config.json"
 
 var _synergy_defs: Array = []

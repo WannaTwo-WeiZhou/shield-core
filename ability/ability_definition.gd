@@ -13,17 +13,16 @@ var repeatable: bool = false
 var per_level: Array = []    # Array[Dictionary]，每级的效果数据
 
 
-static func from_dict(data: Dictionary) -> AbilityDefinition:
-	var def := AbilityDefinition.new()
-	def.id = data.get("id", "")
-	def.display_name = data.get("name", "")
-	def.description = data.get("description", "")
-	def.rarity = data.get("rarity", 1)
-	def.weight = data.get("weight", 100)
-	def.max_level = data.get("max_level", 1)
-	def.repeatable = data.get("repeatable", false)
-	def.per_level = data.get("per_level", [])
-	return def
+## 从配置字典初始化自身（实例方法，避免 GDScript static 自引用编译问题）
+func from_dict(data: Dictionary) -> void:
+	id = data.get("id", "")
+	display_name = data.get("name", "")
+	description = data.get("description", "")
+	rarity = data.get("rarity", 1)
+	weight = data.get("weight", 100)
+	max_level = data.get("max_level", 1)
+	repeatable = data.get("repeatable", false)
+	per_level = (data["per_level"] as Array).duplicate() if data.has("per_level") else []
 
 
 ## 返回指定等级（1-based）的效果字典

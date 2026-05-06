@@ -50,7 +50,8 @@ func _load_definitions() -> void:
 		return
 	file.close()
 	for entry in json.data.get("abilities", []):
-		var def := AbilityDefinition.from_dict(entry)
+		var def = AbilityDefinition.new()
+		def.from_dict(entry)
 		_definitions[def.id] = def
 	print("[AbilityManager] 已加载 %d 个能力定义" % _definitions.size())
 
@@ -76,7 +77,7 @@ func _try_show_pending_level_up() -> void:
 	_pending_level_up_selections -= 1
 	_selection_in_progress = true
 	print("[AbilityManager] 升级候选: %s" % [
-		candidates.map(func(d: AbilityDefinition) -> String: return d.id)
+		candidates.map(func(d) -> String: return d.id)
 	])
 	ability_selection_needed.emit(candidates)
 
@@ -98,7 +99,7 @@ func select_ability(ability_id: String) -> void:
 			_finish_level_up_selection()
 			return
 	else:
-		var def: AbilityDefinition = _definitions.get(ability_id, null)
+		var def = _definitions.get(ability_id, null)
 		if def == null:
 			push_error("[AbilityManager] 未知能力 id: %s" % ability_id)
 			_finish_level_up_selection()
@@ -192,7 +193,7 @@ func _generate_candidates(count: int) -> Array:
 
 func _build_candidate_pool() -> Array:
 	var pool: Array = []
-	for def: AbilityDefinition in _definitions.values():
+	for def in _definitions.values():
 		if def.repeatable or not _instances.has(def.id):
 			pool.append({"def": def, "weight": def.weight})
 	return pool
