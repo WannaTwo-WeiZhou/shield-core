@@ -3,7 +3,8 @@
     {
       "id": "speed_boost",
       "name": "惶惶",
-      "description": "发作时的不安驱你更快地躲避。那些迫近的，你不能让它们靠近。",
+      "description": "移动速度大幅提升",
+      "narrative": "发作时的不安驱你更快地躲避。那些迫近的，你不能让它们靠近。",
       "rarity": 1,
       "weight": 100,
       "max_level": 1,
@@ -16,7 +17,8 @@
     {
       "id": "shield_reflect",
       "name": "盾反",
-      "description": "他们递来的东西，你有时候抓不住。但你会推开。推开的那些，也许正是最需要接住的。",
+      "description": "格挡时有概率反弹弹幕",
+      "narrative": "他们递来的东西，你有时候抓不住。但你会推开。推开的那些，也许正是最需要接住的。",
       "rarity": 2,
       "weight": 80,
       "max_level": 1,
@@ -29,7 +31,8 @@
     {
       "id": "counter_spiral",
       "name": "反击螺旋",
-      "description": "格挡时有概率让护盾短时间高速旋转。",
+      "description": "格挡时概率触发，护盾短时间高速旋转",
+      "narrative": "失序有时也是一种防御。当周围的一切都开始旋转，你反而觉得自己稳住了。",
       "rarity": 2,
       "weight": 70,
       "max_level": 1,
@@ -46,7 +49,8 @@
     {
       "id": "health_regen",
       "name": "生命恢复",
-      "description": "照护不会停止。即使你不开口，那些声音也会在你里面继续起作用——一点一点地修复着什么。",
+      "description": "每隔一段时间自动恢复生命值",
+      "narrative": "照护不会停止。即使你不开口，那些声音也会在你里面继续起作用——一点一点地修复着什么。",
       "rarity": 1,
       "weight": 90,
       "max_level": 1,
@@ -60,7 +64,8 @@
     {
       "id": "crit_block",
       "name": "残片",
-      "description": "每次格挡，你都抓住了一些正在流失的东西——一块记忆的残片，一段你暂时还能说出的名字。",
+      "description": "格挡时有几率获得更多经验值",
+      "narrative": "每次格挡，你都抓住了一些正在流失的东西——一块记忆的残片，一段你暂时还能说出的名字。",
       "rarity": 2,
       "weight": 70,
       "max_level": 1,
@@ -74,7 +79,8 @@
     {
       "id": "max_health_up",
       "name": "稳固边界",
-      "description": "你要坚守的那些部分，今天似乎更坚固了一点。能多撑一会了。",
+      "description": "生命上限提升",
+      "narrative": "你要坚守的那些部分，今天似乎更坚固了一点。能多撑一会了。",
       "rarity": 2,
       "weight": 65,
       "max_level": 1,
@@ -88,7 +94,8 @@
     {
       "id": "breathing_orbit",
       "name": "呼吸摆盾",
-      "description": "儿子的守护像呼吸一样有节奏，时而贴近，时而留出缝隙。但从未离开。",
+      "description": "护盾环绕半径周期性变化，时而贴近，时而远离",
+      "narrative": "儿子的守护像呼吸一样有节奏，时而贴近，时而留出缝隙。但从未离开。",
       "rarity": 2,
       "weight": 75,
       "max_level": 1,
