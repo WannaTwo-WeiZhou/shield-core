@@ -1,25 +1,31 @@
 {
   "synergies": [
-	{
-	  "id": "swift_guardian",
-	  "required_abilities": ["speed_boost", "shield_reflect"],
-	  "description": "疾风护卫：同时拥有【疾风步】与【盾反】时，格挡判定范围略微扩大。",
-	  "effect": {
-		"type": "attribute_bonus",
-		"attribute": "shield_radius_bonus",
-		"bonus": 8
-	  }
-	},
-	{
-	  "id": "vital_fortress",
-	  "required_abilities": ["health_regen", "shield_reflect"],
-	  "description": "生命要塞：同时拥有【生命恢复】与【盾反】时，每次格挡额外恢复 1 点生命。",
-	  "effect": {
-		"type": "event_modifier",
-		"event": "on_block",
-		"action": "heal",
-		"amount": 1
-	  }
-	}
+    {
+      "id": "swift_guardian",
+      "required_abilities": [
+        "speed_boost",
+        "shield_reflect"
+      ],
+      "description": "不安界域：同时拥有【惶惶】与【盾反】时，护盾半径增大，守护边界扩张。不安与抗拒交织，守护的力量必须在更大的范围内才能覆盖住他。",
+      "effect": {
+        "type": "attribute_bonus",
+        "attribute": "shield_radius_bonus",
+        "bonus": 8
+      }
+    },
+    {
+      "id": "vital_fortress",
+      "required_abilities": [
+        "health_regen",
+        "shield_reflect"
+      ],
+      "description": "生命要塞：同时拥有【生命恢复】与【盾反】时，每次格挡额外恢复 1 点生命。",
+      "effect": {
+        "type": "event_modifier",
+        "event": "on_block",
+        "action": "heal",
+        "amount": 1
+      }
+    }
   ]
 }

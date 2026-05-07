@@ -1,92 +1,104 @@
 {
   "abilities": [
-	{
-	  "id": "speed_boost",
-	  "name": "疾风步",
-	  "description": "大幅提升移动速度，让你灵活躲避子弹。",
-	  "rarity": 1,
-	  "weight": 100,
-	  "max_level": 1,
-	  "per_level": [
-		{"speed_bonus": 60}
-	  ]
-	},
-	{
-	  "id": "shield_reflect",
-	  "name": "盾反",
-	  "description": "格挡子弹时，将其反弹回去造成伤害。",
-	  "rarity": 2,
-	  "weight": 80,
-	  "max_level": 1,
-	  "per_level": [
-		{"reflect_chance": 0.50}
-	  ]
-	},
-	{
-	  "id": "counter_spiral",
-	  "name": "反击螺旋",
-	  "description": "格挡时有概率让护盾短时间高速旋转。",
-	  "rarity": 2,
-	  "weight": 70,
-	  "max_level": 1,
-	  "per_level": [
-		{
-		  "proc_chance": 0.25,
-		  "spin_speed_multiplier": 2.0,
-		  "duration_sec": 1.5,
-		  "internal_cooldown_sec": 0.75,
-		  "refresh_on_retrigger": true
-		}
-	  ]
-	},
-	{
-	  "id": "health_regen",
-	  "name": "生命恢复",
-	  "description": "每隔一段时间自动恢复少量生命值。",
-	  "rarity": 1,
-	  "weight": 90,
-	  "max_level": 1,
-	  "per_level": [
-		{"regen_amount": 2, "regen_interval": 5.0}
-	  ]
-	},
-	{
-	  "id": "crit_block",
-	  "name": "暴击格挡",
-	  "description": "格挡时有几率获得双倍经验。",
-	  "rarity": 2,
-	  "weight": 70,
-	  "max_level": 1,
-	  "per_level": [
-		{"crit_chance": 0.15, "block_xp_bonus": 1.0}
-	  ]
-	},
-	{
-	  "id": "max_health_up",
-	  "name": "血量上限升级",
-	  "description": "增加 10 点血量上限。",
-	  "rarity": 2,
-	  "weight": 65,
-	  "max_level": 1,
-	  "repeatable": true,
-	  "per_level": [
-		{"max_health_bonus": 10}
-	  ]
-	},
-	{
-	  "id": "breathing_orbit",
-	  "name": "呼吸摆盾",
-	  "description": "护盾在近远半径间往复摆动，形成呼吸式拦截轨迹。",
-	  "rarity": 2,
-	  "weight": 75,
-	  "max_level": 1,
-	  "per_level": [
-		{
-		  "radius_min_offset_px": -8.0,
-		  "radius_max_offset_px": 24.0,
-		  "radius_cycle_sec": 1.2
-		}
-	  ]
-	}
+    {
+      "id": "speed_boost",
+      "name": "惶惶",
+      "description": "发作时的不安驱你更快地躲避。那些迫近的，你不能让它们靠近。",
+      "rarity": 1,
+      "weight": 100,
+      "max_level": 1,
+      "per_level": [
+        {
+          "speed_bonus": 60
+        }
+      ]
+    },
+    {
+      "id": "shield_reflect",
+      "name": "盾反",
+      "description": "他们递来的东西，你有时候抓不住。但你会推开。推开的那些，也许正是最需要接住的。",
+      "rarity": 2,
+      "weight": 80,
+      "max_level": 1,
+      "per_level": [
+        {
+          "reflect_chance": 0.5
+        }
+      ]
+    },
+    {
+      "id": "counter_spiral",
+      "name": "反击螺旋",
+      "description": "格挡时有概率让护盾短时间高速旋转。",
+      "rarity": 2,
+      "weight": 70,
+      "max_level": 1,
+      "per_level": [
+        {
+          "proc_chance": 0.25,
+          "spin_speed_multiplier": 2.0,
+          "duration_sec": 1.5,
+          "internal_cooldown_sec": 0.75,
+          "refresh_on_retrigger": true
+        }
+      ]
+    },
+    {
+      "id": "health_regen",
+      "name": "生命恢复",
+      "description": "照护不会停止。即使你不开口，那些声音也会在你里面继续起作用——一点一点地修复着什么。",
+      "rarity": 1,
+      "weight": 90,
+      "max_level": 1,
+      "per_level": [
+        {
+          "regen_amount": 2,
+          "regen_interval": 5.0
+        }
+      ]
+    },
+    {
+      "id": "crit_block",
+      "name": "残片",
+      "description": "每次格挡，你都抓住了一些正在流失的东西——一块记忆的残片，一段你暂时还能说出的名字。",
+      "rarity": 2,
+      "weight": 70,
+      "max_level": 1,
+      "per_level": [
+        {
+          "crit_chance": 0.15,
+          "block_xp_bonus": 1.0
+        }
+      ]
+    },
+    {
+      "id": "max_health_up",
+      "name": "稳固边界",
+      "description": "你要坚守的那些部分，今天似乎更坚固了一点。能多撑一会了。",
+      "rarity": 2,
+      "weight": 65,
+      "max_level": 1,
+      "repeatable": true,
+      "per_level": [
+        {
+          "max_health_bonus": 10
+        }
+      ]
+    },
+    {
+      "id": "breathing_orbit",
+      "name": "呼吸摆盾",
+      "description": "儿子的守护像呼吸一样有节奏，时而贴近，时而留出缝隙。但从未离开。",
+      "rarity": 2,
+      "weight": 75,
+      "max_level": 1,
+      "per_level": [
+        {
+          "radius_min_offset_px": -8.0,
+          "radius_max_offset_px": 24.0,
+          "radius_cycle_sec": 1.2
+        }
+      ]
+    }
   ]
 }
