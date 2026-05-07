@@ -8,7 +8,7 @@ signal card_selected(ability_id: String)
 @onready var name_label: Label = $VBoxContainer/name_label
 @onready var rarity_label: Label = $VBoxContainer/rarity_label
 @onready var desc_label: Label = $VBoxContainer/desc_label
-@onready var narrative_label: Label = $VBoxContainer/narrative_label
+@onready var narrative_label: RichTextLabel = $VBoxContainer/narrative_label
 @onready var level_label: Label = $VBoxContainer/level_label
 
 var _ability_id: String = ""
@@ -31,7 +31,7 @@ func setup(def: AbilityDefinition) -> void:
 	name_label.text = def.display_name
 	rarity_label.text = "【%s】" % def.rarity_label()
 	desc_label.text = def.description
-	narrative_label.text = def.narrative
+	narrative_label.text = "[i]%s[/i]" % def.narrative
 	level_label.text = "可重复获得" if def.repeatable else "唯一能力（不可升级）"
 
 	# 根据稀有度设置卡片颜色
