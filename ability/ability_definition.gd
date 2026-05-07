@@ -6,6 +6,7 @@ extends RefCounted
 var id: String = ""
 var display_name: String = ""
 var description: String = ""
+var narrative: String = ""
 var rarity: int = 1          # 1=普通 2=稀有 3=史诗
 var weight: int = 100        # 候选池权重
 var max_level: int = 1
@@ -18,6 +19,7 @@ func from_dict(data: Dictionary) -> void:
 	id = data.get("id", "")
 	display_name = data.get("name", "")
 	description = data.get("description", "")
+	narrative = data.get("narrative", "")
 	rarity = data.get("rarity", 1)
 	weight = data.get("weight", 100)
 	max_level = data.get("max_level", 1)

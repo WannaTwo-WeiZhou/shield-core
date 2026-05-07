@@ -41,6 +41,21 @@ autowrap_mode = 3
 mouse_filter = 2
 theme_override_font_sizes/font_size = 14
 
+[node name="narrative_spacer" type="Control" parent="VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 8)
+mouse_filter = 2
+
+[node name="narrative_label" type="RichTextLabel" parent="VBoxContainer"]
+layout_mode = 2
+fit_content = true
+bbcode_enabled = true
+text = "[i]世界观描述[/i]"
+scroll_active = false
+mouse_filter = 2
+theme_override_colors/default_color = Color(0.69, 0.69, 0.69, 1)
+theme_override_font_sizes/normal_font_size = 13
+
 [node name="level_label" type="Label" parent="VBoxContainer"]
 layout_mode = 2
 text = "新能力"
