@@ -1,0 +1,24 @@
+[gd_scene load_steps=2 format=3 uid="uid://abilityfeedback001"]
+
+[ext_resource type="Script" path="res://ability/feedback/ability_feedback.gd" id="1_feedback_script"]
+
+[node name="ability_feedback" type="CanvasLayer"]
+layer = 200
+script = ExtResource("1_feedback_script")
+
+[node name="FeedbackLabel" type="Label" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -24.0
+offset_right = 200.0
+offset_bottom = 24.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 1
+vertical_alignment = 1
+text = ""
