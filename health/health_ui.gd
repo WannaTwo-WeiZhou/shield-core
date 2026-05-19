@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 const Health = preload("res://health/health.gd")
+const HealthSegment = preload("res://health/health_segment.gd")
 const CELL_HP: int = 10
 const SEGMENT_SCENE = preload("res://health/health_segment.tscn")
 

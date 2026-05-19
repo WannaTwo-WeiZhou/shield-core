@@ -1,3 +1,4 @@
+class_name HealthSegment
 extends Panel
 
 ## 血量格子填充矩形
