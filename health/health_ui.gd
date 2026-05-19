@@ -9,7 +9,8 @@ const SEGMENT_SCENE = preload("res://health/health_segment.tscn")
 
 var player: CharacterBody2D
 var health: Health
-var _last_known_cell_count: int = 0
+var _pending_added_start_index: int = -1
+var _pending_added_count: int = 0
 
 
 func _ready() -> void:
@@ -27,7 +28,6 @@ func _init_segments() -> void:
 	var cell_count := _calc_cell_count()
 	for i in range(cell_count):
 		_add_segment()
-	_last_known_cell_count = cell_count
 
 
 ## 按每格 CELL_HP 血量计算所需格子数（取上整）
@@ -52,7 +52,15 @@ func _remove_segment() -> void:
 # ─── 信号回调 ──────────────────────────────────────────────────────────
 
 func _on_health_changed(_current: int, _max: int) -> void:
+	var before_count := container.get_child_count()
 	_sync_cell_count()
+	var after_count := container.get_child_count()
+	if after_count > before_count:
+		_pending_added_start_index = before_count
+		_pending_added_count = after_count - before_count
+	else:
+		_pending_added_start_index = -1
+		_pending_added_count = 0
 	_update_all_fills()
 
 
@@ -60,22 +68,21 @@ func _on_pick_feedback(ability_id: String, _level: int) -> void:
 	if ability_id != "max_health_up":
 		return
 
-	# 此时 health.max_health 已被管线更新（abilities_updated 先于本信号同步发射）
-	var new_count := _calc_cell_count()
-	if new_count <= _last_known_cell_count:
+	if _pending_added_count <= 0 or _pending_added_start_index < 0:
 		return
 
-	# 为每个新增格子播放扩容扫光动画
-	var cells_to_add := new_count - _last_known_cell_count
 	var current_val := health.current_health
-	for i in range(cells_to_add):
-		var seg := _add_segment()
-		var cell_index := _last_known_cell_count + i
+	for i in range(_pending_added_count):
+		var cell_index := _pending_added_start_index + i
+		var seg := container.get_child(cell_index) as HealthSegment
+		if seg == null:
+			continue
 		var cell_start := cell_index * CELL_HP
 		var actual_fill := clampf(float(current_val - cell_start) / CELL_HP, 0.0, 1.0)
 		seg.play_sweep_animation(actual_fill)
 
-	_last_known_cell_count = new_count
+	_pending_added_start_index = -1
+	_pending_added_count = 0
 
 
 # ─── 内部辅助 ──────────────────────────────────────────────────────────
@@ -90,8 +97,6 @@ func _sync_cell_count() -> void:
 	while current > target:
 		_remove_segment()
 		current -= 1
-
-	_last_known_cell_count = target
 
 
 func _update_all_fills() -> void:

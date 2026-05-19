@@ -20,20 +20,28 @@ func _ready() -> void:
 		style.bg_color = bg_color
 
 
+func _get_fill_height() -> float:
+	var target_height := size.y
+	if target_height <= 0.0:
+		target_height = custom_minimum_size.y
+	return maxf(target_height, 1.0)
+
+
 ## 扩容扫光动画：从 0 → 满 → 回落至指定比例
 func play_sweep_animation(final_ratio: float) -> void:
 	final_ratio = clampf(final_ratio, 0.0, 1.0)
 	if _tween and _tween.is_valid():
 		_tween.kill()
 
+	var fill_height := _get_fill_height()
 	fill_rect.offset_bottom = 0.0
 	_tween = create_tween().set_parallel(false)
 	# 阶段 1：从上到下扫满全格（扩容感）
-	_tween.tween_property(fill_rect, "offset_bottom", size.y, 0.3)\
+	_tween.tween_property(fill_rect, "offset_bottom", fill_height, 0.3)\
 		.set_ease(Tween.EASE_IN_OUT)\
 		.set_trans(Tween.TRANS_CUBIC)
 	# 阶段 2：回落至真实填充率
-	_tween.tween_property(fill_rect, "offset_bottom", size.y * final_ratio, 0.1)\
+	_tween.tween_property(fill_rect, "offset_bottom", fill_height * final_ratio, 0.1)\
 		.set_ease(Tween.EASE_OUT)\
 		.set_trans(Tween.TRANS_CUBIC)
 
@@ -41,7 +49,7 @@ func play_sweep_animation(final_ratio: float) -> void:
 ## 动画填充到指定比例（0 = 空, 1 = 满）
 func animate_fill(ratio: float, duration: float = 0.3) -> void:
 	ratio = clampf(ratio, 0.0, 1.0)
-	var target_height := size.y * ratio
+	var target_height := _get_fill_height() * ratio
 
 	if _tween and _tween.is_valid():
 		_tween.kill()
@@ -56,4 +64,4 @@ func animate_fill(ratio: float, duration: float = 0.3) -> void:
 func set_fill_immediate(ratio: float) -> void:
 	ratio = clampf(ratio, 0.0, 1.0)
 	if fill_rect:
-		fill_rect.offset_bottom = size.y * ratio
+		fill_rect.offset_bottom = _get_fill_height() * ratio
