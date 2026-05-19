@@ -23,7 +23,8 @@ func _ready() -> void:
 
 
 ## HBox 新增子节点后首帧可能尚未完成布局，size.y 会暂时为 0；
-## 此时回退到 custom_minimum_size.y，避免扫光动画目标高度丢失。
+## 此时回退到 custom_minimum_size.y（本格在场景里固定为 18px），避免扫光动画目标高度丢失；
+## 若两者都不可用，再用 MIN_FILL_HEIGHT 保底，确保补间仍可见。
 func _get_fill_height() -> float:
 	if size.y > 0.0:
 		return size.y
