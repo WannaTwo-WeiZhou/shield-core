@@ -164,12 +164,10 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 custom_minimum_size = Vector2(0, 300)
-scroll_vertical_enabled = true
 
 [node name="gm_ability_list" type="VBoxContainer" parent="pause_overlay/gm_panel/VBox/gm_scroll"]
 unique_name_in_owner = true
 layout_mode = 2
-mouse_filter = 1
 theme_override_constants/separation = 8
 
 [node name="gm_back_button" type="Button" parent="pause_overlay/gm_panel/VBox"]
