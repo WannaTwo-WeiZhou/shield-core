@@ -56,7 +56,7 @@ func _on_health_changed(_current: int, _max: int) -> void:
 	_sync_cell_count()
 	var after_count := container.get_child_count()
 	# 假设：单次 health_changed 不会出现“先减后增”的格子变化（当前 max_health_up 仅增加）。
-	# 若未来引入该场景，需要改成记录具体节点集合而不是区间差值。
+	# 若该假设被打破，区间差值可能指向错误格子，导致扫光播错目标；届时需改为记录具体节点集合。
 	if after_count > before_count:
 		_pending_added_start_index = before_count
 		_pending_added_count = after_count - before_count
