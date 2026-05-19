@@ -55,8 +55,8 @@ func _on_health_changed(_current: int, _max: int) -> void:
 	var before_count := container.get_child_count()
 	_sync_cell_count()
 	var after_count := container.get_child_count()
-	# 当前流程里 max_health_up 只会让格子单调增加；若未来引入同帧减后增，
-	# 需要改成记录具体节点集合而不是区间差值。
+	# 假设：单次 health_changed 不会出现“先减后增”的格子变化（当前 max_health_up 仅增加）。
+	# 若未来引入该场景，需要改成记录具体节点集合而不是区间差值。
 	if after_count > before_count:
 		_pending_added_start_index = before_count
 		_pending_added_count = after_count - before_count

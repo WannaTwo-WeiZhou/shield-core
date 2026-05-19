@@ -1,7 +1,7 @@
 class_name HealthSegment
 extends Panel
 
-const MIN_FILL_HEIGHT: float = 1.0
+const MIN_FILL_HEIGHT_PX: float = 1.0
 
 ## 血量格子填充矩形
 @onready var fill_rect: ColorRect = $FillRect
@@ -24,14 +24,14 @@ func _ready() -> void:
 
 ## HBox 新增子节点后首帧可能尚未完成布局，size.y 会暂时为 0；
 ## 此时回退到 custom_minimum_size.y（本格在场景里固定为 18px），避免扫光动画目标高度丢失；
-## 若两者都不可用，再用 MIN_FILL_HEIGHT 保底，确保补间仍可见。
+## 若两者都不可用，再用 MIN_FILL_HEIGHT_PX（1px）保底，确保补间仍可见。
 func _get_fill_height() -> float:
 	if size.y > 0.0:
 		return size.y
 	if custom_minimum_size.y > 0.0:
 		return custom_minimum_size.y
 	# 至少保底 1px，避免目标高度为 0 导致补间不可见。
-	return MIN_FILL_HEIGHT
+	return MIN_FILL_HEIGHT_PX
 
 
 ## 扩容扫光动画：从 0 → 满 → 回落至指定比例
