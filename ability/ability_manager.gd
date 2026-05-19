@@ -118,6 +118,11 @@ func select_ability(ability_id: String) -> void:
 
 # ─── 查询 ─────────────────────────────────────────────────────────────────────
 
+## 根据能力 ID 返回显示名（用于 UI 反馈）
+func get_ability_name(ability_id: String) -> String:
+	var def = _definitions.get(ability_id, null)
+	return def.display_name if def else ability_id
+
 func get_instance(ability_id: String) -> AbilityInstance:
 	return _instances.get(ability_id, null)
 
