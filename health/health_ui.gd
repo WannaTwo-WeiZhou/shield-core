@@ -75,8 +75,6 @@ func _on_pick_feedback(ability_id: String, _level: int) -> void:
 	for i in range(_pending_added_count):
 		var cell_index := _pending_added_start_index + i
 		var seg := container.get_child(cell_index) as HealthSegment
-		if seg == null:
-			continue
 		var cell_start := cell_index * CELL_HP
 		var actual_fill := clampf(float(current_val - cell_start) / CELL_HP, 0.0, 1.0)
 		seg.play_sweep_animation(actual_fill)
