@@ -67,12 +67,13 @@ func _build_ability_list() -> void:
 		child.queue_free()
 
 	# 从 AbilityManager 读取所有能力定义
-	var ability_ids: Array = AbilityManager.get_all_definition_ids()
+	var ability_ids: Array[String] = AbilityManager.get_all_definition_ids()
 	ability_ids.sort()
 
 	for ability_id in ability_ids:
 		var def: AbilityDefinition = AbilityManager.get_ability_definition(ability_id)
 		if def == null:
+			push_warning("[PauseUI] 跳过无效能力定义: %s" % ability_id)
 			continue
 		var btn := Button.new()
 		btn.text = "%s\n%s" % [def.display_name, def.description]
