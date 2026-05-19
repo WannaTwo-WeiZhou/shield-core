@@ -68,7 +68,7 @@ func _on_pick_feedback(ability_id: String, _level: int) -> void:
 	if ability_id != "max_health_up":
 		return
 
-	if _pending_added_count <= 0 or _pending_added_start_index < 0:
+	if _pending_added_count <= 0:
 		return
 
 	var current_val := health.current_health

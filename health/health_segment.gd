@@ -20,6 +20,8 @@ func _ready() -> void:
 		style.bg_color = bg_color
 
 
+## HBox 新增子节点后首帧可能尚未完成布局，size.y 会暂时为 0；
+## 此时回退到 custom_minimum_size.y，避免扫光动画目标高度丢失。
 func _get_fill_height() -> float:
 	var target_height := size.y
 	if target_height <= 0.0:
