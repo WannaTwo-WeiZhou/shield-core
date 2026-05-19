@@ -25,6 +25,7 @@ func _ready() -> void:
 	gm_button.pressed.connect(_on_gm_pressed)
 	gm_back_button.pressed.connect(_on_gm_back_pressed)
 	pause_overlay.hide()
+	gm_ability_list.mouse_filter = Control.MOUSE_FILTER_PASS
 
 
 func _on_pause_pressed() -> void:
