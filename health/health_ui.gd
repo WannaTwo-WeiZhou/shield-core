@@ -11,6 +11,7 @@ var player: CharacterBody2D
 var health: Health
 var _pending_added_start_index: int = -1
 var _pending_added_count: int = 0
+var _initialized := false
 
 
 func _ready() -> void:
@@ -21,7 +22,13 @@ func _ready() -> void:
 	EventBus.on_pick_feedback.connect(_on_pick_feedback)
 
 	_init_segments()
-	_update_all_fills()
+
+
+func _process(_delta: float) -> void:
+	if not _initialized:
+		_initialized = true
+		_update_all_fills()
+		set_process(false)
 
 
 func _init_segments() -> void:
@@ -76,7 +83,7 @@ func _on_pick_feedback(ability_id: String, _level: int) -> void:
 		var seg := container.get_child(cell_index) as HealthSegment
 		var cell_start := cell_index * CELL_HP
 		var actual_fill := clampf(float(current_val - cell_start) / CELL_HP, 0.0, 1.0)
-		seg.play_sweep_animation(actual_fill)
+		seg.play_sweep_animation.call_deferred(actual_fill)
 
 	_pending_added_start_index = -1
 	_pending_added_count = 0
