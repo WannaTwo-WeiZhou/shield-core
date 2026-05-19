@@ -4,6 +4,7 @@
 extends CanvasLayer
 
 const AbilityDefinition = preload("res://ability/ability_definition.gd")
+const GM_ABILITY_BUTTON_MIN_SIZE := Vector2(360, 72)
 
 @onready var pause_button: Button = %pause_button
 @onready var pause_overlay: ColorRect = %pause_overlay
@@ -69,8 +70,7 @@ func _build_ability_list() -> void:
 	var ability_ids: Array = AbilityManager.get_all_definition_ids()
 	ability_ids.sort()
 
-	for ability_id_variant in ability_ids:
-		var ability_id := String(ability_id_variant)
+	for ability_id in ability_ids:
 		var def: AbilityDefinition = AbilityManager.get_ability_definition(ability_id)
 		if def == null:
 			continue
@@ -78,7 +78,7 @@ func _build_ability_list() -> void:
 		btn.text = "%s\n%s" % [def.display_name, def.description]
 		btn.flat = false
 		btn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		btn.custom_minimum_size = Vector2(360, 72)
+		btn.custom_minimum_size = GM_ABILITY_BUTTON_MIN_SIZE
 		btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 		btn.tooltip_text = def.description
 

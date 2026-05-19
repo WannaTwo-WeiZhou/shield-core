@@ -125,8 +125,7 @@ func get_ability_name(ability_id: String) -> String:
 
 
 func get_ability_definition(ability_id: String) -> AbilityDefinition:
-	var def: AbilityDefinition = _definitions.get(ability_id, null)
-	return def
+	return _definitions.get(ability_id, null)
 
 
 func get_all_definition_ids() -> Array:
