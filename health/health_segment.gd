@@ -25,11 +25,12 @@ func _ready() -> void:
 ## HBox 新增子节点后首帧可能尚未完成布局，size.y 会暂时为 0；
 ## 此时回退到 custom_minimum_size.y，避免扫光动画目标高度丢失。
 func _get_fill_height() -> float:
-	var target_height := size.y
-	if target_height <= 0.0:
-		target_height = custom_minimum_size.y
+	if size.y > 0.0:
+		return size.y
+	if custom_minimum_size.y > 0.0:
+		return custom_minimum_size.y
 	# 至少保底 1px，避免目标高度为 0 导致补间不可见。
-	return maxf(target_height, MIN_FILL_HEIGHT)
+	return MIN_FILL_HEIGHT
 
 
 ## 扩容扫光动画：从 0 → 满 → 回落至指定比例
