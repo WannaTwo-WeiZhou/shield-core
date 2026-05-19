@@ -1,6 +1,8 @@
 class_name HealthSegment
 extends Panel
 
+const MIN_FILL_HEIGHT: float = 1.0
+
 ## 血量格子填充矩形
 @onready var fill_rect: ColorRect = $FillRect
 
@@ -26,7 +28,8 @@ func _get_fill_height() -> float:
 	var target_height := size.y
 	if target_height <= 0.0:
 		target_height = custom_minimum_size.y
-	return maxf(target_height, 1.0)
+	# 至少保底 1px，避免目标高度为 0 导致补间不可见。
+	return maxf(target_height, MIN_FILL_HEIGHT)
 
 
 ## 扩容扫光动画：从 0 → 满 → 回落至指定比例

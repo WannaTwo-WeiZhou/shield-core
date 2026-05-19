@@ -59,6 +59,7 @@ func _on_health_changed(_current: int, _max: int) -> void:
 		_pending_added_start_index = before_count
 		_pending_added_count = after_count - before_count
 	else:
+		# 主动清零，避免上一次新增区间误用于后续反馈。
 		_pending_added_start_index = -1
 		_pending_added_count = 0
 	_update_all_fills()
