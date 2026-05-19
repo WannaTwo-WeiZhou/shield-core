@@ -178,6 +178,24 @@ jobs:
             const ref     = process.env.HEAD_REF;
             const version = process.env.VERSION;
             const prNum   = Number(process.env.PR_NUMBER);
+
+            // Fetch the commit message from the API for a human-readable description.
+            let commitMsg = '';
+            try {
+              const commit = await github.rest.repos.getCommit({
+                owner: context.repo.owner,
+                repo:  context.repo.repo,
+                ref:   sha,
+              });
+              commitMsg = commit.data.commit.message.split('\n')[0];
+            } catch (_) {
+              commitMsg = sha.slice(0, 7);
+            }
+
+            const shaLine = commitMsg
+              ? `- 提交: \`${sha.slice(0, 7)}\` — ${commitMsg}`
+              : `- 提交: \`${sha.slice(0, 7)}\``;
+
             const body = [
               marker,
               '### 🕹️ PR 预览构建完成',
@@ -185,7 +203,7 @@ jobs:
               `- 测试地址: ${url}`,
               `- 版本: ${version}`,
               `- 分支: \`${ref}\``,
-              `- 提交: \`${sha.slice(0, 7)}\``,
+              shaLine,
               '',
               'GitHub Pages CDN 缓存可能需要 1–2 分钟刷新。确认无误后再点击合并即可。',
             ].join('\n');
