@@ -93,19 +93,19 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBox" type="VBoxContainer" parent="pause_overlay/CenterContainer"]
+[node name="PauseMenuVBox" type="VBoxContainer" parent="pause_overlay/CenterContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 24
 
-[node name="title" type="Label" parent="pause_overlay/CenterContainer/VBox"]
+[node name="title" type="Label" parent="pause_overlay/CenterContainer/PauseMenuVBox"]
 layout_mode = 2
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 48
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 text = "PAUSED"
 
-[node name="resume_button" type="Button" parent="pause_overlay/CenterContainer/VBox"]
+[node name="resume_button" type="Button" parent="pause_overlay/CenterContainer/PauseMenuVBox"]
 unique_name_in_owner = true
 layout_mode = 2
 custom_minimum_size = Vector2(200, 50)
@@ -116,7 +116,7 @@ theme_override_font_sizes/font_size = 20
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 text = "▶ 继续游戏"
 
-[node name="gm_button" type="Button" parent="pause_overlay/CenterContainer/VBox"]
+[node name="gm_button" type="Button" parent="pause_overlay/CenterContainer/PauseMenuVBox"]
 unique_name_in_owner = true
 layout_mode = 2
 custom_minimum_size = Vector2(200, 50)

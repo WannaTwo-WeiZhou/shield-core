@@ -8,7 +8,7 @@ const AbilityDefinition = preload("res://ability/ability_definition.gd")
 @onready var pause_button: Button = %pause_button
 @onready var pause_overlay: ColorRect = %pause_overlay
 @onready var resume_button: Button = %resume_button
-@onready var pause_menu_vbox: VBoxContainer = %VBox
+@onready var pause_menu_vbox: VBoxContainer = %PauseMenuVBox
 @onready var gm_button: Button = %gm_button
 @onready var gm_panel: CenterContainer = %gm_panel
 @onready var gm_back_button: Button = %gm_back_button
@@ -66,17 +66,21 @@ func _build_ability_list() -> void:
 		child.queue_free()
 
 	# 从 AbilityManager 读取所有能力定义
-	var ability_ids := AbilityManager._definitions.keys()
+	var ability_ids: Array = AbilityManager.get_all_definition_ids()
 	ability_ids.sort()
 
-	for id in ability_ids:
-		var def: AbilityDefinition = AbilityManager._definitions[id]
+	for ability_id_variant in ability_ids:
+		var ability_id := String(ability_id_variant)
+		var def: AbilityDefinition = AbilityManager.get_ability_definition(ability_id)
+		if def == null:
+			continue
 		var btn := Button.new()
-		btn.text = "%s\n[size=14]%s[/size]" % [def.display_name, def.description]
+		btn.text = "%s\n%s" % [def.display_name, def.description]
 		btn.flat = false
 		btn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		btn.custom_minimum_size = Vector2(360, 60)
+		btn.custom_minimum_size = Vector2(360, 72)
 		btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		btn.tooltip_text = def.description
 
 		# 样式
 		var theme_normal := StyleBoxFlat.new()
@@ -99,10 +103,7 @@ func _build_ability_list() -> void:
 
 		btn.add_theme_color_override("font_color", Color(1, 1, 1, 1))
 
-		# 允许使用 BBCode 显示大小不同的文字
-		btn.bbcode_enabled = true
-
-		var captured_id: String = id
+		var captured_id: String = ability_id
 		btn.pressed.connect(func():
 			_on_gm_ability_selected(captured_id)
 		)
