@@ -19,6 +19,8 @@ signal on_crit(context: Dictionary)
 # ---------- 能力系统事件 ----------
 ## 获得新能力
 signal on_ability_acquired(ability_id: String, level: int)
+## 选择能力后的专属视觉反馈（非阻塞动画）
+signal on_pick_feedback(ability_id: String, level: int)
 ## 联动激活
 signal on_synergy_activated(synergy_id: String)
 ## 反击螺旋触发
