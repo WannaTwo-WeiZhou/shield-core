@@ -23,6 +23,34 @@ corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gm"]
+bg_color = Color(0.7, 0.3, 0.3, 0.8)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gm_hover"]
+bg_color = Color(0.85, 0.4, 0.4, 0.85)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ability_item"]
+bg_color = Color(0.25, 0.25, 0.3, 0.8)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ability_item_hover"]
+bg_color = Color(0.35, 0.35, 0.45, 0.85)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
 [node name="PauseUI" type="CanvasLayer"]
 layer = 200
 script = ExtResource("1_script")
@@ -65,18 +93,19 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBox" type="VBoxContainer" parent="pause_overlay/CenterContainer"]
+[node name="PauseMenuVBox" type="VBoxContainer" parent="pause_overlay/CenterContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 24
 
-[node name="title" type="Label" parent="pause_overlay/CenterContainer/VBox"]
+[node name="title" type="Label" parent="pause_overlay/CenterContainer/PauseMenuVBox"]
 layout_mode = 2
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 48
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 text = "PAUSED"
 
-[node name="resume_button" type="Button" parent="pause_overlay/CenterContainer/VBox"]
+[node name="resume_button" type="Button" parent="pause_overlay/CenterContainer/PauseMenuVBox"]
 unique_name_in_owner = true
 layout_mode = 2
 custom_minimum_size = Vector2(200, 50)
@@ -86,3 +115,66 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_resume")
 theme_override_font_sizes/font_size = 20
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 text = "▶ 继续游戏"
+
+[node name="gm_button" type="Button" parent="pause_overlay/CenterContainer/PauseMenuVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(200, 50)
+theme_override_styles/normal = SubResource("StyleBoxFlat_gm")
+theme_override_styles/hover = SubResource("StyleBoxFlat_gm_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_gm_hover")
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "GM 模式"
+
+[node name="gm_panel" type="CenterContainer" parent="pause_overlay"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="VBox" type="VBoxContainer" parent="pause_overlay/gm_panel"]
+layout_mode = 2
+custom_minimum_size = Vector2(400, 0)
+theme_override_constants/separation = 12
+
+[node name="gm_title" type="Label" parent="pause_overlay/gm_panel/VBox"]
+layout_mode = 2
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 36
+theme_override_colors/font_color = Color(1, 0.4, 0.4, 1)
+text = "GM 模式"
+
+[node name="subtitle" type="Label" parent="pause_overlay/gm_panel/VBox"]
+layout_mode = 2
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+text = "直接获取能力"
+
+[node name="gm_scroll" type="ScrollContainer" parent="pause_overlay/gm_panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_minimum_size = Vector2(0, 300)
+
+[node name="gm_ability_list" type="VBoxContainer" parent="pause_overlay/gm_panel/VBox/gm_scroll"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="gm_back_button" type="Button" parent="pause_overlay/gm_panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(200, 40)
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "← 返回"

@@ -123,6 +123,18 @@ func get_ability_name(ability_id: String) -> String:
 	var def = _definitions.get(ability_id, null)
 	return def.display_name if def else ability_id
 
+
+func get_ability_definition(ability_id: String) -> AbilityDefinition:
+	return _definitions.get(ability_id, null)
+
+
+func get_all_definition_ids() -> Array[String]:
+	var ability_ids: Array[String] = []
+	for ability_id in _definitions.keys():
+		ability_ids.append(String(ability_id))
+	return ability_ids
+
+
 func get_instance(ability_id: String) -> AbilityInstance:
 	return _instances.get(ability_id, null)
 

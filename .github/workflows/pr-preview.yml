@@ -44,6 +44,7 @@ jobs:
     outputs:
       pr_number:   ${{ steps.meta.outputs.pr_number }}
       preview_url: ${{ steps.meta.outputs.preview_url }}
+      version:     ${{ steps.version.outputs.version }}
     steps:
       - name: Checkout PR head
         uses: actions/checkout@v4
@@ -75,6 +76,14 @@ jobs:
           godot-version: ${{ env.GODOT_VERSION }}
           godot-template-version: ${{ env.GODOT_TEMPLATE_VERSION }}
           output-dir: build/web
+
+      - name: Read version from patched version.gd
+        id: version
+        run: |
+          set -euo pipefail
+          MAJOR=$(grep -oP '(?<=const MAJOR_VERSION: String = ")[^"]+' version.gd)
+          BUILD=$(grep -oP '(?<=const BUILD_NUMBER: int = )\d+' version.gd)
+          echo "version=v${MAJOR}.${BUILD}" >> "$GITHUB_OUTPUT"
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
@@ -159,50 +168,53 @@ jobs:
           PR_NUMBER:   ${{ needs.build-preview.outputs.pr_number }}
           HEAD_SHA:    ${{ github.event.pull_request.head.sha }}
           HEAD_REF:    ${{ github.event.pull_request.head.ref }}
+          VERSION:     ${{ needs.build-preview.outputs.version }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const marker = '<!-- shield-core-pr-preview -->';
-            const url    = process.env.PREVIEW_URL;
-            const sha    = process.env.HEAD_SHA;
-            const ref    = process.env.HEAD_REF;
-            const prNum  = Number(process.env.PR_NUMBER);
+            const marker  = '<!-- shield-core-pr-preview -->';
+            const url     = process.env.PREVIEW_URL;
+            const sha     = process.env.HEAD_SHA;
+            const ref     = process.env.HEAD_REF;
+            const version = process.env.VERSION;
+            const prNum   = Number(process.env.PR_NUMBER);
+
+            // Fetch the commit message from the API for a human-readable description.
+            let commitMsg = '';
+            try {
+              const commit = await github.rest.repos.getCommit({
+                owner: context.repo.owner,
+                repo:  context.repo.repo,
+                ref:   sha,
+              });
+              commitMsg = commit.data.commit.message.split('\n')[0];
+            } catch (_) {
+              commitMsg = sha.slice(0, 7);
+            }
+
+            const shaLine = commitMsg
+              ? `- 提交: \`${sha.slice(0, 7)}\` — ${commitMsg}`
+              : `- 提交: \`${sha.slice(0, 7)}\``;
+
             const body = [
               marker,
               '### 🕹️ PR 预览构建完成',
               '',
               `- 测试地址: ${url}`,
+              `- 版本: ${version}`,
               `- 分支: \`${ref}\``,
-              `- 提交: \`${sha.slice(0, 7)}\``,
+              shaLine,
               '',
               'GitHub Pages CDN 缓存可能需要 1–2 分钟刷新。确认无误后再点击合并即可。',
             ].join('\n');
 
-            const comments = await github.paginate(
-              github.rest.issues.listComments,
-              {
-                owner: context.repo.owner,
-                repo:  context.repo.repo,
-                issue_number: prNum,
-                per_page: 100,
-              }
-            );
-            const existing = comments.find(c => c.body && c.body.includes(marker));
-            if (existing) {
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo:  context.repo.repo,
-                comment_id: existing.id,
-                body,
-              });
-            } else {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo:  context.repo.repo,
-                issue_number: prNum,
-                body,
-              });
-            }
+            // Always create a new comment so every commit gets its own reply.
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              issue_number: prNum,
+              body,
+            });
 
   cleanup-preview:
     name: Cleanup preview on close
