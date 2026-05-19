@@ -13,6 +13,7 @@ const GM_ABILITY_BUTTON_MIN_SIZE := Vector2(360, 72)
 @onready var gm_button: Button = %gm_button
 @onready var gm_panel: CenterContainer = %gm_panel
 @onready var gm_back_button: Button = %gm_back_button
+@onready var gm_scroll: ScrollContainer = %gm_scroll
 @onready var gm_ability_list: VBoxContainer = %gm_ability_list
 
 var _ability_list_built: bool = false
@@ -25,6 +26,26 @@ func _ready() -> void:
 	gm_button.pressed.connect(_on_gm_pressed)
 	gm_back_button.pressed.connect(_on_gm_back_pressed)
 	pause_overlay.hide()
+
+	# 加宽 GM 能力列表的滑块，方便拖拽
+	var v_bar := gm_scroll.get_v_scroll_bar()
+	if v_bar == null:
+		return
+	v_bar.add_theme_constant_override("scrollbar_width", 16)
+	var grabber := StyleBoxFlat.new()
+	grabber.bg_color = Color(0.6, 0.6, 0.65, 0.85)
+	grabber.corner_radius_top_left = 4
+	grabber.corner_radius_top_right = 4
+	grabber.corner_radius_bottom_right = 4
+	grabber.corner_radius_bottom_left = 4
+	v_bar.add_theme_stylebox_override("grabber", grabber)
+	var grabber_hover := StyleBoxFlat.new()
+	grabber_hover.bg_color = Color(0.75, 0.75, 0.85, 1.0)
+	grabber_hover.corner_radius_top_left = 4
+	grabber_hover.corner_radius_top_right = 4
+	grabber_hover.corner_radius_bottom_right = 4
+	grabber_hover.corner_radius_bottom_left = 4
+	v_bar.add_theme_stylebox_override("grabber_highlight", grabber_hover)
 
 
 func _on_pause_pressed() -> void:
