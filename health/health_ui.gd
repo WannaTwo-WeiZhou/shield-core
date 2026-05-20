@@ -74,8 +74,14 @@ func _on_health_changed(_current: int, _max: int) -> void:
 
 
 func _on_pick_feedback(ability_id: String, _level: int) -> void:
-	if ability_id != "max_health_up":
-		return
+	match ability_id:
+		"max_health_up":
+			_play_max_health_up_feedback()
+		"health_regen":
+			_play_health_regen_feedback()
+
+
+func _play_max_health_up_feedback() -> void:
 	if _pending_added_count <= 0:
 		return
 
@@ -90,6 +96,13 @@ func _on_pick_feedback(ability_id: String, _level: int) -> void:
 
 	_pending_added_start_index = -1
 	_pending_added_count = 0
+
+
+func _play_health_regen_feedback() -> void:
+	for child in container.get_children():
+		var seg := child as HealthSegment
+		if seg:
+			seg.play_regen_flash()
 
 
 # ─── 内部辅助 ─────────────────────────────────────────────────────────────────

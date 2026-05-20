@@ -6,6 +6,8 @@ extends Panel
 
 ## 填充色（红）
 @export var fill_color: Color = Color(0.905882, 0.298039, 0.235294, 1)
+## 恢复反馈闪烁色（鲜绿）
+const REGEN_FLASH_COLOR := Color(0.22, 0.95, 0.38, 1)
 ## 背景色（暗灰）
 @export var bg_color: Color = Color(0.2, 0.2, 0.2, 0.8)
 
@@ -46,6 +48,22 @@ func play_sweep_animation(final_ratio: float) -> void:
 	_tween.tween_property(fill_rect, "anchor_bottom", final_ratio, 0.1) \
 		.set_ease(Tween.EASE_OUT) \
 		.set_trans(Tween.TRANS_CUBIC)
+
+
+## 选择 health_regen 时：填充条闪绿约 0.3 秒
+func play_regen_flash(duration: float = 0.3) -> void:
+	if not fill_rect:
+		return
+	if _tween != null:
+		_tween.kill()
+	var half := duration * 0.5
+	_tween = create_tween()
+	_tween.tween_property(fill_rect, "color", REGEN_FLASH_COLOR, half) \
+		.set_ease(Tween.EASE_OUT) \
+		.set_trans(Tween.TRANS_SINE)
+	_tween.tween_property(fill_rect, "color", fill_color, half) \
+		.set_ease(Tween.EASE_IN) \
+		.set_trans(Tween.TRANS_SINE)
 
 
 ## 立即设置填充比例（无动画）
