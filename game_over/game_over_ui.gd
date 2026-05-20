@@ -60,4 +60,5 @@ func _input(event: InputEvent) -> void:
 			should_restart = true
 	
 	if should_restart:
+		AbilityManager.reset_for_new_run()
 		get_tree().reload_current_scene()

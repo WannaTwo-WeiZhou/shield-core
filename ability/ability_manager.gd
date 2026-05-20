@@ -161,6 +161,17 @@ func get_player() -> Node:
 	return _player
 
 
+## 重新开始一局时清空已获得能力与升级候选状态（Autoload 不随场景重载而重置）
+func reset_for_new_run() -> void:
+	_instances.clear()
+	_pending_level_up_selections = 0
+	_selection_in_progress = false
+	_player = null
+	_rebuild_pipeline()
+	abilities_updated.emit()
+	print("[AbilityManager] 已重置本局能力状态")
+
+
 # ─── 内部：管线重建 ────────────────────────────────────────────────────────────
 
 func _rebuild_pipeline() -> void:
