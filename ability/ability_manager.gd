@@ -113,6 +113,7 @@ func select_ability(ability_id: String) -> void:
 	_rebuild_pipeline()
 	ability_acquired.emit(ability_id, final_inst.get_stack_count() if final_inst else 1)
 	abilities_updated.emit()
+	EventBus.on_pick_feedback.emit(ability_id, final_inst.get_stack_count() if final_inst else 1)
 	_finish_level_up_selection()
 
 
