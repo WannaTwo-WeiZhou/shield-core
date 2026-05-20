@@ -34,7 +34,7 @@ func _apply_fill_ratio(ratio: float) -> void:
 ## 扩容扫光动画：从 0 → 满 → 回落至指定比例（tween anchor_bottom）
 func play_sweep_animation(final_ratio: float) -> void:
 	final_ratio = clampf(final_ratio, 0.0, 1.0)
-	if _tween and _tween.is_valid():
+	if _tween != null:
 		_tween.kill()
 	_apply_fill_ratio(0.0)
 	_tween = create_tween().set_parallel(false)
@@ -51,7 +51,7 @@ func play_sweep_animation(final_ratio: float) -> void:
 ## 立即设置填充比例（无动画）
 func set_fill_immediate(ratio: float) -> void:
 	ratio = clampf(ratio, 0.0, 1.0)
-	if _tween and _tween.is_valid():
+	if _tween != null:
 		_tween.kill()
 	if fill_rect:
 		_apply_fill_ratio(ratio)
