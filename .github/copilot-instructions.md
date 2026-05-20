@@ -15,8 +15,10 @@ Godot **4.6.2-stable**（GL Compatibility）2D 竖屏游戏，含完整 GDScript
   - `player/` — 玩家与护盾
   - `bullet/` — 弹幕、`bullet_spawner.gd`、`wave_director.gd`、`wave_config.json`
   - `bomb/` — B 弹清屏与 UI
-  - `health/`、`experience/`、`game_over/`、`pause/`
-  - `ability/` — 能力核心、`pick_ui/`、`feedback/`
+  - `health/` — `health.gd`、分段血条 `health_ui.gd` / `health_segment.gd`（每格 10 HP；选择反馈见 README）
+  - `experience/`、`game_over/`
+  - `pause/` — 暂停 UI + **GM 模式**（`pause_ui.gd`：列表调用 `AbilityManager.select_ability`）
+  - `ability/` — 能力核心、`pick_ui/`、`feedback/`（中央浮字，非 `on_pick_feedback`）
 - `assets/fonts/NotoSansSC.ttf` — **未提交**；CI 下载。本地可自 [Google Fonts](https://github.com/google/fonts/raw/main/ofl/notosanssc/NotoSansSC%5Bwght%5D.ttf) 放置，或临时清空 `project.godot` 中 `gui/theme/custom_font`。
 - `version.gd` — `MAJOR_VERSION` / `BUILD_NUMBER`；CI 导出前 patch 构建号。
 - `export_presets.cfg` — `Web` 预设 → `build/web/index.html`；`script_export_mode=2`，`thread_support=false`。
@@ -71,7 +73,12 @@ Fork PR 无写权限时跳过预览。本仓库 PR 预览**不依赖** approving
 - 配置：`ability/abilities_config.json`、`ability/synergies_config.json`。
 - 无 tags；联动仅 `required_abilities`。
 - 属性白名单在 `AbilityManager._apply_instance_to_pipeline()`；行为型能力在 `player/player.gd` 等按 `ability_id` 读取。
+- **获得反馈双通道**：`ability_feedback.gd` ← `AbilityManager.ability_acquired`；按能力 UI ← `EventBus.on_pick_feedback`（当前 `health_ui`：`max_health_up` / `health_regen`）。
 - 新能力流程：**先配置、后接线、再验证** — 详见 README。
+
+## 调试
+
+- 暂停菜单 → **GM 模式**：列出 `abilities_config.json` 中全部能力，点击即 `select_ability`（走正常管线与反馈）。
 
 ## Conventions
 
