@@ -8,14 +8,15 @@ alwaysApply: true
 
 > **始终使用中文回复用户。** 代码注释、提交信息可保持英文，但与用户的对话一律使用简体中文。
 
-本项目遵循 `.github/copilot-instructions.md` 中的完整规范。核心要点：
+本项目遵循 `.github/copilot-instructions.md` 中的完整规范；能力系统与配置细节见根目录 **`README.md`**。
 
 ## 项目概览
 
-- **引擎**: Godot 4.6.2-stable (GL Compatibility renderer)
-- **类型**: 2D Web 游戏，导出到 GitHub Pages
-- **分辨率**: 640×960 竖屏
+- **引擎**: Godot 4.6.2-stable (GL Compatibility)
+- **类型**: 2D Web 竖屏格挡生存游戏
+- **分辨率**: 640×960
 - **主场景**: `main.tscn`
+- **Autoload**: `EventBus`、`AbilityManager`
 
 ## 命名与组织规范
 
@@ -26,14 +27,20 @@ alwaysApply: true
 | 类名/节点名 | `PascalCase` |
 | 资源引用 | 优先 `uid://` |
 
+## Feature 目录（摘要）
+
+`start/`、`player/`、`bullet/`、`bomb/`、`health/`、`experience/`、`ability/`（含 `pick_ui/`、`feedback/`）、`game_over/`、`pause/`；共享资源在 `assets/`。
+
 ## 关键约定
 
-1. **场景是构建单元** — 以小型 `.tscn` 为单元，由 `main.tscn` 实例化
-2. **Feature 目录** — 每个功能独立目录（如 `start/`、`player/`）
-3. **共享资源** — 放 `assets/`（字体、音效等）
-4. **自动加载** — 放 `autoload/`
-5. **插件** — 放 `addons/<plugin_name>/`
+1. **场景是构建单元** — 小型 `.tscn` 由 `main.tscn` 实例化
+2. **能力** — 配置在 `ability/*.json`；属性走 pipeline 白名单，行为型在 `player.gd` 等按 `ability_id` 接线；联动仅用 `required_abilities`
+3. **共享资源** — `assets/`
+4. **插件** — `addons/<plugin_name>/`
+5. **CI** — `main` 部署 Pages；PR 推送触发预览，关闭时清理并更新全部预览评论
 
 ## 完整规范
 
-详细规范请参考 `.github/copilot-instructions.md`
+- 布局 / 构建 / CI / Issue 流程：`.github/copilot-instructions.md`
+- 能力架构与新增步骤：`README.md`
+- Claude Code 上下文：`CLAUDE.md`
