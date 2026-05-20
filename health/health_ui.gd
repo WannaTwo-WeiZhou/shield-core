@@ -68,6 +68,9 @@ func _on_health_changed(_current: int, _max: int) -> void:
 		_pending_added_start_index = before_count
 		_pending_added_count = after_count - before_count
 	_update_all_fills()
+	# 新增子格的 @onready 可能在同一帧稍晚完成，再刷一次避免 fill_rect 未就绪时跳过
+	if after_count > before_count:
+		call_deferred("_update_all_fills")
 
 
 func _on_pick_feedback(ability_id: String, _level: int) -> void:

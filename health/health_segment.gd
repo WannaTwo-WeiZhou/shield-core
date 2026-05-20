@@ -1,8 +1,6 @@
 class_name HealthSegment
 extends Panel
 
-const MIN_FILL_HEIGHT_PX: float = 1.0
-
 ## 血量格子填充矩形
 @onready var fill_rect: ColorRect = $FillRect
 
@@ -21,30 +19,31 @@ func _ready() -> void:
 		style.bg_color = bg_color
 
 
-## HBox 新增子节点后首帧可能尚未完成布局，size.y 会暂时为 0；
-## 此时回退到 custom_minimum_size.y，若两者都不可用，再用 MIN_FILL_HEIGHT_PX 保底。
-func _get_fill_height() -> float:
-	if size.y > 0.0:
-		return size.y
-	if custom_minimum_size.y > 0.0:
-		return custom_minimum_size.y
-	return MIN_FILL_HEIGHT_PX
+## 将填充比例应用到 Rect（0~1：anchor_bottom 相对父 Panel 高度）
+func _apply_fill_ratio(ratio: float) -> void:
+	fill_rect.anchor_left = 0.0
+	fill_rect.anchor_top = 0.0
+	fill_rect.anchor_right = 1.0
+	fill_rect.anchor_bottom = ratio
+	fill_rect.offset_left = 0.0
+	fill_rect.offset_top = 0.0
+	fill_rect.offset_right = 0.0
+	fill_rect.offset_bottom = 0.0
 
 
-## 扩容扫光动画：从 0 → 满 → 回落至指定比例
+## 扩容扫光动画：从 0 → 满 → 回落至指定比例（tween anchor_bottom）
 func play_sweep_animation(final_ratio: float) -> void:
 	final_ratio = clampf(final_ratio, 0.0, 1.0)
 	if _tween and _tween.is_valid():
 		_tween.kill()
-	var fill_height := _get_fill_height()
-	fill_rect.offset_bottom = 0.0
+	_apply_fill_ratio(0.0)
 	_tween = create_tween().set_parallel(false)
 	# 阶段 1：从上到下扫满全格（扩容感）
-	_tween.tween_property(fill_rect, "offset_bottom", fill_height, 0.3) \
+	_tween.tween_property(fill_rect, "anchor_bottom", 1.0, 0.3) \
 		.set_ease(Tween.EASE_IN_OUT) \
 		.set_trans(Tween.TRANS_CUBIC)
 	# 阶段 2：回落至真实填充率
-	_tween.tween_property(fill_rect, "offset_bottom", fill_height * final_ratio, 0.1) \
+	_tween.tween_property(fill_rect, "anchor_bottom", final_ratio, 0.1) \
 		.set_ease(Tween.EASE_OUT) \
 		.set_trans(Tween.TRANS_CUBIC)
 
@@ -52,5 +51,7 @@ func play_sweep_animation(final_ratio: float) -> void:
 ## 立即设置填充比例（无动画）
 func set_fill_immediate(ratio: float) -> void:
 	ratio = clampf(ratio, 0.0, 1.0)
+	if _tween and _tween.is_valid():
+		_tween.kill()
 	if fill_rect:
-		fill_rect.offset_bottom = _get_fill_height() * ratio
+		_apply_fill_ratio(ratio)

@@ -1,7 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://healthui001"]
+[gd_scene load_steps=1 format=3 uid="uid://healthui001"]
 
 [ext_resource type="Script" path="res://health/health_ui.gd" id="1_script"]
-[ext_resource type="PackedScene" path="res://health/health_segment.tscn" id="2_segment_scene"]
 
 [node name="HealthUI" type="CanvasLayer"]
 script = ExtResource("1_script")
@@ -12,4 +11,3 @@ offset_top = 20.0
 offset_right = 520.0
 offset_bottom = 40.0
 theme_override_constants/separation = 2
-
