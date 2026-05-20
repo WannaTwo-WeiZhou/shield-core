@@ -6,13 +6,9 @@ const SEGMENT_SCENE = preload("res://health/health_segment.tscn")
 const CELL_HP: int = 10
 
 @onready var container: HBoxContainer = $SegmentsContainer
-@onready var regen_popup_label: Label = $regen_popup_label
 
 var player: CharacterBody2D
 var health: Health
-
-var _regen_popup_base_position: Vector2 = Vector2.ZERO
-var _regen_popup_tween: Tween = null
 
 # 记录上一次 _on_health_changed 触发后新增的格子范围，供 _on_pick_feedback 播动画
 var _pending_added_start_index: int = -1
@@ -26,8 +22,6 @@ func _ready() -> void:
 	health = player.get_node("health")
 	health.health_changed.connect(_on_health_changed)
 	EventBus.on_pick_feedback.connect(_on_pick_feedback)
-	_regen_popup_base_position = regen_popup_label.position
-	regen_popup_label.hide()
 	_init_segments()
 
 
@@ -109,39 +103,6 @@ func _play_health_regen_feedback() -> void:
 		var seg := child as HealthSegment
 		if seg:
 			seg.play_regen_flash()
-	_show_regen_popup()
-
-
-func _show_regen_popup() -> void:
-	regen_popup_label.text = "+1"
-	regen_popup_label.position = _regen_popup_base_position
-	regen_popup_label.modulate = Color(1, 1, 1, 1)
-	regen_popup_label.show()
-
-	if _regen_popup_tween != null:
-		_regen_popup_tween.kill()
-
-	_regen_popup_tween = create_tween()
-	_regen_popup_tween.set_parallel(true)
-	_regen_popup_tween.tween_property(
-		regen_popup_label,
-		"position",
-		_regen_popup_base_position + Vector2(0, -14),
-		0.5
-	).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	_regen_popup_tween.tween_property(
-		regen_popup_label,
-		"modulate",
-		Color(1, 1, 1, 0),
-		0.5
-	).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	_regen_popup_tween.finished.connect(_on_regen_popup_finished)
-
-
-func _on_regen_popup_finished() -> void:
-	regen_popup_label.hide()
-	regen_popup_label.position = _regen_popup_base_position
-	regen_popup_label.modulate = Color(1, 1, 1, 1)
 
 
 # ─── 内部辅助 ─────────────────────────────────────────────────────────────────
