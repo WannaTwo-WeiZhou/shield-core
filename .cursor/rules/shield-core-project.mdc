@@ -34,7 +34,7 @@ alwaysApply: true
 ## 关键约定
 
 1. **场景是构建单元** — 小型 `.tscn` 由 `main.tscn` 实例化
-2. **能力** — 配置在 `ability/*.json`；属性走 pipeline 白名单，行为型在 `player.gd` 等按 `ability_id` 接线；联动仅用 `required_abilities`；获得反馈：中央浮字（`ability_acquired`）+ 按能力 UI（`EventBus.on_pick_feedback`，如 `health_ui`）
+2. **能力** — 配置在 `ability/*.json`；属性走 pipeline 白名单，行为型在 `player.gd` 等按 `ability_id` 接线；联动仅用 `required_abilities`；获得反馈：中央浮字（`ability_acquired`）+ 按能力 UI（`EventBus.on_pick_feedback`，如 `health_ui`）；Autoload 不随场景重载清零，再开局须 `AbilityManager.reset_for_new_run()`（`game_over_ui.gd`）
 3. **共享资源** — `assets/`
 4. **插件** — `addons/<plugin_name>/`
 5. **CI** — `main` 部署 Pages；PR 推送触发预览，关闭时清理并更新全部预览评论
