@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3 uid="uid://speedlinesfeedback001"]
+
+[ext_resource type="Script" path="res://gameplay/abilities/feedback/speed_lines_feedback.gd" id="1_speed_lines_script"]
+
+[node name="speed_lines_feedback" type="CanvasLayer"]
+layer = 150
+
+[node name="SpeedLinesDrawing" type="Control" parent="."]
+layout_mode = 0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_speed_lines_script")
