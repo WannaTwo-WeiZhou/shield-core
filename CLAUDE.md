@@ -15,21 +15,21 @@ Godot 4.6.2 2D 竖屏格挡生存游戏（移动格挡 + 经验升级 + 能力/�
 
 | 目录 | 用途 |
 |------|------|
-| `ability/` | 能力定义、实例、管理器、管线、联动、EventBus、三选一 UI、获得反馈 |
-| `player/` | 移动、格挡/反弹、能力消费（属性 pipeline + 行为型 per_level） |
-| `bullet/` | 弹幕、`bullet_spawner`、`wave_director`、`wave_config.json` |
-| `bomb/` | B 弹清屏（`bomb_system.gd`，非 Autoload） |
-| `health/` | `health.gd`、分段血条 `health_ui.gd` / `health_segment.gd`（`CELL_HP=10`） |
-| `experience/` | 经验与升级 |
-| `game_over/` | 游戏结束；再开局时先 `AbilityManager.reset_for_new_run()` 再重载 `main` |
-| `start/` | 背景、提示、版本 |
-| `pause/` | 暂停 UI + GM 模式（`pause_ui.gd`，调试直接 `select_ability`） |
+| `gameplay/abilities/` | 能力定义、实例、管理器、管线、联动、EventBus、三选一 UI、获得反馈 |
+| `gameplay/player/` | 移动、格挡/反弹、能力消费（属性 pipeline + 行为型 per_level） |
+| `gameplay/combat/bullets/` | 弹幕、`bullet_spawner`、`wave_director`、`wave_config.json` |
+| `gameplay/combat/bomb/` | B 弹清屏（`bomb_system.gd`，非 Autoload） |
+| `gameplay/progression/health/` | `health.gd`、分段血条 `health_ui.gd` / `health_segment.gd`（`CELL_HP=10`） |
+| `gameplay/progression/experience/` | 经验与升级 |
+| `ui/game_over/` | 游戏结束；再开局时先 `AbilityManager.reset_for_new_run()` 再重载 `main` |
+| `ui/start/` | 背景、提示、版本 |
+| `ui/pause/` | 暂停 UI + GM 模式（`pause_ui.gd`，调试直接 `select_ability`） |
 | `assets/` | 共享字体等 |
 
 ## Autoload
 
-- **EventBus** (`ability/event_bus.gd`) — 格挡、受伤、波次、B 弹、`on_ability_acquired`、`on_pick_feedback`、联动等
-- **AbilityManager** (`ability/ability_manager.gd`) — 加载配置、三选一、管线重建；`ability_acquired` 供中央浮字；再开局前 `reset_for_new_run()`（`game_over_ui.gd` 在 `reload_current_scene()` 前调用，因 Autoload 不随场景重载清零）
+- **EventBus** (`core/autoload/event_bus.gd`) — 格挡、受伤、波次、B 弹、`on_ability_acquired`、`on_pick_feedback`、联动等
+- **AbilityManager** (`core/autoload/ability_manager.gd`) — 加载配置、三选一、管线重建；`ability_acquired` 供中央浮字；再开局前 `reset_for_new_run()`（`game_over_ui.gd` 在 `reload_current_scene()` 前调用，因 Autoload 不随场景重载清零）
 
 ## 核心架构
 
@@ -39,15 +39,15 @@ Godot 4.6.2 2D 竖屏格挡生存游戏（移动格挡 + 经验升级 + 能力/�
 能力管理器 (ability_manager.gd) → 候选池、选择、重建管线
 效果管线 (modifier_pipeline.gd) → 属性加成 + 运行时效果（event_modifier / runtime_flag）
 联动解析器 (synergy_resolver.gd) → required_abilities 精确匹配
-玩家 (player/player.gd) → pipeline 属性 + 按 ability_id 的行为逻辑 + 事件修饰器
-B 弹 (bomb/bomb_system.gd) → pipeline 中 bomb_* 属性
-波次 (bullet/wave_director.gd) → wave_config 驱动弹幕节奏
+玩家 (gameplay/player/player.gd) → pipeline 属性 + 按 ability_id 的行为逻辑 + 事件修饰器
+B 弹 (gameplay/combat/bomb/bomb_system.gd) → pipeline 中 bomb_* 属性
+波次 (gameplay/combat/bullets/wave_director.gd) → wave_config 驱动弹幕节奏
 ```
 
 ## 能力配置要点
 
-- `ability/abilities_config.json` — 能力；可选 `narrative`；无 tags
-- `ability/synergies_config.json` — 联动；仅 `required_abilities`
+- `gameplay/abilities/config/abilities_config.json` — 能力；可选 `narrative`；无 tags
+- `gameplay/abilities/config/synergies_config.json` — 联动；仅 `required_abilities`
 - **属性白名单**（`_apply_instance_to_pipeline`）：
   `speed_bonus`, `bullet_speed_bonus`, `damage_bonus`, `block_xp_bonus`, `max_health_bonus`, `bomb_capacity_bonus`, `bomb_recharge_seconds_bonus`
 - **行为型**（示例）：`shield_reflect`, `counter_spiral`, `health_regen`, `crit_block`, `breathing_orbit` — 在 `player.gd` 用 `get_instance(id)` 读 `per_level`

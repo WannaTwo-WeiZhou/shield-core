@@ -11,14 +11,14 @@ Godot **4.6.2-stable**（GL Compatibility）2D 竖屏游戏，含完整 GDScript
 - `project.godot` — 主场景 `res://main.tscn`，视口 640×960，`stretch_mode=canvas_items`。
 - `main.tscn` — 入口：实例化 `player`、`bullet_spawner`、`wave_director`、UI、B 弹、能力三选一等。
 - **Feature 目录**（按功能划分，场景+脚本+专属资源放同目录）：
-  - `start/` — 背景、提示、版本标签
-  - `player/` — 玩家与护盾
-  - `bullet/` — 弹幕、`bullet_spawner.gd`、`wave_director.gd`、`wave_config.json`
-  - `bomb/` — B 弹清屏与 UI
-  - `health/` — `health.gd`、分段血条 `health_ui.gd` / `health_segment.gd`（每格 10 HP；选择反馈见 README）
-  - `experience/`、`game_over/`（`game_over_ui.gd`：结束后再开局须先 `AbilityManager.reset_for_new_run()`，因 Autoload 不随 `reload_current_scene()` 清零）
-  - `pause/` — 暂停 UI + **GM 模式**（`pause_ui.gd`：列表调用 `AbilityManager.select_ability`）
-  - `ability/` — 能力核心、`pick_ui/`、`feedback/`（中央浮字，非 `on_pick_feedback`）
+  - `ui/start/` — 背景、提示、版本标签
+  - `gameplay/player/` — 玩家与护盾
+  - `gameplay/combat/bullets/` — 弹幕、`bullet_spawner.gd`、`wave_director.gd`、`wave_config.json`
+  - `gameplay/combat/bomb/` — B 弹清屏与 UI
+  - `gameplay/progression/health/` — `health.gd`、分段血条 `health_ui.gd` / `health_segment.gd`（每格 10 HP；选择反馈见 README）
+  - `gameplay/progression/experience/`、`ui/game_over/`（`game_over_ui.gd`：结束后再开局须先 `AbilityManager.reset_for_new_run()`，因 Autoload 不随 `reload_current_scene()` 清零）
+  - `ui/pause/` — 暂停 UI + **GM 模式**（`pause_ui.gd`：列表调用 `AbilityManager.select_ability`）
+  - `gameplay/abilities/` — 能力核心、`pick_ui/`、`feedback/`（中央浮字，非 `on_pick_feedback`）
 - `assets/fonts/NotoSansSC.ttf` — **未提交**；CI 下载。本地可自 [Google Fonts](https://github.com/google/fonts/raw/main/ofl/notosanssc/NotoSansSC%5Bwght%5D.ttf) 放置，或临时清空 `project.godot` 中 `gui/theme/custom_font`。
 - `version.gd` — `MAJOR_VERSION` / `BUILD_NUMBER`；CI 导出前 patch 构建号。
 - `export_presets.cfg` — `Web` 预设 → `build/web/index.html`；`script_export_mode=2`，`thread_support=false`。
@@ -70,12 +70,12 @@ Fork PR 无写权限时跳过预览。本仓库 PR 预览**不依赖** approving
 
 ## 能力系统（摘要）
 
-- 配置：`ability/abilities_config.json`、`ability/synergies_config.json`。
+- 配置：`gameplay/abilities/config/abilities_config.json`、`gameplay/abilities/config/synergies_config.json`。
 - 无 tags；联动仅 `required_abilities`。
-- 属性白名单在 `AbilityManager._apply_instance_to_pipeline()`；行为型能力在 `player/player.gd` 等按 `ability_id` 读取。
+- 属性白名单在 `AbilityManager._apply_instance_to_pipeline()`；行为型能力在 `gameplay/player/player.gd` 等按 `ability_id` 读取。
 - **获得反馈双通道**：`ability_feedback.gd` ← `AbilityManager.ability_acquired`；按能力 UI ← `EventBus.on_pick_feedback`（当前 `health_ui`：`max_health_up` / `health_regen`）。
 - 新能力流程：**先配置、后接线、再验证** — 详见 README。
-- **再开局**：`game_over/game_over_ui.gd` 在 `reload_current_scene()` 前调用 `AbilityManager.reset_for_new_run()`，清空实例、待选升级与管线。
+- **再开局**：`ui/game_over/game_over_ui.gd` 在 `reload_current_scene()` 前调用 `AbilityManager.reset_for_new_run()`，清空实例、待选升级与管线。
 
 ## 调试
 
@@ -97,5 +97,5 @@ Fork PR 无写权限时跳过预览。本仓库 PR 预览**不依赖** approving
   - 重做：`[Ability][Rework] ...`
   - 平衡：`[Ability][Balance] ...`
 - 正文须含 `## Execution Checklist (vN)` 及固定四节（Files / Steps / Validation / Rollback）。
-- 路径对齐本仓库：`ability/abilities_config.json`、`ability/synergies_config.json`（勿引用不存在的 `abilities/registry.gd`）。
+- 路径对齐本仓库：`gameplay/abilities/config/abilities_config.json`、`gameplay/abilities/config/synergies_config.json`（勿引用不存在的 `abilities/registry.gd`）。
 - 可写 GitHub 时用 `.github/skills/create-ability-issue/create_github_issue.ps1`（凭据或 `GH_TOKEN` / `GITHUB_TOKEN`）。

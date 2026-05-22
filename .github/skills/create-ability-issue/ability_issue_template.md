@@ -29,7 +29,7 @@
 - 数值边界：TBD
 
 ## 2.5 数据结构与配置（Config Schema）
-- 配置文件路径（预期）：TBD（优先对齐本仓库真实路径，如 `ability/abilities_config.json`、`ability/synergies_config.json` 或新增的 feature 目录）
+- 配置文件路径（预期）：TBD（优先对齐本仓库真实路径，如 `gameplay/abilities/config/abilities_config.json`、`gameplay/abilities/config/synergies_config.json` 或新增的 feature 目录）
 - 必填字段：TBD
 - 可选字段：TBD
 - 默认值：TBD

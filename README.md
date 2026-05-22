@@ -7,18 +7,18 @@ Godot 4.6.2 的 2D 竖屏格挡游戏，核心玩法围绕玩家移动格挡、�
 | 目录 | 用途 |
 |------|------|
 | `main.tscn` | 游戏入口，实例化各 feature 场景与系统节点 |
-| `start/` | 背景、提示文案、版本标签 |
-| `player/` | 玩家移动、护盾格挡/反弹、能力效果消费 |
-| `bullet/` | 弹幕实体、`bullet_spawner`、`wave_director` 与 `wave_config.json` |
-| `bomb/` | B 弹清屏系统与 UI |
-| `health/` | 生命组件（`health.gd`）、分段血条 UI（`health_ui.gd`、`health_segment.tscn`） |
-| `experience/` | 经验值与升级 UI |
-| `ability/` | 能力定义、实例、管理器、管线、联动、三选一 UI、获得反馈 |
-| `game_over/` | 游戏结束 UI；再开局前调用 `AbilityManager.reset_for_new_run()`（见下文「局生命周期」） |
-| `pause/` | 暂停 UI；内含 **GM 模式**（调试：从暂停菜单直接获得任意能力） |
+| `ui/start/` | 背景、提示文案、版本标签 |
+| `gameplay/player/` | 玩家移动、护盾格挡/反弹、能力效果消费 |
+| `gameplay/combat/bullets/` | 弹幕实体、`bullet_spawner`、`wave_director` 与 `wave_config.json` |
+| `gameplay/combat/bomb/` | B 弹清屏系统与 UI |
+| `gameplay/progression/health/` | 生命组件（`health.gd`）、分段血条 UI（`health_ui.gd`、`health_segment.tscn`） |
+| `gameplay/progression/experience/` | 经验值与升级 UI |
+| `gameplay/abilities/` | 能力定义、实例、管理器、管线、联动、三选一 UI、获得反馈 |
+| `ui/game_over/` | 游戏结束 UI；再开局前调用 `AbilityManager.reset_for_new_run()`（见下文「局生命周期」） |
+| `ui/pause/` | 暂停 UI；内含 **GM 模式**（调试：从暂停菜单直接获得任意能力） |
 | `assets/` | 跨 feature 共享资源（如 `assets/fonts/NotoSansSC.ttf`，由 CI 下载） |
 
-**Autoload**：`EventBus`（`ability/event_bus.gd`）、`AbilityManager`（`ability/ability_manager.gd`）。
+**Autoload**：`EventBus`（`core/autoload/event_bus.gd`）、`AbilityManager`（`core/autoload/ability_manager.gd`）。
 
 ## 部署与 PR 预览
 
@@ -37,26 +37,26 @@ Godot 4.6.2 的 2D 竖屏格挡游戏，核心玩法围绕玩家移动格挡、�
 
 | 文件 | 角色 | 关键职责 |
 | --- | --- | --- |
-| `ability/ability_definition.gd` | 静态定义 | 从配置读取能力元数据与 `per_level` 效果。 |
-| `ability/ability_instance.gd` | 运行时实例 | 记录玩家当前持有能力与可重复能力的叠加次数。 |
-| `ability/ability_manager.gd` | 系统入口（Autoload） | 加载能力、升级三选一、处理重复获取、应用实例效果、重建管线；`reset_for_new_run()` 清空本局已获得能力（再开局用）。 |
-| `ability/modifier_pipeline.gd` | 效果容器 | 聚合属性加成与运行时效果（事件修饰器、运行时标记）。 |
-| `ability/synergy_resolver.gd` | 联动解析器 | 根据 `required_abilities` 激活联动。 |
-| `ability/event_bus.gd` | 事件总线（Autoload） | 发射格挡、受伤、波次、B 弹、`on_ability_acquired`、`on_pick_feedback` 等事件。 |
-| `health/health.gd` | 生命组件 | 管理当前/最大生命，支持动态上限（`set_max_health`）。 |
-| `health/health_ui.gd` | 分段血条 UI | 按 `CELL_HP=10` 动态增删 `HealthSegment`；订阅 `on_pick_feedback` 播放能力专属反馈。 |
-| `health/health_segment.gd` | 单格血条 | `set_fill_immediate`、`play_sweep_animation`（扩容扫光）、`play_regen_flash`（绿闪）。 |
-| `player/player.gd` | 战斗消费层 | 读取 pipeline 属性、按能力 ID 读取行为型 `per_level`、执行事件修饰器。 |
-| `ability/pick_ui/ability_pick_ui.gd` | 升级 UI | 三选一候选展示与选择。 |
-| `ability/feedback/ability_feedback.gd` | 中央浮字反馈 | 订阅 `AbilityManager.ability_acquired`，屏幕中央「获得【能力名】」淡入淡出。 |
-| `pause/pause_ui.gd` | 暂停 / GM | 暂停菜单；GM 模式调用 `AbilityManager.select_ability()` 直接获得能力。 |
-| `bomb/bomb_system.gd` | B 弹系统 | 双击/Space 清屏，充能从 pipeline 读取容量与冷却加成。 |
+| `gameplay/abilities/core/ability_definition.gd` | 静态定义 | 从配置读取能力元数据与 `per_level` 效果。 |
+| `gameplay/abilities/core/ability_instance.gd` | 运行时实例 | 记录玩家当前持有能力与可重复能力的叠加次数。 |
+| `core/autoload/ability_manager.gd` | 系统入口（Autoload） | 加载能力、升级三选一、处理重复获取、应用实例效果、重建管线；`reset_for_new_run()` 清空本局已获得能力（再开局用）。 |
+| `gameplay/abilities/core/modifier_pipeline.gd` | 效果容器 | 聚合属性加成与运行时效果（事件修饰器、运行时标记）。 |
+| `gameplay/abilities/core/synergy_resolver.gd` | 联动解析器 | 根据 `required_abilities` 激活联动。 |
+| `core/autoload/event_bus.gd` | 事件总线（Autoload） | 发射格挡、受伤、波次、B 弹、`on_ability_acquired`、`on_pick_feedback` 等事件。 |
+| `gameplay/progression/health/health.gd` | 生命组件 | 管理当前/最大生命，支持动态上限（`set_max_health`）。 |
+| `gameplay/progression/health/health_ui.gd` | 分段血条 UI | 按 `CELL_HP=10` 动态增删 `HealthSegment`；订阅 `on_pick_feedback` 播放能力专属反馈。 |
+| `gameplay/progression/health/health_segment.gd` | 单格血条 | `set_fill_immediate`、`play_sweep_animation`（扩容扫光）、`play_regen_flash`（绿闪）。 |
+| `gameplay/player/player.gd` | 战斗消费层 | 读取 pipeline 属性、按能力 ID 读取行为型 `per_level`、执行事件修饰器。 |
+| `gameplay/abilities/pick_ui/ability_pick_ui.gd` | 升级 UI | 三选一候选展示与选择。 |
+| `gameplay/abilities/feedback/ability_feedback.gd` | 中央浮字反馈 | 订阅 `AbilityManager.ability_acquired`，屏幕中央「获得【能力名】」淡入淡出。 |
+| `ui/pause/pause_ui.gd` | 暂停 / GM | 暂停菜单；GM 模式调用 `AbilityManager.select_ability()` 直接获得能力。 |
+| `gameplay/combat/bomb/bomb_system.gd` | B 弹系统 | 双击/Space 清屏，充能从 pipeline 读取容量与冷却加成。 |
 
 ### 局生命周期与 Autoload 状态
 
 `EventBus` 与 `AbilityManager` 注册为 **Autoload**，在 `get_tree().reload_current_scene()` 时**不会**随 `main.tscn` 重载而销毁。场景内节点（玩家、`health`、`bomb_system`、经验等）会随场景重建，在各自 `_ready()` 中恢复初始状态。
 
-游戏结束后再开局（`game_over/game_over_ui.gd`：触摸 / 点击 / 按键）顺序为：
+游戏结束后再开局（`ui/game_over/game_over_ui.gd`：触摸 / 点击 / 按键）顺序为：
 
 1. **`AbilityManager.reset_for_new_run()`** — 清空 `_instances`、待处理升级次数、三选一进行中标志、`_player` 引用；`pipeline.reset()` 后重建空管线，并 `abilities_updated.emit()`。
 2. **`get_tree().reload_current_scene()`** — 重载 `main.tscn`；`player.gd` 在 `_ready()` 中再次 `register_player(self)` 并订阅 `abilities_updated`。
@@ -89,7 +89,7 @@ reflectEvent --> eventModifiers
 1. **管线属性型**：`per_level` 中的键若列入 `AbilityManager._apply_instance_to_pipeline()` 白名单，会累加到 `ModifierPipeline`，由 `player.gd`、`bomb_system.gd` 等通过 `get_attribute()` 消费。当前白名单：
    - `speed_bonus`、`bullet_speed_bonus`、`damage_bonus`、`block_xp_bonus`、`max_health_bonus`
    - `bomb_capacity_bonus`、`bomb_recharge_seconds_bonus`
-2. **行为型（按能力 ID 接线）**：如 `shield_reflect`（`reflect_chance`）、`counter_spiral`、`health_regen`、`crit_block`、`breathing_orbit` 等，在 `player/player.gd` 中通过 `AbilityManager.get_instance(ability_id)` 读取 `per_level` 数据并执行逻辑。新增此类能力需在 `player.gd`（或对应系统脚本）增加分支。
+2. **行为型（按能力 ID 接线）**：如 `shield_reflect`（`reflect_chance`）、`counter_spiral`、`health_regen`、`crit_block`、`breathing_orbit` 等，在 `gameplay/player/player.gd` 中通过 `AbilityManager.get_instance(ability_id)` 读取 `per_level` 数据并执行逻辑。新增此类能力需在 `player.gd`（或对应系统脚本）增加分支。
 
 联动注入的 `attribute_bonus`（如 `shield_radius_bonus`）不经过能力白名单，由 `synergy_resolver.gd` 直接写入 pipeline。
 
@@ -97,10 +97,10 @@ reflectEvent --> eventModifiers
 
 选择能力后（`AbilityManager.select_ability`）并行触发两类非阻塞反馈：
 
-1. **中央浮字** — `ability/feedback/ability_feedback.gd` 监听 `AbilityManager.ability_acquired`，显示「获得【能力名】」。
+1. **中央浮字** — `gameplay/abilities/feedback/ability_feedback.gd` 监听 `AbilityManager.ability_acquired`，显示「获得【能力名】」。
 2. **按能力定制的 UI 反馈** — 同一流程末尾由 `AbilityManager` 发射 `EventBus.on_pick_feedback(ability_id, level)`；各 feature 自行 `connect` 并按 `ability_id` 分支。
 
-当前 `health/health_ui.gd` 已接线的 `ability_id`：
+当前 `gameplay/progression/health/health_ui.gd` 已接线的 `ability_id`：
 
 | `ability_id` | 反馈表现 |
 | --- | --- |
@@ -120,7 +120,7 @@ reflectEvent --> eventModifiers
 
 ## 配置文件说明
 
-### 1) 能力定义：`ability/abilities_config.json`
+### 1) 能力定义：`gameplay/abilities/config/abilities_config.json`
 
 每个能力一条 `abilities` 项，常用字段：
 
@@ -166,7 +166,7 @@ reflectEvent --> eventModifiers
 }
 ```
 
-### 2) 联动定义：`ability/synergies_config.json`
+### 2) 联动定义：`gameplay/abilities/config/synergies_config.json`
 
 - **条件**：`required_abilities`（至少 1 个 ID；组合联动一般 2 个及以上）。
 - **效果**：`effect`（单条）或 `effects`（数组，推荐）。
@@ -195,7 +195,7 @@ reflectEvent --> eventModifiers
 
 当前已配置联动：`swift_guardian`（惶惶 + 盾反 → 护盾半径）、`vital_fortress`（生命恢复 + 盾反 → 格挡回血）。
 
-### 3) 弹幕波次：`bullet/wave_config.json`
+### 3) 弹幕波次：`gameplay/combat/bullets/wave_config.json`
 
 由 `wave_director.gd` 读取，控制 prep/duration、发射间隔、`bullet_speed` 与 `pattern`（如 `single_aimed`、`fan_3_tight`、`ring_12` 等）。波次生命周期通过 `EventBus` 的 `on_wave_prep_started` / `on_wave_started` / `on_wave_ended` 广播。
 
@@ -205,21 +205,21 @@ reflectEvent --> eventModifiers
 
 ### A. 新增普通能力（不涉及联动）
 
-1. 在 `ability/abilities_config.json` 新增条目。
+1. 在 `gameplay/abilities/config/abilities_config.json` 新增条目。
 2. 确认接入路径：
    - 纯属性且键已在白名单：通常无需额外代码。
    - 新属性键：扩展 `ability_manager.gd` 白名单 + 消费方读取。
-   - 行为型：在 `player/player.gd`（或 `bomb_system.gd` 等）按 `ability_id` 读取并实现。
+   - 行为型：在 `gameplay/player/player.gd`（或 `bomb_system.gd` 等）按 `ability_id` 读取并实现。
 3. 调整 `weight` / `rarity`；可重复能力设置 `repeatable: true`，并避免将其误加入仅需「拥有一次」的联动条件（若设计需要「叠层」联动需单独约定）。
 
 ### B. 新增联动
 
-1. 在 `ability/synergies_config.json` 添加 `required_abilities` 与 `effect` / `effects`。
-2. 新 `event_modifier.action` 需在 `player/player.gd` 的 `_apply_single_event_modifier()` 增加分支。
+1. 在 `gameplay/abilities/config/synergies_config.json` 添加 `required_abilities` 与 `effect` / `effects`。
+2. 新 `event_modifier.action` 需在 `gameplay/player/player.gd` 的 `_apply_single_event_modifier()` 增加分支。
 
 ## 事件修饰器 action
 
-`player/player.gd` 当前支持：
+`gameplay/player/player.gd` 当前支持：
 
 - `heal`
 - `bonus_xp`

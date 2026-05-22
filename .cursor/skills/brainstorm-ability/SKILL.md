@@ -7,7 +7,7 @@ description: 用于头脑风暴 ShieldCore 的新增能力或修改现有能力�
 
 ## 目标
 
-帮助用户在 ShieldCore 现有能力体系内，快速产出多个可比较的能力候选，并最终精简成一份足够具体、可直接落入 `ability/abilities_config.json` 与 `ability/synergies_config.json` 的总结。
+帮助用户在 ShieldCore 现有能力体系内，快速产出多个可比较的能力候选，并最终精简成一份足够具体、可直接落入 `gameplay/abilities/config/abilities_config.json` 与 `gameplay/abilities/config/synergies_config.json` 的总结。
 
 ## 输入与边界
 
@@ -18,10 +18,10 @@ description: 用于头脑风暴 ShieldCore 的新增能力或修改现有能力�
 
 ## 仓库事实（仅使用本仓库真实信息）
 
-- 能力定义：`ability/abilities_config.json`
-- 协同定义：`ability/synergies_config.json`
-- 运行时编排：`ability/ability_manager.gd` + `ability/event_bus.gd`
-- 常见消费者：`player/player.gd`、`bullet/bullet.gd`、`health/health.gd`、`experience/experience.gd`
+- 能力定义：`gameplay/abilities/config/abilities_config.json`
+- 协同定义：`gameplay/abilities/config/synergies_config.json`
+- 运行时编排：`core/autoload/ability_manager.gd` + `core/autoload/event_bus.gd`
+- 常见消费者：`gameplay/player/player.gd`、`gameplay/combat/bullets/bullet.gd`、`gameplay/progression/health/health.gd`、`gameplay/progression/experience/experience.gd`
 - 协同匹配规则：仅按 `required_abilities`（精确 `ability_id` 匹配），**不要**引入 `tags / required_tags / affects_tags`。
 - 能力字段以现有条目为准（如 `id / name / description / rarity / weight / max_level / repeatable / per_level`）；不要凭空新增字段族。
 
@@ -31,7 +31,7 @@ description: 用于头脑风暴 ShieldCore 的新增能力或修改现有能力�
 
 ### Step 1 — 总结现有能力（Recap）
 
-读取 `ability/abilities_config.json` 与 `ability/synergies_config.json`，输出一张紧凑表格，至少包含：
+读取 `gameplay/abilities/config/abilities_config.json` 与 `gameplay/abilities/config/synergies_config.json`，输出一张紧凑表格，至少包含：
 
 - `id`（英文）
 - 中文名
@@ -97,7 +97,7 @@ title_type: 新增 | Rework | Balance
 
 ## 严禁事项
 
-- 不要在 Step 1–3 期间修改 `ability/*.json` 或任何代码文件。
+- 不要在 Step 1–3 期间修改 `gameplay/abilities/config/*.json` 或任何代码文件。
 - 不要在用户**显式确认**前调用 `create-ability-issue` 或执行创建脚本。
 - 不要把多个能力打包进同一个 issue（下游 Skill 强约束：单一 `ability_id`）。
 - 不要重新引入 `tags / required_tags / affects_tags` 之类已被废弃的字段。
