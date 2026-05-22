@@ -83,7 +83,7 @@ func _draw() -> void:
 
 	for g in _ghosts:
 		# alpha 按存活时间线性衰减
-		var progress := g["elapsed"] / FADE_DURATION
+		var progress: float = g["elapsed"] / FADE_DURATION
 		var col := base_color
 		col.a = g["start_alpha"] * (1.0 - progress)
 
