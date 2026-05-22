@@ -414,6 +414,10 @@ def commit_and_create_pr(pr_info: dict, files_modified: list[str]):
         log.warning("No branch name configured, skipping commit")
         return
 
+    # Configure git identity (not pre-set on fresh CI runners)
+    safe_git(["config", "user.name", "github-actions[bot]"])
+    safe_git(["config", "user.email", "41898282+github-actions[bot]@users.noreply.github.com"])
+
     # Stage changes
     safe_git(["add", "-A"])
 
