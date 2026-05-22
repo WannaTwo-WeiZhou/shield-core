@@ -1,0 +1,47 @@
+name: Post-merge sync AI instruction files
+
+on:
+  pull_request:
+    types: [closed]
+
+# Only run for merged PRs from the same repo (not forks), not authored by
+# bots, and whose head branch doesn't start with "ai/" to avoid loops.
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: sync-instructions
+  cancel-in-progress: false
+
+jobs:
+  sync-instructions:
+    if: |
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.user.login != 'github-actions[bot]' &&
+      !startsWith(github.event.pull_request.head.ref, 'ai/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Sync AI instruction files
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_WORKSPACE: ${{ github.workspace }}
+        run: python .github/scripts/update-instructions.py
