@@ -1,82 +1,33 @@
 ---
-description: ShieldCore 项目规范 - 引用 Copilot Instructions
+description: ShieldCore 项目规范 - 分层 AI 指令入口
 globs: *
 alwaysApply: true
 ---
 
 # ShieldCore 项目规范
 
-> **始终使用中文回复用户。** 代码注释、提交信息可保持英文，但与用户的对话一律使用简体中文。
+始终使用简体中文回复用户；代码、命令、日志、API 名称和路径保留原文。
 
-本项目遵循 `.github/copilot-instructions.md` 中的完整规范；能力系统与配置细节见根目录 **`README.md`**。
+本仓库的 AI 指令采用分层维护：
 
-## 项目概览
+- Codex / 通用代理：根路径和子目录的 `AGENTS.md`
+- Claude Code：根路径和子目录的 `CLAUDE.md`
+- GitHub Copilot：`.github/copilot-instructions.md` 与 `.github/instructions/*.instructions.md`
 
-- **引擎**: Godot 4.6.2-stable (GL Compatibility)
-- **类型**: 2D Web 竖屏格挡生存游戏
-- **分辨率**: 640×960
-- **主场景**: `main.tscn`
-- **Autoload**: `EventBus`、`AbilityManager`
+根路径指令只描述项目架构；模块细节以对应目录的指令文件为准。
 
-## 命名与组织规范
+## 项目架构
 
-| 项目 | 规范 |
-|------|------|
-| 文件名 | `snake_case` |
-| 目录结构 | Feature-based |
-| 类名/节点名 | `PascalCase` |
-| 资源引用 | 优先 `uid://` |
+- `core/`：Autoload 和全局基础设施。
+- `gameplay/`：能力、玩家、战斗、成长等玩法实现。
+- `ui/`：开始、暂停、游戏结束等流程界面。
+- `assets/`：跨模块共享资源。
+- `main.tscn`：主场景入口。
 
-## Feature 目录（摘要）
+## Godot LSP（MCP）
 
-`ui/start/`、`gameplay/player/`、`gameplay/combat/bullets/`、`gameplay/combat/bomb/`、`gameplay/progression/health/`（`health_ui` + `health_segment` 分段血条）、`gameplay/progression/experience/`、`gameplay/abilities/`（含 `pick_ui/`、`feedback/`）、`ui/game_over/`、`ui/pause/`（含 GM 调试）；共享资源在 `assets/`。
+涉及 `.gd` 代码时优先使用可用的 Godot / GDScript LSP 能力进行查定义、查引用、诊断和重命名；纯文本搜索再使用 `rg`。
 
-## 关键约定
+修改 `.gd` 后，在继续语义查询前同步或重新打开相关文件，避免诊断和引用结果过期。
 
-1. **场景是构建单元** — 小型 `.tscn` 由 `main.tscn` 实例化
-2. **能力** — 配置在 `gameplay/abilities/config/*.json`；属性走 pipeline 白名单，行为型在 `player.gd` 等按 `ability_id` 接线；联动仅用 `required_abilities`；获得反馈：中央浮字（`ability_acquired`）+ 按能力 UI（`EventBus.on_pick_feedback`，如 `health_ui`）；Autoload 不随场景重载清零，再开局须 `AbilityManager.reset_for_new_run()`（`game_over_ui.gd`）
-3. **共享资源** — `assets/`
-4. **插件** — `addons/<plugin_name>/`
-5. **CI** — `main` 部署 Pages；PR 推送触发预览，关闭时清理并更新全部预览评论
-
-## GDScript LSP（MCP）
-
-LSP MCP（`godotlens`、`godot-lsp`）配置在用户级 `~/.cursor/mcp.json`，所有 Godot 项目通用。涉及 `.gd` 代码时**优先使用 LSP MCP 工具**，不要仅用 `grep` 替代语义查询。
-
-### 前置条件
-
-- Godot LSP 须已运行：在项目根目录执行 `& "$env:USERPROFILE\.cursor\start_godot_lsp.ps1"`，或在 Godot 编辑器中打开本项目（端口 **6005**）
-- 连接异常时先调用 `gdscript_status`；失败则提示用户启动 LSP 后再继续
-
-### 工具选用
-
-| 场景 | 优先工具 |
-|------|----------|
-| 查找引用、跳转定义、重命名、hover、符号列表 | `godotlens`: `gdscript_references`, `gdscript_definition`, `gdscript_rename`, `gdscript_hover`, `gdscript_symbols` |
-| 单文件 / 全项目诊断 | `godotlens`: `gdscript_diagnostics`；或 `godot-lsp`: `get_diagnostics`, `scan_workspace_diagnostics` |
-| 运行时 print / 错误输出 | `godot-lsp`: `get_console_output` |
-
-`grep` 仅用于纯文本搜索（字符串、注释、非符号匹配）；跨文件影响分析、重构、重命名一律走 LSP。
-
-### 编辑后同步
-
-Agent 修改任意 `.gd` 文件后，在再次查询诊断或引用之前，须对相关文件调用 `gdscript_sync_file`（多文件用 `gdscript_sync_files`）。删除文件时调用 `gdscript_delete_file`。
-
-Godot LSP 不会自动感知编辑器外写入；跳过 sync 会导致诊断与引用结果过期。
-
-### 典型工作流
-
-1. **改前**：`gdscript_references` / `gdscript_definition` 评估影响面
-2. **改后**：`gdscript_sync_file` → `gdscript_diagnostics` 或 `scan_workspace_diagnostics` 验证
-3. **跨文件重命名**：`gdscript_references` 预览 → `gdscript_rename` → 再次诊断确认
-
-### 坐标与语义注意
-
-- `godotlens` 的 line / character 为 **0-indexed**（编辑器行号减 1）
-- 查询 `_process` 等 `Node` 虚方法时，LSP 可能返回**全项目所有重写定义**，而非显式调用点；引擎回调无代码引用属正常
-
-## 完整规范
-
-- 布局 / 构建 / CI / Issue 流程：`.github/copilot-instructions.md`
-- 能力架构与新增步骤：`README.md`
-- Claude Code 上下文：`CLAUDE.md`
+完整模块规则请读取当前目录最近的 `AGENTS.md` / `CLAUDE.md`，Copilot 场景请读取 `.github/instructions/` 中匹配路径的文件。
