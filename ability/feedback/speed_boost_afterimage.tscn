@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://speedboostafterimage001"]
+
+[ext_resource type="Script" path="res://ability/feedback/speed_boost_afterimage.gd" id="1_script"]
+
+[node name="speed_boost_afterimage" type="Node"]
+script = ExtResource("1_script")

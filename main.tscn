@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://byoiqp8nrncx"]
+[gd_scene load_steps=18 format=3 uid="uid://byoiqp8nrncx"]
 
 [ext_resource type="PackedScene" uid="uid://bg1qf8y10f7qy" path="res://start/background.tscn" id="1_bg"]
 [ext_resource type="PackedScene" uid="uid://c54q3qhqhcyey" path="res://start/hint_label.tscn" id="2_label"]
@@ -17,6 +17,7 @@
 [ext_resource type="PackedScene" uid="uid://versionlabel001" path="res://start/version_label.tscn" id="14_version_label"]
 [ext_resource type="PackedScene" uid="uid://xaji0y6dpbhsah" path="res://pause/pause_ui.tscn" id="15_pause_ui"]
 [ext_resource type="PackedScene" uid="uid://abilityfeedback001" path="res://ability/feedback/ability_feedback.tscn" id="16_ability_feedback"]
+[ext_resource type="PackedScene" uid="uid://speedboostafterimage001" path="res://ability/feedback/speed_boost_afterimage.tscn" id="17_afterimage"]
 
 [node name="main" type="Node2D" unique_id=1686072544]
 
@@ -64,3 +65,5 @@ texture = ExtResource("7_joystick_knob")
 [node name="pause_ui" parent="." instance=ExtResource("15_pause_ui")]
 
 [node name="ability_feedback" parent="." instance=ExtResource("16_ability_feedback")]
+
+[node name="speed_boost_afterimage" parent="." instance=ExtResource("17_afterimage")]

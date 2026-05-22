@@ -25,6 +25,7 @@ const BASE_SHIELD_SPIN_SPEED: float = PI
 var is_dragging: bool = false
 var joystick_center: Vector2 = Vector2.ZERO
 var input_vector: Vector2 = Vector2.ZERO
+var last_move_direction: Vector2 = Vector2.DOWN
 
 # 生命恢复计时器（由 health_regen 能力驱动）
 var _regen_timer: float = 0.0
@@ -134,6 +135,9 @@ func _update_keyboard_input() -> void:
 func _move_player(delta: float) -> void:
 	if input_vector == Vector2.ZERO:
 		return
+
+	# 记录最近一次有效移动方向（供拖影等反馈使用）
+	last_move_direction = input_vector.normalized()
 
 	# 应用速度加成（来自 speed_boost 等能力）
 	var speed := BASE_SPEED + AbilityManager.pipeline.get_attribute("speed_bonus")
