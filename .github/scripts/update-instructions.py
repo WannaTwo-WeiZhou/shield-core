@@ -347,13 +347,13 @@ def run_analysis(pr_info: dict, diff: str, changed_files: list[str]) -> bool:
 # ── Main ────────────────────────────────────────────────────────────────────
 
 def main():
+    global PR_NUMBER, BRANCH_NAME
     log.info(f"Repository: {REPO}")
     log.info(f"PR Number: {PR_NUMBER or '(auto-detect)'}")
 
     # 1. Fetch PR info
     pr_info = get_pr_info()
     actual_pr_number = pr_info["number"]
-    global PR_NUMBER, BRANCH_NAME
     PR_NUMBER = str(actual_pr_number)
     BRANCH_NAME = f"ai/sync-instructions-pr-{actual_pr_number}"
     log.info(f"PR #{PR_NUMBER}: {pr_info.get('title', 'N/A')}")
