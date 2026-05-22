@@ -17,8 +17,8 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-EventBus="*res://ability/event_bus.gd"
-AbilityManager="*res://ability/ability_manager.gd"
+EventBus="*res://core/autoload/event_bus.gd"
+AbilityManager="*res://core/autoload/ability_manager.gd"
 
 [display]
 

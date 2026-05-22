@@ -30,18 +30,18 @@ Produce a complete ability issue that follows the repository spec, then create t
 - Keep the fixed section headings from the repository spec, but scope `## 2.7 测试与验收（Test & Acceptance）` and `### 3) Validation` so they do not require AI-run runtime verification.
 - In validation-related sections, only include AI-owned checks such as code creation/modification completed and compile/build/export passes.
 - Use the repository's actual ability architecture when writing file paths or implementation notes:
-  - Core definitions live in `ability/abilities_config.json`
-  - Synergy definitions live in `ability/synergies_config.json`
+  - Core definitions live in `gameplay/abilities/config/abilities_config.json`
+  - Synergy definitions live in `gameplay/abilities/config/synergies_config.json`
   - Runtime ability orchestration is handled by the `AbilityManager` and `EventBus` autoload-driven flow
 - Ability definitions no longer include `tags`, `affects_tags`, or `responds_to_tags` fields. Do not introduce them in new ability issues.
 - Synergies are matched **only** by `required_abilities` (exact ability_id match). Do not introduce `required_tags` or any tag-based matching in new synergy proposals.
 - Do not copy generic example paths from outside docs unless they truly exist in this repo.
 - Prefer concrete, repo-realistic paths in `Files to add / modify`, such as:
-  - `ability/abilities_config.json`
-  - `ability/synergies_config.json`
-  - `ability/<feature_name>.gd`
-  - `player/player.gd`
-  - `bullet/bullet.gd`
+  - `gameplay/abilities/config/abilities_config.json`
+  - `gameplay/abilities/config/synergies_config.json`
+  - `gameplay/abilities/<feature_name>.gd`
+  - `gameplay/player/player.gd`
+  - `gameplay/combat/bullets/bullet.gd`
 
 ## Title rules
 

@@ -40,25 +40,25 @@ description: Cursor Cloud Agent 的最小测试启动 Skill，覆盖 shield-core
 
 ## 按代码区域组织的测试流程
 
-### 1) `start/`（开场与启动）
+### 1) `ui/start/`（开场与启动）
 
 - 主要触点
-  - `start/background.tscn`
-  - `start/hint_label.tscn`
+  - `ui/start/background.tscn`
+  - `ui/start/hint_label.tscn`
 - 变更后验证
   - 执行 `godot --headless --import`
   - 启动 `res://main.tscn`，确认场景可加载、无解析错误
 - Agent 测试工作流（示例）
   - 修改开场场景节点或资源引用 -> 重新 `--import` -> 运行主场景 -> 检查无缺失资源/解析报错
 
-### 2) `player/` 与 `bullet/`（核心循环）
+### 2) `gameplay/player/` 与 `gameplay/combat/bullets/`（核心循环）
 
 - 主要触点
-  - `player/player.tscn`
-  - `player/player.gd`
-  - `bullet/bullet.tscn`
-  - `bullet/bullet.gd`
-  - `bullet/bullet_spawner.gd`
+  - `gameplay/player/player.tscn`
+  - `gameplay/player/player.gd`
+  - `gameplay/combat/bullets/bullet.tscn`
+  - `gameplay/combat/bullets/bullet.gd`
+  - `gameplay/combat/bullets/bullet_spawner.gd`
 - 变更后验证
   - `godot --headless --import`
   - `godot --path . res://main.tscn`
@@ -66,16 +66,16 @@ description: Cursor Cloud Agent 的最小测试启动 Skill，覆盖 shield-core
 - Agent 测试工作流（示例）
   - 修改移动/发射逻辑 -> 导入 -> 运行主场景检查脚本解析与场景装配 -> 导出 Web 确认可构建
 
-### 3) `health/` 与 `experience/`（状态与 UI）
+### 3) `gameplay/progression/health/` 与 `gameplay/progression/experience/`（状态与 UI）
 
 - 主要触点
-  - `health/health.gd`
-  - `health/health_ui.tscn`
-  - `health/health_ui.gd`
-  - `experience/experience.gd`
-  - `experience/experience_ui.tscn`
-  - `experience/experience_ui.gd`
-  - `experience/experience_config.json`
+  - `gameplay/progression/health/health.gd`
+  - `gameplay/progression/health/health_ui.tscn`
+  - `gameplay/progression/health/health_ui.gd`
+  - `gameplay/progression/experience/experience.gd`
+  - `gameplay/progression/experience/experience_ui.tscn`
+  - `gameplay/progression/experience/experience_ui.gd`
+  - `gameplay/progression/experience/experience_config.json`
 - 变更后验证
   - 先 `--import`
   - 运行主场景确认 UI 相关场景与脚本加载正常
@@ -83,19 +83,19 @@ description: Cursor Cloud Agent 的最小测试启动 Skill，覆盖 shield-core
 - Agent 测试工作流（示例）
   - 修改经验或血量 UI 绑定 -> 导入 -> 运行并检查无脚本/资源错误 -> 导出验证
 
-### 4) `ability/`（能力系统）
+### 4) `gameplay/abilities/`（能力系统）
 
 - 主要触点
-  - `ability/ability_manager.gd`
-  - `ability/event_bus.gd`
-  - `ability/ability_instance.gd`
-  - `ability/ability_definition.gd`
-  - `ability/modifier_pipeline.gd`
-  - `ability/synergy_resolver.gd`
-  - `ability/abilities_config.json`
-  - `ability/synergies_config.json`
-  - `ability/pick_ui/ability_pick_ui.tscn`
-  - `ability/pick_ui/ability_card.tscn`
+  - `core/autoload/ability_manager.gd`
+  - `core/autoload/event_bus.gd`
+  - `gameplay/abilities/core/ability_instance.gd`
+  - `gameplay/abilities/core/ability_definition.gd`
+  - `gameplay/abilities/core/modifier_pipeline.gd`
+  - `gameplay/abilities/core/synergy_resolver.gd`
+  - `gameplay/abilities/config/abilities_config.json`
+  - `gameplay/abilities/config/synergies_config.json`
+  - `gameplay/abilities/pick_ui/ability_pick_ui.tscn`
+  - `gameplay/abilities/pick_ui/ability_card.tscn`
 - 变更后验证
   - `godot --headless --import`
   - 运行主场景，检查能力配置加载与相关场景引用是否报错
@@ -103,11 +103,11 @@ description: Cursor Cloud Agent 的最小测试启动 Skill，覆盖 shield-core
 - Agent 测试工作流（示例）
   - 增加/修改 ability 配置 -> 导入 -> 运行检查配置读取与脚本解析 -> 导出验证
 
-### 5) `game_over/`（结束流程）
+### 5) `ui/game_over/`（结束流程）
 
 - 主要触点
-  - `game_over/game_over_ui.tscn`
-  - `game_over/game_over_ui.gd`
+  - `ui/game_over/game_over_ui.tscn`
+  - `ui/game_over/game_over_ui.gd`
 - 变更后验证
   - `godot --headless --import`
   - 运行主场景确认 game over UI 资源引用正常
@@ -118,9 +118,9 @@ description: Cursor Cloud Agent 的最小测试启动 Skill，覆盖 shield-core
 
 本仓库不使用远程 Feature Flag 平台。请使用 JSON 配置做可控开关：
 
-- `ability/abilities_config.json`
-- `ability/synergies_config.json`
-- `experience/experience_config.json`
+- `gameplay/abilities/config/abilities_config.json`
+- `gameplay/abilities/config/synergies_config.json`
+- `gameplay/progression/experience/experience_config.json`
 
 安全 mock 策略：
 

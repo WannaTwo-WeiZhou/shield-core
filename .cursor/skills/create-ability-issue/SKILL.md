@@ -37,10 +37,10 @@ Reuse the existing Copilot skill assets instead of inventing a second spec:
 - Write issue prose in simplified Chinese unless a field is naturally English-only, such as `ability_id`, file paths, or config keys.
 - Keep `ability_id` in `snake_case`.
 - Use this repository's real ability architecture:
-  - Ability definitions: `ability/abilities_config.json`
-  - Synergy definitions: `ability/synergies_config.json`
+  - Ability definitions: `gameplay/abilities/config/abilities_config.json`
+  - Synergy definitions: `gameplay/abilities/config/synergies_config.json`
   - Runtime orchestration: `AbilityManager` and `EventBus` autoload flow
-  - Common consumers: `player/player.gd`, `bullet/bullet.gd`, `health/health.gd`, `experience/experience.gd`
+  - Common consumers: `gameplay/player/player.gd`, `gameplay/combat/bullets/bullet.gd`, `gameplay/progression/health/health.gd`, `gameplay/progression/experience/experience.gd`
 - Ability definitions no longer include `tags / affects_tags / responds_to_tags` fields; do not reintroduce them.
 - Synergies are matched **only** by `required_abilities` (exact ability_id match); do not propose `required_tags` or any tag-based matching.
 - Do not copy generic paths from outside docs unless those files exist in this repo.
