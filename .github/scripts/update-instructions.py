@@ -356,7 +356,8 @@ def main():
     actual_pr_number = pr_info["number"]
     PR_NUMBER = str(actual_pr_number)
     BRANCH_NAME = f"ai/sync-instructions-pr-{actual_pr_number}"
-    log.info(f"PR #{PR_NUMBER}: {pr_info.get('title', 'N/A')}")
+    pr_title = pr_info.get("title", "N/A")
+    log.info(f"PR #{PR_NUMBER}: {pr_title}")
 
     # 2. Fetch diff
     diff = get_pr_diff()
@@ -364,7 +365,7 @@ def main():
     log.info(f"PR diff: {len(diff)} chars, {len(changed_files)} files changed")
 
     if len(diff) == 0:
-        log.info("Empty diff, nothing to analyze")
+        conclusion("跳过", "PR diff 为空，无需分析")
         return 0
 
     # 3. Run DeepSeek analysis
@@ -372,21 +373,26 @@ def main():
         modified = run_analysis(pr_info, diff, changed_files)
     except Exception as e:
         log.error(f"DeepSeek analysis failed: {e}")
+        conclusion("失败", f"DeepSeek 分析异常: {e}")
         return 1
 
     if not modified:
-        log.info("No instruction files modified, skipping commit")
+        conclusion("无需更新", "经 DeepSeek 分析，此 PR 未改变架构/规则/约定，所有指令文件已是最新")
         return 0
 
     # 4. Commit and create PR
     try:
         files_modified = find_modified_files()
         commit_and_create_pr(pr_info, files_modified)
+        conclusion(
+            "已创建 PR",
+            "DeepSeek 发现指令文件需同步，已自动创建 PR，请审阅后合并"
+        )
     except Exception as e:
         log.error(f"Commit/PR creation failed: {e}")
+        conclusion("失败", f"创建 PR 失败: {e}")
         return 1
 
-    log.info("Done! Instruction file sync PR created.")
     return 0
 
 
@@ -482,5 +488,16 @@ def commit_and_create_pr(pr_info: dict, files_modified: list[str]):
     print(f"::notice title=PR Created::{pr_url}")
 
 
-if __name__ == "__main__":
-    sys.exit(main())
+def conclusion(result: str, detail: str):
+    """Print a clear summary to stdout and GITHUB_STEP_SUMMARY."""
+    lines = [
+        f"## AI 指令文件同步: {result}",
+        "",
+        f"- **PR**: [#{PR_NUMBER}](https://github.com/{REPO}/pull/{PR_NUMBER})",
+        f"- **结果**: {detail}",
+    ]
+    text = "\n".join(lines)
+    print(text)
+    # Write to GitHub step summary so it appears on the Actions run page
+    summary_path = Path(os.environ.get("GITHUB_STEP_SUMMARY", "/dev/null"))
+    summary_path.write_text(text + "\n", encoding="utf-8")
