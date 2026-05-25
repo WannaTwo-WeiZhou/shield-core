@@ -327,17 +327,31 @@ func _try_trigger_counter_spiral(body: Node2D, shield: Area2D) -> void:
 
 	var spin_speed_multiplier := maxf(1.0, float(data.get("spin_speed_multiplier", 1.0)))
 	var duration_sec := maxf(0.0, float(data.get("duration_sec", 0.0)))
+	_activate_counter_spiral(spin_speed_multiplier, duration_sec, shield, body, {
+		"proc_chance": proc_chance,
+		"internal_cooldown_sec": internal_cooldown_sec
+	})
+
+
+func _activate_counter_spiral(
+	spin_speed_multiplier: float,
+	duration_sec: float,
+	shield: Area2D,
+	body: Node2D,
+	extra: Dictionary = {}
+) -> void:
+	var now_sec := _get_time_seconds()
 	_counter_spiral_last_trigger_time_sec = now_sec
 	_counter_spiral_spin_multiplier = spin_speed_multiplier
 	_counter_spiral_boost_end_time_sec = now_sec + duration_sec
 
-	EventBus.emit_counter_spiral_trigger(self, shield, {
+	var ctx := {
 		"body": body,
-		"proc_chance": proc_chance,
 		"spin_speed_multiplier": spin_speed_multiplier,
 		"duration_sec": duration_sec,
-		"internal_cooldown_sec": internal_cooldown_sec
-	})
+	}
+	ctx.merge(extra)
+	EventBus.emit_counter_spiral_trigger(self, shield, ctx)
 	print("[COUNTER SPIRAL] 触发！旋转倍率 x%.2f，持续 %.2f 秒" % [
 		spin_speed_multiplier,
 		duration_sec
@@ -427,17 +441,17 @@ func _on_pick_feedback(ability_id: String, _level: int) -> void:
 
 	var data := inst.get_current_data()
 	var now_sec := _get_time_seconds()
+
+	var refresh_on_retrigger := bool(data.get("refresh_on_retrigger", true))
+	if _is_counter_spiral_active(now_sec) and not refresh_on_retrigger:
+		return
+
 	var spin_speed_multiplier := maxf(1.0, float(data.get("spin_speed_multiplier", 1.0)))
 	var duration_sec := maxf(0.0, float(data.get("duration_sec", 0.0)))
 
-	_counter_spiral_last_trigger_time_sec = now_sec
-	_counter_spiral_spin_multiplier = spin_speed_multiplier
-	_counter_spiral_boost_end_time_sec = now_sec + duration_sec
-
-	print("[COUNTER SPIRAL] 选择反馈触发！旋转倍率 x%.2f，持续 %.2f 秒" % [
-		spin_speed_multiplier,
-		duration_sec
-	])
+	_activate_counter_spiral(spin_speed_multiplier, duration_sec, shield_left, null, {
+		"source": "pick_feedback"
+	})
 
 
 func _on_health_changed(current: int, max: int) -> void:
