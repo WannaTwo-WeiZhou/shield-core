@@ -501,3 +501,7 @@ def conclusion(result: str, detail: str):
     # Write to GitHub step summary so it appears on the Actions run page
     summary_path = Path(os.environ.get("GITHUB_STEP_SUMMARY", "/dev/null"))
     summary_path.write_text(text + "\n", encoding="utf-8")
+
+
+if __name__ == "__main__":
+    sys.exit(main())
