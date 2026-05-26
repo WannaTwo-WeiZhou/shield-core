@@ -11,6 +11,14 @@ size = Vector2(32, 32)
 [sub_resource type="CircleShape2D" id="CircleShape2D_shield"]
 radius = 16.0
 
+[sub_resource type="Shader" id="Shader_shield_reflect_feedback"]
+code = "shader_type canvas_item;\n\nuniform vec4 flash_color : source_color = vec4(1.0);\nuniform float flash_strength : hint_range(0.0, 1.0) = 0.0;\n\nvoid fragment() {\n\tvec4 tex_color = texture(TEXTURE, UV);\n\tvec3 display_color = mix(tex_color.rgb, flash_color.rgb, flash_strength);\n\tCOLOR = vec4(display_color, tex_color.a);\n}\n"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_shield_reflect_feedback"]
+shader = SubResource("Shader_shield_reflect_feedback")
+shader_parameter/flash_color = Color(1, 0.54902, 0.196078, 1)
+shader_parameter/flash_strength = 0.0
+
 [node name="player" type="CharacterBody2D" unique_id=1008815712]
 position = Vector2(320, 800)
 script = ExtResource("1_script")
@@ -38,6 +46,7 @@ collision_layer = 2
 collision_mask = 4
 
 [node name="shield_left_visual" type="Sprite2D" parent="shield_container/shield_left" unique_id=777787216]
+material = SubResource("ShaderMaterial_shield_reflect_feedback")
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("2_shield")
 
@@ -50,6 +59,7 @@ collision_layer = 2
 collision_mask = 4
 
 [node name="shield_right_visual" type="Sprite2D" parent="shield_container/shield_right" unique_id=1940887331]
+material = SubResource("ShaderMaterial_shield_reflect_feedback")
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("2_shield")
 

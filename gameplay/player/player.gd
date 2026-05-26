@@ -12,6 +12,9 @@ const MAX_Y: float = 920.0
 const JOYSTICK_MAX_RADIUS: float = 60.0
 const JOYSTICK_DEADZONE: float = 10.0
 const BASE_SHIELD_SPIN_SPEED: float = PI
+const SHIELD_REFLECT_FLASH_DURATION: float = 1.0
+const SHIELD_REFLECT_FLASH_ORANGE := Color("#ff8c32")
+const SHIELD_REFLECT_FLASH_GOLD := Color("#ffd34e")
 
 @onready var joystick_base: Sprite2D = get_node("/root/main/joystick_canvas/joystick_base")
 @onready var joystick_knob: Sprite2D = get_node("/root/main/joystick_canvas/joystick_base/joystick_knob")
@@ -19,6 +22,7 @@ const BASE_SHIELD_SPIN_SPEED: float = PI
 @onready var core_hitbox: Area2D = $core_hitbox
 @onready var shield_left: Area2D = $shield_container/shield_left
 @onready var shield_right: Area2D = $shield_container/shield_right
+@onready var shield_left_visual: Sprite2D = $shield_container/shield_left/shield_left_visual
 @onready var health: Health = $health
 @onready var experience: Experience = $experience
 
@@ -32,6 +36,8 @@ var _base_max_health: int = 0
 var _counter_spiral_spin_multiplier: float = 1.0
 var _counter_spiral_boost_end_time_sec: float = -1.0
 var _counter_spiral_last_trigger_time_sec: float = -1.0
+var _shield_reflect_feedback_material: ShaderMaterial = null
+var _shield_reflect_feedback_tween: Tween = null
 
 # 呼吸摆盾状态（由 breathing_orbit 能力驱动）
 var _cached_shield_initial_radius: float = 0.0
@@ -53,6 +59,8 @@ func _ready() -> void:
 	AbilityManager.register_player(self)
 	_base_max_health = health.max_health
 	_cached_shield_initial_radius = shield_left.position.length()
+	_shield_reflect_feedback_material = shield_left_visual.material as ShaderMaterial
+	_set_shield_reflect_flash_strength(0.0)
 
 	# 订阅能力变更事件，刷新属性
 	AbilityManager.abilities_updated.connect(_on_abilities_updated)
@@ -429,9 +437,13 @@ func _on_bomb_used(_ctx: Dictionary) -> void:
 	input_vector = Vector2.ZERO
 
 
-# ─── counter_spiral 选择反馈 ────────────────────────────────────────────────
+# ─── 护盾相关选择反馈 ───────────────────────────────────────────────────────
 
 func _on_pick_feedback(ability_id: String, _level: int) -> void:
+	if ability_id == "shield_reflect":
+		_play_shield_reflect_pick_feedback()
+		return
+
 	if ability_id != "counter_spiral":
 		return
 
@@ -452,6 +464,54 @@ func _on_pick_feedback(ability_id: String, _level: int) -> void:
 	_activate_counter_spiral(spin_speed_multiplier, duration_sec, shield_left, null, {
 		"source": "pick_feedback"
 	})
+
+
+func _play_shield_reflect_pick_feedback() -> void:
+	if _shield_reflect_feedback_material == null:
+		return
+
+	if _shield_reflect_feedback_tween != null:
+		_shield_reflect_feedback_tween.kill()
+
+	_set_shield_reflect_flash_color(SHIELD_REFLECT_FLASH_ORANGE)
+	_set_shield_reflect_flash_strength(1.0)
+
+	var half_duration := SHIELD_REFLECT_FLASH_DURATION * 0.5
+	_shield_reflect_feedback_tween = create_tween().set_parallel(false)
+	_shield_reflect_feedback_tween.tween_method(
+		_set_shield_reflect_flash_color,
+		SHIELD_REFLECT_FLASH_ORANGE,
+		SHIELD_REFLECT_FLASH_GOLD,
+		half_duration
+	)
+	_shield_reflect_feedback_tween.tween_method(
+		_set_shield_reflect_flash_strength,
+		1.0,
+		0.0,
+		half_duration
+	)
+	_shield_reflect_feedback_tween.finished.connect(
+		_on_shield_reflect_feedback_done.bind(_shield_reflect_feedback_tween),
+		CONNECT_ONE_SHOT
+	)
+
+
+func _set_shield_reflect_flash_color(color: Color) -> void:
+	if _shield_reflect_feedback_material != null:
+		_shield_reflect_feedback_material.set_shader_parameter("flash_color", color)
+
+
+func _set_shield_reflect_flash_strength(strength: float) -> void:
+	if _shield_reflect_feedback_material != null:
+		_shield_reflect_feedback_material.set_shader_parameter("flash_strength", strength)
+
+
+func _on_shield_reflect_feedback_done(tween: Tween) -> void:
+	if tween != _shield_reflect_feedback_tween:
+		return
+
+	_set_shield_reflect_flash_strength(0.0)
+	_shield_reflect_feedback_tween = null
 
 
 func _on_health_changed(current: int, max: int) -> void:
