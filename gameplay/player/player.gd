@@ -12,7 +12,7 @@ const MAX_Y: float = 920.0
 const JOYSTICK_MAX_RADIUS: float = 60.0
 const JOYSTICK_DEADZONE: float = 10.0
 const BASE_SHIELD_SPIN_SPEED: float = PI
-const SHIELD_REFLECT_FLASH_DURATION: float = 0.15
+const SHIELD_REFLECT_FLASH_DURATION: float = 1.0
 const SHIELD_REFLECT_FLASH_ORANGE := Color("#ff8c32")
 const SHIELD_REFLECT_FLASH_GOLD := Color("#ffd34e")
 
