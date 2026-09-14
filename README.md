@@ -2,6 +2,8 @@
 
 ShieldCore 是一款 Godot 4.6.2 制作的 2D 竖屏格挡生存游戏。玩家移动核心、借助旋转护盾格挡压力轨迹，在不断增强的弹幕波次中尽可能延缓被空白吞噬。
 
+**在线预览**：[wannatwo-weizhou.github.io/shield-core](https://wannatwo-weizhou.github.io/shield-core/)
+
 ## 游戏玩法
 
 - **核心目标**：维持“清醒残余”的存续时间。核心被命中会损失生命，生命耗尽后本轮结束。
@@ -14,7 +16,7 @@ ShieldCore 是一款 Godot 4.6.2 制作的 2D 竖屏格挡生存游戏。玩家�
 
 ## CI 与发布
 
-- **主站部署**：push 到 `main` 后，`.github/workflows/deploy-pages.yml` 构建 Web 包并发布到 `gh-pages` 根目录。
+- **主站部署**：push 到 `main` 后，`.github/workflows/deploy-pages.yml` 构建 Web 包并发布到 `gh-pages` 根目录，即 main 分支的在线预览：https://wannatwo-weizhou.github.io/shield-core/
 - **PR 预览**：PR opened / synchronize / reopened 时，`.github/workflows/pr-preview.yml` 构建 PR 版本并发布到 `pr-preview/pr-<number>/`，同时评论预览链接。
 - **预览清理**：PR closed 时清理对应预览目录，并更新该 PR 下所有带 `<!-- shield-core-pr-preview -->` 标记的评论。
 - **Fork PR**：无仓库写权限的 fork PR 会跳过预览构建与清理。
